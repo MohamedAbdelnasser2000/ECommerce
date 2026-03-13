@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>المدونة</value></data>
+  <data name="InsightsStories" xml:space="preserve"><value>الرؤى والقصص</value></data>
+  <data name="LatestTips" xml:space="preserve"><value>اقرأ أحدث نصائحنا، دليل المنتجات، وتحديثات المتجر.</value></data>
+  <data name="SearchArticles" xml:space="preserve"><value>البحث في المقالات...</value></data>
+  <data name="Search" xml:space="preserve"><value>بحث</value></data>
+  <data name="Update" xml:space="preserve"><value>تحديث</value></data>
+  <data name="News" xml:space="preserve"><value>أخبار</value></data>
+  <data name="WelcomeStore" xml:space="preserve"><value>مرحباً بك في متجرنا</value></data>
+  <data name="DiscoverNew" xml:space="preserve"><value>اكتشف ما هو جديد وكيفية الاستفادة القصوى من ميزاتنا وعروضنا.</value></data>
+  <data name="ReadMore" xml:space="preserve"><value>اقرأ المزيد</value></data>
+  <data name="ChooseProduct" xml:space="preserve"><value>كيفية اختيار المنتج المناسب</value></data>
+  <data name="Guide" xml:space="preserve"><value>دليل</value></data>
+  <data name="Tips" xml:space="preserve"><value>نصائح</value></data>
+  <data name="Checklist" xml:space="preserve"><value>قائمة عملية لمساعدتك في تحديد ما يناسب احتياجاتك وميزانيتك.</value></data>
+  <data name="SummerPicks" xml:space="preserve"><value>أفضل 10 اختيارات صيفية</value></data>
+  <data name="Trends" xml:space="preserve"><value>اتجاهات</value></data>
+  <data name="Products" xml:space="preserve"><value>منتجات</value></data>
+  <data name="CuratedList" xml:space="preserve"><value>قائمتنا المختارة لهذا الموسم - أنماط جديدة وقيمة رائعة.</value></data>
+  <data name="Packaging" xml:space="preserve"><value>خلف الكواليس: التغليف</value></data>
+  <data name="Story" xml:space="preserve"><value>قصة</value></data>
+  <data name="Sustainability" xml:space="preserve"><value>الاستدامة</value></data>
+  <data name="EcoPackaging" xml:space="preserve"><value>كيف نبني تغليفاً صديقاً للبيئة دون التضحية بالجودة.</value></data>
+  <data name="Prev" xml:space="preserve"><value>السابق</value></data>
+  <data name="Next" xml:space="preserve"><value>التالي</value></data>
+  <data name="PopularTags" xml:space="preserve"><value>الوسوم الشائعة</value></data>
+  <data name="RecentPosts" xml:space="preserve"><value>المنشورات الأخيرة</value></data>
+</root>

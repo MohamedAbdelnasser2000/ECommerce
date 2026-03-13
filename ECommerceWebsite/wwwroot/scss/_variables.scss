@@ -1,0 +1,18 @@
+// Typography
+$font-poppins: 'Poppins', sans-serif;
+$font-ubuntu: 'Ubuntu', sans-serif;
+
+// Brand Palette
+$pink: #F8C8DC;        // Pale Pink
+$gold: #e83e8c;        // Metallic Gold
+$gold-dark: #B8860B;   // Darker gold for hover/focus accents
+$white-color: #ffffff; // Ensure white is available in this scope
+
+// Theme Overrides (applied after importing theme_color.scss in style.scss)
+// These re-assign core tokens so downstream rules (buttons, headers, etc.) pick up the brand
+$bg-default: $pink;                 // Primary brand background (used by .essence-btn, etc.)
+$hover-color: $gold;                // Primary hover/active color
+$border-color: #f3dce6;            // Subtle pink for separators and borders
+
+// Optional explicit accent for custom components
+$accent-color: $gold;

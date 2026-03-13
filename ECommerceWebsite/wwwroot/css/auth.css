@@ -1,0 +1,86 @@
+/* Auth pages styling aligned with Pink–Gold visual identity */
+:root {
+  /* Uses variables from theme.pink-gold.css where available */
+  --auth-bg-1: rgba(248, 200, 220, 0.35); /* pink wash */
+  --auth-bg-2: rgba(232, 62, 140, 0.10);  /* gold/pink glaze */
+  --auth-border: #F3D0E0;                 /* soft pink border */
+}
+
+.auth-section {
+  min-height: 100vh;
+  padding: 60px 0;
+  background:
+    radial-gradient(1000px 400px at -10% -10%, var(--auth-bg-1), transparent 60%),
+    radial-gradient(800px 300px at 110% 0%, var(--auth-bg-2), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.9));
+  display: flex;
+  align-items: center;
+}
+
+.auth-card {
+  background: #fff;
+  border: 1px solid var(--auth-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.12);
+  overflow: hidden;
+}
+
+.auth-header {
+  background: linear-gradient(90deg, var(--pink), rgba(248,200,220,0.6));
+  color: #111;
+  padding: 20px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--auth-border);
+}
+
+.auth-header .brand-icon {
+  color: var(--gold);
+  font-size: 28px;
+  margin-right: 8px;
+}
+
+.auth-header h4 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.auth-body {
+  padding: 24px;
+}
+
+/* Inputs */
+.auth-body .form-label { font-weight: 600; color: #222; }
+.auth-body .form-control {
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid var(--auth-border);
+}
+.auth-body .form-control:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.15);
+}
+
+/* Helpers */
+.auth-footer {
+  padding: 0 24px 24px 24px;
+}
+.auth-footer .divider {
+  margin: 20px 0;
+  border-top: 1px solid var(--auth-border);
+}
+
+/* Buttons rely on theme.pink-gold overrides for .btn-primary/.btn-outline-primary */
+.auth-actions .btn {
+  height: 48px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.alt-links a { color: var(--gold); text-decoration: none; }
+.alt-links a:hover { color: var(--gold-dark); }
+
+/* Responsive */
+@media (max-width: 576px) {
+  .auth-body { padding: 18px; }
+  .auth-footer { padding: 0 18px 18px 18px; }
+}

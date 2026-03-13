@@ -1,0 +1,63 @@
+// Brand-specific styles using pink & gold palette
+// This partial is imported by style.scss so compiled CSS includes brand layer
+
+// Topbar (above modern header)
+.topbar {
+  background: #F9E3EC; // soft pink 100
+  color: #5a4100;      // deep gold-brown for text
+  font-size: 12px;
+  border-bottom: 1px solid #F3D0E0; // pink 200
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  a { color: $gold; font-weight: 600; text-decoration: none; }
+  a:hover { color: $gold-dark; }
+  i { color: $gold; }
+  .divider { opacity: .5; margin: 0 8px; }
+}
+
+// Footer brand skin
+.site-footer {
+  background: #F9E3EC; // soft pink 100
+  color: #333;
+  border-top: 1px solid #F3D0E0; // pink 200
+  a { color: $gold; }
+  a:hover { color: $gold-dark; }
+  h6 { color: $gold-dark; }
+  .btn-primary { background-color: $gold; border-color: $gold; }
+  .btn-outline-primary { color: $gold; border-color: $gold; }
+  .btn-outline-primary:hover { background-color: $gold; color: #fff; }
+  .input-group .form-control { border-color: #F3D0E0; }
+  .input-group .form-control:focus { box-shadow: 0 0 0 .15rem rgba(212,175,55,.25); border-color: $gold; }
+}
+
+// Heading accents
+.section-heading {
+  h2 { color: #1a1a1a; }
+  &::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin-top: 10px;
+    background: $gold; // subtle accent bar below section headings
+  }
+}
+
+// Borders and subtle separators
+hr { border-top: 1px solid #F3D0E0; }
+.card, .dropdown-menu, .icon-btn { border-color: #F3D0E0; }
+
+// Menu hover backgrounds
+.modern-header .main-links a:hover { background: rgba(248,200,220, .35); }
+.mobile-nav .menu a:hover { background: rgba(248,200,220, .35); }
+.header_area .classynav ul li a:hover,
+.header_area .classynav ul li .megamenu li a:hover,
+.header_area .classynav ul li .dropdown li a:hover { background: rgba(248,200,220, .25); color: #111; }

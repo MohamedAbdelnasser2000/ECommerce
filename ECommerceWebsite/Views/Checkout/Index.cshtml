@@ -1,0 +1,517 @@
+@model ECommerceWebsite.Models.CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container my-5 checkout-page">
+    <!-- Header / Breadcrumb -->
+    <div class="row align-items-center mb-3">
+        <div class="col-12 col-md-6">
+            <h2 class="mb-1 fw-semibold"><i class="fas fa-credit-card me-2 text-primary"></i>Checkout</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Cart" asp-action="Index">Cart</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
+            <span class="text-muted small"><i class="fas fa-lock me-1"></i>Secure checkout</span>
+        </div>
+    </div>
+
+    <!-- Progress / Steps -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="steps-wrapper">
+                <ul class="steps list-unstyled d-flex justify-content-between align-items-center mb-2">
+                    <li class="step done"><span class="index">1</span><span class="label">Cart</span></li>
+                    <li class="step active"><span class="index">2</span><span class="label">Shipping</span></li>
+                    <li class="step active"><span class="index">3</span><span class="label">Payment</span></li>
+                    <li class="step"><span class="index">4</span><span class="label">Review</span></li>
+                </ul>
+                <div class="progress position-relative" style="height: 6px;">
+                    <div class="progress-bar bg-primary" style="width: 72%;" role="progressbar" aria-label="Checkout progress" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0"><i class="fas fa-shipping-fast me-2 text-primary"></i>Shipping Information</h4>
+                    <span class="small text-muted">All fields marked * are required</span>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="post" id="checkout-form" novalidate>
+                        <!-- Hidden fields for calculated totals -->
+                        <input type="hidden" asp-for="Subtotal" id="hidden-subtotal" />
+                        <input type="hidden" asp-for="Shipping" id="hidden-shipping" />
+                        <input type="hidden" asp-for="Tax" id="hidden-tax" />
+                        <input type="hidden" asp-for="Total" id="hidden-total" />
+                        <input type="hidden" asp-for="DiscountAmount" id="hidden-discount" />
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ShippingFirstName" class="form-label">First Name *</label>
+                                    <input asp-for="ShippingFirstName" class="form-control" autocomplete="given-name" required />
+                                    <span asp-validation-for="ShippingFirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ShippingLastName" class="form-label">Last Name *</label>
+                                    <input asp-for="ShippingLastName" class="form-control" autocomplete="family-name" required />
+                                    <span asp-validation-for="ShippingLastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ShippingAddress" class="form-label">Address *</label>
+                            <textarea asp-for="ShippingAddress" class="form-control" rows="3" placeholder="Street, building, apartment" autocomplete="shipping street-address" required></textarea>
+                            <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ShippingCity" class="form-label">City *</label>
+                                    <input asp-for="ShippingCity" class="form-control" autocomplete="address-level2" required />
+                                    <span asp-validation-for="ShippingCity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ShippingPostalCode" class="form-label">Postal Code *</label>
+                                    <input asp-for="ShippingPostalCode" class="form-control" inputmode="numeric" autocomplete="postal-code" required />
+                                    <span asp-validation-for="ShippingPostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ShippingPhone" class="form-label">Phone Number *</label>
+                            <input asp-for="ShippingPhone" class="form-control" type="tel" inputmode="tel" autocomplete="tel" required />
+                            <span asp-validation-for="ShippingPhone" class="text-danger"></span>
+                        </div>
+
+                        @if (!(User?.Identity?.IsAuthenticated ?? false))
+                        {
+                            <div class="form-group mb-3">
+                                <label asp-for="GuestEmail" class="form-label">Email Address (for order updates) *</label>
+                                <input asp-for="GuestEmail" class="form-control" type="email" autocomplete="email" required />
+                                <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                            </div>
+                        }
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Notes" class="form-label">Order Notes (Optional)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Special instructions for delivery..."></textarea>
+                        </div>
+
+                        <div class="separator my-4"></div>
+
+                        <h5 class="mb-3"><i class="fas fa-truck me-2 text-primary"></i>Shipping Method</h5>
+
+                        @if (Model.AvailableShippingMethods.Any())
+                        {
+                            <div class="row">
+                                @foreach (var shippingMethod in Model.AvailableShippingMethods)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check shipping-option p-3 border rounded">
+                                            <input class="form-check-input" type="radio" asp-for="SelectedShippingMethodId" value="@shippingMethod.Id" id="shipping-@shippingMethod.Id" />
+                                            <label class="form-check-label d-flex align-items-center justify-content-between w-100" for="shipping-@shippingMethod.Id">
+                                                <div>
+                                                    <strong>@shippingMethod.Name</strong><br>
+                                                    <small class="text-muted">@shippingMethod.Description</small>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="fw-bold">$@shippingMethod.Cost</span><br>
+                                                    <small class="text-muted">@shippingMethod.EstimatedDays days</small>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>No shipping methods are currently available.
+                            </div>
+                        }
+
+                        <div class="separator my-4"></div>
+
+                        <h5 class="mb-3"><i class="fas fa-percentage me-2 text-primary"></i>Tax Settings</h5>
+
+                        @if (Model.AvailableTaxSettings.Any())
+                        {
+                            <div class="row">
+                                @foreach (var taxSetting in Model.AvailableTaxSettings)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check tax-option p-3 border rounded">
+                                            <input class="form-check-input" type="radio" asp-for="AppliedTaxSettingId" value="@taxSetting.Id" id="tax-@taxSetting.Id" />
+                                            <label class="form-check-label d-flex align-items-center justify-content-between w-100" for="tax-@taxSetting.Id">
+                                                <div>
+                                                    <strong>@taxSetting.Country</strong>
+                                                    @if (!string.IsNullOrEmpty(taxSetting.Region))
+                                                    {
+                                                        <span>, @taxSetting.Region</span>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(taxSetting.City))
+                                                    {
+                                                        <span>, @taxSetting.City</span>
+                                                    }
+                                                    <br>
+                                                    <small class="text-muted">@taxSetting.Notes</small>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="fw-bold">@taxSetting.TaxRate%</span><br>
+                                                    <small class="text-muted">Tax Rate</small>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>No tax settings configured. A default rate will be applied.
+                            </div>
+                        }
+
+                        <div class="separator my-4"></div>
+
+                        <h5 class="mb-3"><i class="fas fa-wallet me-2 text-primary"></i>Payment Method</h5>
+
+                        <div class="row">
+                           @*  <div class="col-sm-4 mb-3">
+                                <div class="form-check payment-option p-3 border rounded">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethod.CreditCard" id="credit-card" checked />
+                                    <label class="form-check-label d-flex align-items-center" for="credit-card"><i class="fas fa-credit-card me-2 text-primary"></i>Credit Card</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 mb-3">
+                                <div class="form-check payment-option p-3 border rounded">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethod.PayPal" id="paypal" />
+                                    <label class="form-check-label d-flex align-items-center" for="paypal"><i class="fab fa-paypal me-2 text-primary"></i>PayPal</label>
+                                </div>
+                            </div> *@
+                            <div class="col-sm-4 mb-3">
+                                <div class="form-check payment-option p-3 border rounded">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethod.CashOnDelivery" id="cod" />
+                                    <label class="form-check-label d-flex align-items-center" for="cod"><i class="fas fa-money-bill-wave me-2 text-primary"></i>Cash on Delivery</label>
+                                </div>
+                            </div>
+                        </div>
+
+@*                         <div id="credit-card-fields" class="payment-fields" aria-live="polite">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CardNumber" class="form-label">Card Number</label>
+                                        <input asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456" autocomplete="cc-number" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CardholderName" class="form-label">Cardholder Name</label>
+                                        <input asp-for="CardholderName" class="form-control" autocomplete="cc-name" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ExpiryMonth" class="form-label">Month</label>
+                                        <select asp-for="ExpiryMonth" class="form-select" autocomplete="cc-exp-month">
+                                            <option value="">Month</option>
+                                            @for (int i = 1; i <= 12; i++)
+                                            {
+                                                <option value="@i">@i.ToString("00")</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ExpiryYear" class="form-label">Year</label>
+                                        <select asp-for="ExpiryYear" class="form-select" autocomplete="cc-exp-year">
+                                            <option value="">Year</option>
+                                            @for (int i = DateTime.Now.Year; i <= DateTime.Now.Year + 10; i++)
+                                            {
+                                                <option value="@i">@i</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CVV" class="form-label">CVV</label>
+                                        <input asp-for="CVV" class="form-control" placeholder="123" maxlength="4" autocomplete="cc-csc" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+ *@
+                        <div id="paypal-fields" class="payment-fields" style="display:none;" aria-live="polite">
+                            <div class="alert alert-info"><i class="fab fa-paypal me-2"></i>You will be redirected to PayPal to complete your payment.</div>
+                        </div>
+
+                        <div id="cod-fields" class="payment-fields" style="display:none;" aria-live="polite">
+                            <div class="alert alert-warning"><i class="fas fa-money-bill-wave me-2"></i>You will pay when your order is delivered. Additional charges may apply.</div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="place-order-btn"><i class="fas fa-lock me-2"></i>Place Order</button>
+                            <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Cart</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-lg-top" style="top: 88px;">
+                <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2 text-primary"></i>Order Summary</h5>
+                    <span class="badge bg-light text-dark">@Model.CartItems.Count() items</span>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="@Url.Content($"~/media/50x50/{(item.Product.ImageUrl ?? "images/unnamed.jpg").TrimStart('/')}")" alt="@item.Product.GetLocalizedName()" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='@Url.Content("~/media/50x50/images/unnamed.jpg")';">
+                                <div>
+                                    <h6 class="mb-0">@item.Product.GetLocalizedName()</h6>
+                                    <small class="text-muted">Qty: @item.Quantity</small>
+                                </div>
+                            </div>
+                            <span class="fw-bold">$@item.TotalPrice</span>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="ck-subtotal" data-val="@Model.Subtotal">$@Model.Subtotal</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span id="ck-shipping" data-val="@Model.Shipping">$@Model.Shipping</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax:</span>
+                        <span id="ck-tax" data-val="@Model.Tax">$@Model.Tax</span>
+                    </div>
+
+                    @if (Model.DiscountAmount > 0 && !string.IsNullOrEmpty(Model.AppliedCouponCode))
+                    {
+                        <div class="d-flex justify-content-between mb-2" id="discount-row">
+                            <span>Discount (@Model.AppliedCouponCode):
+                                <button type="button" class="btn btn-sm btn-link p-0 text-danger" id="remove-coupon" aria-label="Remove coupon"><i class="fas fa-times"></i></button>
+                            </span>
+                            <span class="text-success" id="discount-amount" data-val="@Model.DiscountAmount">-$@Model.DiscountAmount.ToString("F2")</span>
+                        </div>
+                    }
+
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong class="text-primary" id="ck-total">$@Model.Total</strong>
+                    </div>
+
+                    @if (!(Model.DiscountAmount > 0 && !string.IsNullOrEmpty(Model.AppliedCouponCode)))
+                    {
+                        <div class="form-group" id="coupon-form">
+                            <label for="coupon-code" class="form-label">Coupon Code</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="coupon-code" placeholder="Enter coupon code" aria-label="Coupon code">
+                                <button class="btn btn-outline-primary" type="button" id="apply-coupon">Apply</button>
+                            </div>
+                            <div class="small mt-2" id="coupon-msg" role="status" aria-live="polite"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            function togglePaymentFields() {
+                const method = $('input[name="PaymentMethod"]:checked').val();
+                $('#credit-card-fields').toggle(method === 'CreditCard');
+                $('#paypal-fields').toggle(method === 'PayPal');
+                $('#cod-fields').toggle(method === 'CashOnDelivery');
+            }
+            $('input[name="PaymentMethod"]').on('change', togglePaymentFields);
+            togglePaymentFields();
+
+            function parseMoney(text) { return parseFloat(String(text).replace('$', '')) || 0; }
+            function formatMoney(v) { return '$' + (v).toFixed(2); }
+            function updateHiddenFields() {
+                const sub = parseFloat($('#ck-subtotal').data('val')) || parseMoney($('#ck-subtotal').text());
+                const ship = parseFloat($('#ck-shipping').data('val')) || parseMoney($('#ck-shipping').text());
+                const tax = parseFloat($('#ck-tax').data('val')) || parseMoney($('#ck-tax').text());
+                const disc = parseFloat($('#discount-amount').data('val')) || 0;
+                const total = sub + ship + tax - disc;
+
+                $('#hidden-subtotal').val(sub.toFixed(2));
+                $('#hidden-shipping').val(ship.toFixed(2));
+                $('#hidden-tax').val(tax.toFixed(2));
+                $('#hidden-discount').val(disc.toFixed(2));
+                $('#hidden-total').val(total.toFixed(2));
+            }
+            function recalcTotal() {
+                const sub = parseFloat($('#ck-subtotal').data('val')) || parseMoney($('#ck-subtotal').text());
+                const ship = parseFloat($('#ck-shipping').data('val')) || parseMoney($('#ck-shipping').text());
+                const tax = parseFloat($('#ck-tax').data('val')) || parseMoney($('#ck-tax').text());
+                const disc = parseFloat($('#discount-amount').data('val')) || 0;
+                const total = sub + ship + tax - disc;
+                $('#ck-total').text(formatMoney(total));
+                updateHiddenFields();
+            }
+
+            function updateShippingAndTax() {
+                // Update shipping and tax calculations based on selections
+                const selectedShippingId = $('input[name="SelectedShippingMethodId"]:checked').val();
+                const selectedTaxId = $('input[name="AppliedTaxSettingId"]:checked').val();
+
+                // Update shipping cost in summary
+                if (selectedShippingId) {
+                    // This would typically call an API to get updated shipping cost
+                    // For now, we'll use the static calculation from the model
+                    const shippingCost = @Model.Shipping.ToString("F2");
+                    $('#ck-shipping').text('$' + shippingCost);
+                }
+
+                // Update tax calculation in summary
+                if (selectedTaxId) {
+                    // This would typically call an API to get updated tax amount
+                    // For now, we'll use the static calculation from the model
+                    const taxAmount = @Model.Tax.ToString("F2");
+                    $('#ck-tax').text('$' + taxAmount);
+                }
+
+                recalcTotal();
+            }
+
+            // Update calculations when shipping or tax selection changes
+            $('input[name="SelectedShippingMethodId"], input[name="AppliedTaxSettingId"]').on('change', updateShippingAndTax);
+
+            // Initial calculation and hidden field update
+            updateShippingAndTax();
+
+            // Apply coupon functionality
+            $(document).on('click', '#apply-coupon', function() {
+                const code = $('#coupon-code').val().trim();
+                if (!code) { $('#coupon-msg').addClass('text-danger').removeClass('text-success').text('Please enter a coupon code.'); return; }
+                $('#apply-coupon').prop('disabled', true).text('Applying...');
+                fetch('/Checkout/ApplyCoupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ CouponCode: code })
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            $('#coupon-msg').removeClass('text-danger').addClass('text-success').text(d.message || 'Coupon applied');
+                            const disc = parseFloat(d.discountAmount) || 0;
+                            if (!$('#discount-row').length) {
+                                $(
+                                    '<div class="d-flex justify-content-between mb-2" id="discount-row">' +
+                                    '<span>Discount (' + (d.couponCode || code) + '): <button type="button" class="btn btn-sm btn-link p-0 text-danger" id="remove-coupon" aria-label="Remove coupon"><i class="fas fa-times"></i></button></span>' +
+                                    '<span class="text-success" id="discount-amount">-$' + disc.toFixed(2) + '</span>' +
+                                    '</div>'
+                                ).insertBefore($('#ck-total').closest('.d-flex'));
+                            } else {
+                                $('#discount-amount').text('-$' + disc.toFixed(2));
+                            }
+                            $('#discount-amount').attr('data-val', disc);
+                            $('#coupon-form').hide();
+                            recalcTotal();
+                        } else {
+                            $('#coupon-msg').addClass('text-danger').removeClass('text-success').text(d.message || 'Invalid coupon');
+                        }
+                    })
+                    .catch(() => { $('#coupon-msg').addClass('text-danger').removeClass('text-success').text('Error applying coupon'); })
+                    .finally(() => { $('#apply-coupon').prop('disabled', false).text('Apply'); });
+            });
+
+            $(document).on('click', '#remove-coupon', function () {
+                fetch('/Checkout/RemoveCoupon', { method: 'POST' })
+                    .then(r => r.ok ? r.json().catch(() => ({})) : {})
+                    .finally(() => {
+                        $('#discount-row').remove();
+                        $('#coupon-form').show();
+                        $('#discount-amount').attr('data-val', 0);
+                        recalcTotal();
+                    });
+            });
+        });
+
+        // RTL toggle (scoped to checkout page)
+        (function initRtlToggle(){
+            const key='rtl_checkout_page';
+            const $root=$('.checkout-page');
+            const saved=sessionStorage.getItem(key)==='1';
+            if(saved) $root.addClass('rtl');
+            const id='rtl-toggle';
+            if(!document.getElementById(id)){
+                // $('body').append('<button id="'+id+'" class="btn btn-light border shadow-sm position-fixed" style="bottom:152px;right:16px;z-index:1030">RTL</button>');
+                $('#'+id).on('click', function(){
+                    $root.toggleClass('rtl');
+                    sessionStorage.setItem(key, $root.hasClass('rtl') ? '1' : '0');
+                });
+            }
+        })();
+    </script>
+
+    <style>
+        .steps .step { text-align:center; position:relative; }
+        .steps .step .index { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#f1f3f5; color:#6c757d; font-weight:600; margin-bottom:.25rem; }
+        .steps .step.active .index, .steps .step.done .index { background: var(--bs-primary); color: #fff; }
+        .steps .step .label { display:block; font-size:.8rem; color:#6c757d; }
+        .separator { height:1px; background: rgba(0,0,0,.06); }
+        .payment-option:hover { background: #f9fafb; }
+        .checkout-page h4, .checkout-page h5, .checkout-page h6 { letter-spacing: .2px; }
+        .checkout-page .card { border-radius: .6rem; }
+        .sticky-lg-top { position: sticky; }
+        .shipping-option, .tax-option { transition: all 0.3s ease; }
+        .shipping-option:hover, .tax-option:hover { background: #f9fafb; border-color: var(--bs-primary); }
+        .shipping-option .form-check-input:checked ~ .form-check-label,
+        .tax-option .form-check-input:checked ~ .form-check-label { background: rgba(var(--bs-primary-rgb), 0.1); border-color: var(--bs-primary); }
+
+        /* Scoped RTL support */
+        .checkout-page.rtl { direction: rtl; }
+        .checkout-page.rtl .me-1 { margin-right: 0 !important; margin-left: .25rem !important; }
+        .checkout-page.rtl .me-2 { margin-right: 0 !important; margin-left: .5rem !important; }
+        .checkout-page.rtl .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+        .checkout-page.rtl .ms-1 { margin-left: 0 !important; margin-right: .25rem !important; }
+        .checkout-page.rtl .ms-2 { margin-left: 0 !important; margin-right: .5rem !important; }
+        .checkout-page.rtl .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+        .checkout-page.rtl .text-start { text-align: right !important; }
+        .checkout-page.rtl .text-end { text-align: left !important; }
+        .checkout-page.rtl .breadcrumb { justify-content: flex-end; }
+    </style>
+}

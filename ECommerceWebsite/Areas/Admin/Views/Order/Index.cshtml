@@ -1,0 +1,355 @@
+@model IEnumerable<ECommerceWebsite.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders Management";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-shopping-cart me-2"></i>Orders Management
+                </h3>
+                <div class="card-tools">
+                    <span class="badge badge-info">
+                        Total: @ViewBag.TotalOrders orders
+                    </span>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Status Filter</label>
+                        <select name="status" class="form-control">
+                            <option value="">All Statuses</option>
+                            <option value="Pending" selected="@(ViewBag.CurrentStatus == "Pending")">Pending</option>
+                            <option value="Processing" selected="@(ViewBag.CurrentStatus == "Processing")">Processing</option>
+                            <option value="Shipped" selected="@(ViewBag.CurrentStatus == "Shipped")">Shipped</option>
+                            <option value="Delivered" selected="@(ViewBag.CurrentStatus == "Delivered")">Delivered</option>
+                            <option value="Cancelled" selected="@(ViewBag.CurrentStatus == "Cancelled")">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search" class="form-control" placeholder="Order number, customer name, email..." value="@ViewBag.CurrentSearch" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Bulk Order Status</label>
+                        <div class="input-group">
+                            <select id="bulkAction" class="form-control">
+                                <option value="">Select Action</option>
+                                <option value="Processing">Mark as Processing</option>
+                                <option value="Shipped">Mark as Shipped</option>
+                                <option value="Delivered">Mark as Delivered</option>
+                                <option value="Cancelled">Mark as Cancelled</option>
+                            </select>
+                            <button type="button" id="applyBulkAction" class="btn btn-warning">Apply</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Bulk Payment Status</label>
+                        <div class="input-group">
+                            <select id="bulkPaymentAction" class="form-control">
+                                <option value="">Select Action</option>
+                                <option value="Pending">Mark as Pending</option>
+                                <option value="Paid">Mark as Paid</option>
+                                <option value="Failed">Mark as Failed</option>
+                                <option value="Refunded">Mark as Refunded</option>
+                            </select>
+                            <button type="button" id="applyBulkPaymentAction" class="btn btn-warning">Apply</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-body">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="40">
+                                        <input type="checkbox" id="selectAll" />
+                                    </th>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="order-checkbox" value="@order.Id" />
+                                        </td>
+                                        <td>
+                                            <a asp-action="Details" asp-route-id="@order.Id" class="text-decoration-none">
+                                                <strong>#@order.OrderNumber</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                @if (order.User != null)
+                                                {
+                                                    <strong>@order.User.FirstName @order.User.LastName</strong>
+                                                    <br />
+                                                    <small class="text-muted">@order.User.Email</small>
+                                                }
+                                                else
+                                                {
+                                                    <strong>Guest</strong>
+                                                    <br />
+                                                    <small class="text-muted">@order.GuestEmail</small>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                                            <br>
+                                            <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">@((order.OrderItems?.Sum(oi => oi.Quantity) ?? 0)) items</span>
+                                        </td>
+                                        <td>
+                                            <strong>$@order.TotalAmount.ToString("F2")</strong>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm dropdown-toggle @(order.PaymentStatus switch
+                                                {
+                                                    ECommerceWebsite.Models.PaymentStatus.Paid => "btn-success",
+                                                    ECommerceWebsite.Models.PaymentStatus.Pending => "btn-warning",
+                                                    ECommerceWebsite.Models.PaymentStatus.Failed => "btn-danger",
+                                                    ECommerceWebsite.Models.PaymentStatus.Refunded => "btn-secondary",
+                                                    _ => "btn-light"
+                                                }) quick-payment-toggle" type="button" data-toggle="dropdown">
+                                                    @order.PaymentStatus
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    @foreach (ECommerceWebsite.Models.PaymentStatus statusOption in Enum.GetValues(typeof(ECommerceWebsite.Models.PaymentStatus)))
+                                                    {
+                                                        if (statusOption != order.PaymentStatus)
+                                                        {
+                                                            <li><a class="dropdown-item quick-payment-update" href="#" data-id="@order.Id" data-status="@statusOption">@statusOption</a></li>
+                                                        }
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">@((System.Enum.IsDefined(typeof(ECommerceWebsite.Models.PaymentMethod), order.PaymentMethod) ? order.PaymentMethod.ToString() : "N/A"))</small>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm dropdown-toggle @(order.Status switch
+                                                {
+                                                    ECommerceWebsite.Models.OrderStatus.Pending => "btn-warning",
+                                                    ECommerceWebsite.Models.OrderStatus.Processing => "btn-info",
+                                                    ECommerceWebsite.Models.OrderStatus.Shipped => "btn-primary",
+                                                    ECommerceWebsite.Models.OrderStatus.Delivered => "btn-success",
+                                                    ECommerceWebsite.Models.OrderStatus.Cancelled => "btn-danger",
+                                                    _ => "btn-secondary"
+                                                })" type="button" data-toggle="dropdown">
+                                                    @order.Status
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    @if (order.Status != ECommerceWebsite.Models.OrderStatus.Processing)
+                                                    {
+                                                        <li><a class="dropdown-item quick-status-update" href="#" data-id="@order.Id" data-status="Processing">Processing</a></li>
+                                                    }
+                                                    @if (order.Status != ECommerceWebsite.Models.OrderStatus.Shipped)
+                                                    {
+                                                        <li><a class="dropdown-item quick-status-update" href="#" data-id="@order.Id" data-status="Shipped">Shipped</a></li>
+                                                    }
+                                                    @if (order.Status != ECommerceWebsite.Models.OrderStatus.Delivered)
+                                                    {
+                                                        <li><a class="dropdown-item quick-status-update" href="#" data-id="@order.Id" data-status="Delivered">Delivered</a></li>
+                                                    }
+                                                    @if (order.Status != ECommerceWebsite.Models.OrderStatus.Cancelled)
+                                                    {
+                                                        <li><a class="dropdown-item quick-status-update" href="#" data-id="@order.Id" data-status="Cancelled">Cancelled</a></li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if (order.Status == ECommerceWebsite.Models.OrderStatus.Cancelled)
+                                                {
+                                                    <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-danger btn-sm" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Orders pagination">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="?page=@i&status=@ViewBag.CurrentStatus&search=@ViewBag.CurrentSearch">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Orders Found</h4>
+                        <p class="text-muted">No orders match your current filters.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Select all checkbox
+            $('#selectAll').change(function() {
+                $('.order-checkbox').prop('checked', $(this).prop('checked'));
+            });
+
+            // Quick status update
+            $('.quick-status-update').click(function(e) {
+                e.preventDefault();
+                var orderId = $(this).data('id');
+                var status = $(this).data('status');
+
+                if (confirm('Are you sure you want to update this order status to ' + status + '?')) {
+                    $.post('@Url.Action("QuickStatusUpdate")', {
+                        id: orderId,
+                        status: status
+                    }, function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    });
+                }
+            });
+
+            // Quick payment update
+            $('.quick-payment-update').click(function(e) {
+                e.preventDefault();
+                var orderId = $(this).data('id');
+                var paymentStatus = $(this).data('status');
+
+                if (confirm('هل أنت متأكد من تحديث حالة الدفع إلى ' + paymentStatus + '؟')) {
+                    $.post('@Url.Action("QuickPaymentUpdate")', {
+                        id: orderId,
+                        paymentStatus: paymentStatus
+                    }, function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    });
+                }
+            });
+
+            // Bulk actions for order status
+            $('#applyBulkAction').click(function() {
+                var action = $('#bulkAction').val();
+                var selectedOrders = $('.order-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (!action) {
+                    alert('Please select an action');
+                    return;
+                }
+
+                if (selectedOrders.length === 0) {
+                    alert('Please select at least one order');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to apply this action to ' + selectedOrders.length + ' order(s)?')) {
+                    $.post('@Url.Action("BulkStatusUpdate")', {
+                        orderIds: selectedOrders,
+                        status: action
+                    }, function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    });
+                }
+            });
+
+            // Bulk actions for payment status
+            $('#applyBulkPaymentAction').click(function() {
+                var action = $('#bulkPaymentAction').val();
+                var selectedOrders = $('.order-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (!action) {
+                    alert('Please select an action');
+                    return;
+                }
+
+                if (selectedOrders.length === 0) {
+                    alert('Please select at least one order');
+                    return;
+                }
+
+                if (confirm('هل أنت متأكد من تطبيق هذا الإجراء على ' + selectedOrders.length + ' طلب(ات)؟')) {
+                    $.post('@Url.Action("BulkPaymentUpdate")', {
+                        orderIds: selectedOrders,
+                        paymentStatus: action
+                    }, function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert('خطأ: ' + response.message);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,229 @@
+@model IEnumerable<ECommerceWebsite.Models.EmailLog>
+@{
+    ViewData["Title"] = "Email Logs";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Email Management</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item active">Email Logs</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Email Stats Cards -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 id="totalEmails">@Model.Count()</h3>
+                            <p>Total Emails</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3 id="sentEmails">@Model.Count(e => e.Status == ECommerceWebsite.Models.EmailStatus.Sent)</h3>
+                            <p>Sent Successfully</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3 id="pendingEmails">@Model.Count(e => e.Status == ECommerceWebsite.Models.EmailStatus.Pending)</h3>
+                            <p>Pending</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3 id="failedEmails">@Model.Count(e => e.Status == ECommerceWebsite.Models.EmailStatus.Failed)</h3>
+                            <p>Failed</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Logs Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Email Logs</h3>
+                    <div class="card-tools">
+                        <a href="@Url.Action("Templates")" class="btn btn-primary btn-sm">
+                            <i class="fas fa-file-alt"></i> Manage Templates
+                        </a>
+                        <a href="@Url.Action("Newsletter")" class="btn btn-success btn-sm">
+                            <i class="fas fa-newspaper"></i> Newsletter
+                        </a>
+                        <a href="@Url.Action("EmailStats")" class="btn btn-info btn-sm">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="emailLogsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>To Email</th>
+                                        <th>Subject</th>
+                                        <th>Template</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var log in Model.OrderByDescending(e => e.SentAt))
+                                    {
+                                        <tr>
+                                            <td>@log.SentAt.ToString("MMM dd, yyyy HH:mm")</td>
+                                            <td>@log.ToEmail</td>
+                                            <td>@log.Subject</td>
+                                            <td>
+                                                @if (log.Template != null)
+                                                {
+                                                    <span class="badge badge-info">@log.Template.Name</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Custom</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (log.Status)
+                                                {
+                                                    case ECommerceWebsite.Models.EmailStatus.Sent:
+                                                        <span class="badge badge-success">Sent</span>
+                                                        break;
+                                                    case ECommerceWebsite.Models.EmailStatus.Pending:
+                                                        <span class="badge badge-warning">Pending</span>
+                                                        break;
+                                                    case ECommerceWebsite.Models.EmailStatus.Failed:
+                                                        <span class="badge badge-danger">Failed</span>
+                                                        break;
+                                                    case ECommerceWebsite.Models.EmailStatus.Bounced:
+                                                        <span class="badge badge-secondary">Bounced</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-info"
+                                                        onclick="viewEmailContent(@log.Id)" title="View Content">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                @if (!string.IsNullOrEmpty(log.ErrorMessage))
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="viewError('@log.ErrorMessage')" title="View Error">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No email logs found</h5>
+                            <p class="text-muted">Email logs will appear here once emails are sent.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Email Content Modal -->
+<div class="modal fade" id="emailContentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Email Content</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="emailContentBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            if ($.fn.DataTable) {
+                $('#emailLogsTable').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "order": [[0, "desc"]],
+                    "pageLength": 25
+                });
+            }
+        });
+
+        function viewEmailContent(logId) {
+            // In a real implementation, you would fetch the email content via AJAX
+            $('#emailContentBody').html('<p>Email content viewing functionality would be implemented here.</p>');
+            $('#emailContentModal').modal('show');
+        }
+
+        function viewError(errorMessage) {
+            alert('Error: ' + errorMessage);
+        }
+    </script>
+}
+
+<style>
+    .small-box {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+    }
+
+    .badge {
+        font-size: 0.75em;
+    }
+</style>

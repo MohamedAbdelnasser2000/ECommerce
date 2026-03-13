@@ -1,0 +1,175 @@
+@model IEnumerable<CouponViewModel>
+
+@{
+    ViewData["Title"] = "Manage Coupons";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">
+                        <i class="fas fa-ticket-alt me-2"></i>Manage Coupons
+                    </h3>
+                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Coupon
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="couponsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Usage</th>
+                                    <th>Status</th>
+                                    <th>Valid Until</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var coupon in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-secondary">@coupon.Code</span>
+                                        </td>
+                                        <td>@coupon.Name</td>
+                                        <td>
+                                            @switch (coupon.Type)
+                                            {
+                                                case CouponType.Percentage:
+                                                    <span class="badge bg-info">Percentage</span>
+                                                    break;
+                                                case CouponType.FixedAmount:
+                                                    <span class="badge bg-success">Fixed Amount</span>
+                                                    break;
+                                                case CouponType.FreeShipping:
+                                                    <span class="badge bg-warning">Free Shipping</span>
+                                                    break;
+                                                case CouponType.BOGO:
+                                                    <span class="badge bg-primary">BOGO</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (coupon.Type == CouponType.Percentage)
+                                            {
+                                                <span>@coupon.Value%</span>
+                                            }
+                                            else if (coupon.Type == CouponType.FixedAmount)
+                                            {
+                                                <span>$@coupon.Value</span>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="text-muted">@coupon.UsedCount</span>
+                                            @if (coupon.UsageLimit.HasValue)
+                                            {
+                                                <span class="text-muted">/ @coupon.UsageLimit</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (coupon.IsActive)
+                                            {
+                                                @if (coupon.EndDate.HasValue && coupon.EndDate < DateTime.Now)
+                                                {
+                                                    <span class="badge bg-danger">Expired</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (coupon.EndDate.HasValue)
+                                            {
+                                                @coupon.EndDate.Value.ToString("MMM dd, yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No expiry</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="@Url.Action("Details", new { id = coupon.Id })" class="btn btn-sm btn-info" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", new { id = coupon.Id })" class="btn btn-sm btn-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm @(coupon.IsActive ? "btn-secondary" : "btn-success")"
+                                                        onclick="toggleStatus(@coupon.Id)" title="@(coupon.IsActive ? "Deactivate" : "Activate")">
+                                                    <i class="fas fa-@(coupon.IsActive ? "pause" : "play")"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteCoupon(@coupon.Id)" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#couponsTable').DataTable({
+                responsive: true,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: [7] }
+                ]
+            });
+        });
+
+        function toggleStatus(id) {
+            $.post('@Url.Action("ToggleStatus")', { id: id }, function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    location.reload();
+                } else {
+                    toastr.error(response.message);
+                }
+            });
+        }
+
+        function deleteCoupon(id) {
+            if (confirm('Are you sure you want to delete this coupon?')) {
+                $.post('@Url.Action("Delete")', { id: id }, function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        location.reload();
+                    } else {
+                        toastr.error(response.message);
+                    }
+                });
+            }
+        }
+    </script>
+}

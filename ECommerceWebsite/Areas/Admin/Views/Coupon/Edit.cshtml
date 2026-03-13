@@ -1,0 +1,187 @@
+@model CouponViewModel
+
+@{
+    ViewData["Title"] = "Edit Coupon";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-edit me-2"></i>Edit Coupon
+                    </h3>
+                    <div class="card-tools">
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <form asp-action="Edit" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Code" class="form-label"></label>
+                                    <input asp-for="Code" class="form-control" placeholder="e.g., SAVE20" />
+                                    <span asp-validation-for="Code" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" placeholder="e.g., Save $20" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Description" class="form-label"></label>
+                                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Coupon description"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Type" class="form-label"></label>
+                                    <select asp-for="Type" asp-items="ViewBag.CouponTypes" class="form-select" id="couponType">
+                                        <option value="">Select Coupon Type</option>
+                                    </select>
+                                    <span asp-validation-for="Type" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Value" class="form-label" id="valueLabel">Value</label>
+                                    <input asp-for="Value" class="form-control" step="0.01" />
+                                    <span asp-validation-for="Value" class="text-danger"></span>
+                                    <small class="form-text text-muted" id="valueHelp">Enter the discount value</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="MinimumOrderAmount" class="form-label"></label>
+                                    <input asp-for="MinimumOrderAmount" class="form-control" step="0.01" />
+                                    <span asp-validation-for="MinimumOrderAmount" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3" id="maxDiscountGroup">
+                                    <label asp-for="MaximumDiscountAmount" class="form-label"></label>
+                                    <input asp-for="MaximumDiscountAmount" class="form-control" step="0.01" />
+                                    <span asp-validation-for="MaximumDiscountAmount" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="UsageLimit" class="form-label"></label>
+                                    <input asp-for="UsageLimit" class="form-control" />
+                                    <span asp-validation-for="UsageLimit" class="text-danger"></span>
+                                    <small class="form-text text-muted">Leave empty for unlimited usage</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="StartDate" class="form-label"></label>
+                                    <input asp-for="StartDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="EndDate" class="form-label"></label>
+                                    <input asp-for="EndDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                    <small class="form-text text-muted">Leave empty for no expiry</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="CategoryId" class="form-label"></label>
+                                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="ProductId" class="form-label"></label>
+                                    <select asp-for="ProductId" asp-items="ViewBag.Products" class="form-select">
+                                        <option value="">All Products</option>
+                                    </select>
+                                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label asp-for="IsActive" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Coupon
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // Update value label and help text based on coupon type
+            function updateValueFields() {
+                var selectedType = $('#couponType').val();
+                var valueLabel = $('#valueLabel');
+                var valueHelp = $('#valueHelp');
+                var maxDiscountGroup = $('#maxDiscountGroup');
+                
+                switch(selectedType) {
+                    case '1': // Percentage
+                        valueLabel.text('Percentage (%)');
+                        valueHelp.text('Enter percentage value (e.g., 10 for 10%)');
+                        maxDiscountGroup.show();
+                        break;
+                    case '2': // FixedAmount
+                        valueLabel.text('Amount ($)');
+                        valueHelp.text('Enter fixed discount amount');
+                        maxDiscountGroup.hide();
+                        break;
+                    case '3': // FreeShipping
+                        valueLabel.text('Value (Not Used)');
+                        valueHelp.text('Value is not used for free shipping coupons');
+                        maxDiscountGroup.hide();
+                        break;
+                    case '4': // BOGO
+                        valueLabel.text('Value (Not Used)');
+                        valueHelp.text('Value is not used for BOGO coupons');
+                        maxDiscountGroup.hide();
+                        break;
+                    default:
+                        valueLabel.text('Value');
+                        valueHelp.text('Enter the discount value');
+                        maxDiscountGroup.show();
+                }
+            }
+            
+            $('#couponType').change(updateValueFields);
+            
+            // Initialize on page load
+            updateValueFields();
+            
+            // Convert datetime values to proper format
+            var startDate = '@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")';
+            var endDate = '@(Model.EndDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")';
+            
+            if (startDate && startDate !== '') {
+                $('#StartDate').val(startDate);
+            }
+            if (endDate && endDate !== '') {
+                $('#EndDate').val(endDate);
+            }
+        });
+    </script>
+}

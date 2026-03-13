@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>طلباتي</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="Shop" xml:space="preserve"><value>تسوق</value></data>
+  <data name="OrdersHeading" xml:space="preserve"><value>طلباتي</value></data>
+  <data name="OrderNumber" xml:space="preserve"><value>الطلب رقم {0}</value></data>
+  <data name="PlacedOn" xml:space="preserve"><value>تم الطلب في {0}</value></data>
+  <data name="Pending" xml:space="preserve"><value>قيد الانتظار</value></data>
+  <data name="Processing" xml:space="preserve"><value>جار المعالجة</value></data>
+  <data name="Shipped" xml:space="preserve"><value>تم الشحن</value></data>
+  <data name="Delivered" xml:space="preserve"><value>تم التسليم</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>تم الإلغاء</value></data>
+  <data name="TotalAmount" xml:space="preserve"><value>{0}</value></data>
+  <data name="Items" xml:space="preserve"><value>العناصر ({0})</value></data>
+  <data name="Quantity" xml:space="preserve"><value>الكمية: {0}</value></data>
+  <data name="MoreItems" xml:space="preserve"><value>+{0} عناصر إضافية</value></data>
+  <data name="ShippedOn" xml:space="preserve"><value>تاريخ الشحن: {0}</value></data>
+  <data name="DeliveredOn" xml:space="preserve"><value>تاريخ التسليم: {0}</value></data>
+  <data name="ViewDetails" xml:space="preserve"><value>عرض التفاصيل</value></data>
+  <data name="NoOrdersTitle" xml:space="preserve"><value>لا توجد طلبات بعد</value></data>
+  <data name="NoOrdersDescription" xml:space="preserve"><value>لم تقم بتقديم أي طلب حتى الآن. ابدأ التسوق لتظهر طلباتك هنا!</value></data>
+  <data name="StartShopping" xml:space="preserve"><value>ابدأ التسوق</value></data>
+  <data name="PaginationAria" xml:space="preserve"><value>ترقيم صفحات الطلبات</value></data>
+  <data name="RtlToggleLabel" xml:space="preserve"><value>اتجاه</value></data>
+</root>

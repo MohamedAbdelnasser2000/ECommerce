@@ -1,0 +1,75 @@
+@model ECommerceWebsite.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+@section Styles {
+    <link href="~/css/auth.css" rel="stylesheet" />
+}
+
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-5">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-sign-in-alt brand-icon"></i>
+                            @L["Login to your account"]
+                        </h4>
+                    </div>
+
+                    <div class="auth-body">
+                        <form asp-action="Login" method="post" asp-antiforgery="true">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>@L["Email"]
+                                </label>
+                                <input asp-for="Email" class="form-control" placeholder="@L["Enter your email"]" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>@L["Password"]
+                                </label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="@L["Enter your password"]" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">@L["Remember me"]</label>
+                            </div>
+
+                            <div class="auth-actions d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>@L["Login"]
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="auth-footer">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap alt-links">
+                            <a href="#" class="small"><i class="fas fa-unlock-alt me-1"></i>@L["Forgot your password?"]</a>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="text-center">
+                            <p class="mb-2">@L["Don't have an account?"]</p>
+                            <a asp-action="Register" class="btn btn-outline-primary">
+                                <i class="fas fa-user-plus me-2"></i>@L["Create Account"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

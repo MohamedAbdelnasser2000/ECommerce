@@ -1,0 +1,266 @@
+@model ECommerceWebsite.Models.ApplicationUser
+@{
+    ViewData["Title"] = $"Edit User - {Model.FirstName} {Model.LastName}";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-user-edit me-2"></i>Edit User
+    </h2>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+            <i class="fas fa-eye me-1"></i>View Details
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Users
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user me-2"></i>User Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="FirstName" class="form-label">First Name</label>
+                                <input asp-for="FirstName" class="form-control" required />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="LastName" class="form-label">Last Name</label>
+                                <input asp-for="LastName" class="form-control" required />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label">Email Address</label>
+                        <input asp-for="Email" class="form-control" readonly />
+                        <small class="form-text text-muted">Email cannot be changed from here.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="City" class="form-label">City</label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="PostalCode" class="form-label">Postal Code</label>
+                                <input asp-for="PostalCode" class="form-control" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Email Confirmed</label>
+                                <div class="form-check">
+                                    <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
+                                    <label asp-for="EmailConfirmed" class="form-check-label">
+                                        Email is verified
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Member Since</label>
+                                <input value="@Model.CreatedAt.ToString("MMMM dd, yyyy")" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Update User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>Additional Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-warning btn-block" onclick="resetPassword('@Model.Id')">
+                            <i class="fas fa-key me-2"></i>Reset Password
+                        </button>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-info btn-block" onclick="toggleLockout('@Model.Id')">
+                            <i class="fas fa-lock me-2"></i>Toggle Lockout
+                        </button>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-primary btn-block" onclick="sendNotification('@Model.Id')">
+                            <i class="fas fa-envelope me-2"></i>Send Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        @if (Model.Email != "admin@ecommerce.com")
+        {
+            <div class="card mt-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Once you delete a user, there is no going back. Please be certain.
+                    </p>
+                    <button class="btn btn-danger" onclick="deleteUser('@Model.Id', '@Model.FirstName @Model.LastName')">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        function resetPassword(userId) {
+            if (confirm('Are you sure you want to reset this user\'s password?')) {
+                fetch(`/Admin/User/ResetPassword/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Password reset successfully! New temporary password: ${data.tempPassword}`);
+                    } else {
+                        toastr.error(data.message || 'Error resetting password');
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error resetting password');
+                });
+            }
+        }
+
+        function toggleLockout(userId) {
+            fetch(`/Admin/User/ToggleLockout/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success(data.message);
+                } else {
+                    toastr.error(data.message || 'Error toggling lockout');
+                }
+            })
+            .catch(error => {
+                toastr.error('Error toggling lockout');
+            });
+        }
+
+        function sendNotification(userId) {
+            const subject = prompt('Enter notification subject:');
+            if (subject) {
+                const message = prompt('Enter notification message:');
+                if (message) {
+                    fetch(`/Admin/User/SendNotification/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        body: JSON.stringify({ subject: subject, message: message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success('Notification sent successfully!');
+                        } else {
+                            toastr.error(data.message || 'Error sending notification');
+                        }
+                    })
+                    .catch(error => {
+                        toastr.error('Error sending notification');
+                    });
+                }
+            }
+        }
+
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+                fetch(`/Admin/User/Delete/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success('User deleted successfully!');
+                        window.location.href = '/Admin/User';
+                    } else {
+                        toastr.error(data.message || 'Error deleting user');
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error deleting user');
+                });
+            }
+        }
+    </script>
+}

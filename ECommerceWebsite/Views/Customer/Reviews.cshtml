@@ -1,0 +1,153 @@
+@model IEnumerable<ECommerceWebsite.Models.Review>
+@using System.Globalization
+@using System.Text.Json
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+<div class="container py-4 reviews-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-star me-2 text-warning"></i>@Localizer["Heading"]
+        </h2>
+        <a asp-action="Dashboard" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>@Localizer["BackToDashboard"]
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var review in Model)
+            {
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @if (!string.IsNullOrEmpty(review.Product.ImageUrl))
+                                    {
+                                        <img src="@review.Product.ImageUrl" alt="@review.Product.GetLocalizedName()" 
+                                             class="img-fluid rounded" style="max-height: 150px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="mb-0">@review.Product.GetLocalizedName()</h5>
+                                        <div class="d-flex align-items-center">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="fas fa-star text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star text-muted"></i>
+                                                }
+                                            }
+                                            <span class="ms-2 text-muted">@Localizer["RatingValue", review.Rating]</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="text-muted mb-2">@review.Comment</p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            @Localizer["ReviewedOn", review.CreatedAt.ToString("D", CultureInfo.CurrentCulture)]
+                                            @if (review.IsApproved)
+                                            {
+                                                <span class="badge bg-success ms-2">@Localizer["Approved"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning ms-2">@Localizer["PendingApproval"]</span>
+                                            }
+                                        </small>
+                                        <div>
+                                            <a asp-controller="Product" asp-action="Details" asp-route-id="@review.Product.Id" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>@Localizer["ViewProduct"]
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteReview(@review.Id)">
+                                                <i class="fas fa-trash me-1"></i>@Localizer["Delete"]
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="@Localizer["PaginationAria"]">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+            <h4>@Localizer["EmptyTitle"]</h4>
+            <p class="text-muted">@Localizer["EmptyDescription"]</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                <i class="fas fa-shopping-bag me-1"></i>@Localizer["BrowseProducts"]
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function deleteReview(reviewId) {
+            const resources = {
+                confirm: @Html.Raw(JsonSerializer.Serialize(Localizer["DeleteConfirm"].Value)),
+                success: @Html.Raw(JsonSerializer.Serialize(Localizer["DeleteSuccess"].Value)),
+                error: @Html.Raw(JsonSerializer.Serialize(Localizer["DeleteError"].Value))
+            };
+
+            if (confirm(resources.confirm)) {
+                fetch('/Customer/DeleteReview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ reviewId: reviewId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        try { toastr.success(resources.success); } catch (_) { alert(resources.success); }
+                        location.reload();
+                    } else {
+                        const message = data.message || resources.error;
+                        try { toastr.error(message); } catch (_) { alert(message); }
+                    }
+                })
+                .catch(() => {
+                    try { toastr.error(resources.error); } catch (_) { alert(resources.error); }
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="Products" xml:space="preserve"><value>المنتجات</value></data>
+  <data name="InStock" xml:space="preserve"><value>متوفر</value></data>
+  <data name="Available" xml:space="preserve"><value>متوفر</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>غير متوفر</value></data>
+  <data name="Quantity" xml:space="preserve"><value>الكمية:</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>أضف إلى السلة</value></data>
+  <data name="AddToWishlist" xml:space="preserve"><value>أضف إلى المفضلة</value></data>
+  <data name="FreeShipping" xml:space="preserve"><value>شحن مجاني للطلبات فوق 50 دولار</value></data>
+  <data name="Returns" xml:space="preserve"><value>إرجاع خلال 30 يوم</value></data>
+  <data name="Warranty" xml:space="preserve"><value>ضمان لمدة سنة واحدة</value></data>
+  <data name="Support" xml:space="preserve"><value>دعم على مدار الساعة</value></data>
+  <data name="ShareProduct" xml:space="preserve"><value>مشاركة هذا المنتج</value></data>
+  <data name="Description" xml:space="preserve"><value>الوصف</value></data>
+  <data name="Reviews" xml:space="preserve"><value>التقييمات</value></data>
+  <data name="NoDescription" xml:space="preserve"><value>لا يوجد وصف متاح لهذا المنتج.</value></data>
+  <data name="NoReviews" xml:space="preserve"><value>لا توجد تقييمات بعد</value></data>
+  <data name="FirstReview" xml:space="preserve"><value>كن أول من يقيم هذا المنتج!</value></data>
+  <data name="WriteReview" xml:space="preserve"><value>اكتب تقييم</value></data>
+  <data name="YourRating" xml:space="preserve"><value>تقييمك</value></data>
+  <data name="Poor" xml:space="preserve"><value>سيء</value></data>
+  <data name="Excellent" xml:space="preserve"><value>ممتاز</value></data>
+  <data name="YourReview" xml:space="preserve"><value>تقييمك</value></data>
+  <data name="ReviewPlaceholder" xml:space="preserve"><value>شارك تجربتك مع هذا المنتج...</value></data>
+  <data name="SubmitReview" xml:space="preserve"><value>إرسال التقييم</value></data>
+  <data name="LoginToReviewText" xml:space="preserve"><value>يرجى تسجيل الدخول لكتابة تقييم</value></data>
+  <data name="LoginToReview" xml:space="preserve"><value>تسجيل الدخول للتقييم</value></data>
+  <data name="ZoomImage" xml:space="preserve"><value>تكبير الصورة</value></data>
+  <data name="CopyLink" xml:space="preserve"><value>نسخ الرابط</value></data>
+  <data name="ShareFacebook" xml:space="preserve"><value>مشاركة على فيسبوك</value></data>
+  <data name="ShareTwitter" xml:space="preserve"><value>مشاركة على إكس</value></data>
+  <data name="ShareWhatsApp" xml:space="preserve"><value>مشاركة على واتساب</value></data>
+  <data name="SharePinterest" xml:space="preserve"><value>مشاركة على بينتريست</value></data>
+  <data name="ShareLinkedIn" xml:space="preserve"><value>مشاركة على لينكد إن</value></data>
+  <data name="Previous" xml:space="preserve"><value>السابق</value></data>
+  <data name="Next" xml:space="preserve"><value>التالي</value></data>
+  <data name="reviews" xml:space="preserve"><value>تقييمات</value></data>
+  <data name="OFF" xml:space="preserve"><value>خصم</value></data>
+  <data name="YouMayAlsoLike" xml:space="preserve"><value>قد يعجبك أيضًا</value></data>
+</root>

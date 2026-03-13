@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>My Reviews</value></data>
+  <data name="Heading" xml:space="preserve"><value>My Reviews</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>Back to Dashboard</value></data>
+  <data name="RatingValue" xml:space="preserve"><value>({0}/5)</value></data>
+  <data name="ReviewedOn" xml:space="preserve"><value>Reviewed on {0}</value></data>
+  <data name="Approved" xml:space="preserve"><value>Approved</value></data>
+  <data name="PendingApproval" xml:space="preserve"><value>Pending Approval</value></data>
+  <data name="ViewProduct" xml:space="preserve"><value>View Product</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="PaginationAria" xml:space="preserve"><value>Reviews pagination</value></data>
+  <data name="EmptyTitle" xml:space="preserve"><value>No Reviews Yet</value></data>
+  <data name="EmptyDescription" xml:space="preserve"><value>You haven't written any reviews yet. Purchase products and share your experience!</value></data>
+  <data name="BrowseProducts" xml:space="preserve"><value>Browse Products</value></data>
+  <data name="DeleteConfirm" xml:space="preserve"><value>Are you sure you want to delete this review? This action cannot be undone.</value></data>
+  <data name="DeleteSuccess" xml:space="preserve"><value>Review deleted successfully!</value></data>
+  <data name="DeleteError" xml:space="preserve"><value>Error deleting review</value></data>
+</root>

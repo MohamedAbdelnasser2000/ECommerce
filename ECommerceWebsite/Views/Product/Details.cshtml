@@ -1,0 +1,1339 @@
+@model ECommerceWebsite.Models.Product
+@{
+    ViewData["Title"] = Model.GetLocalizedName();
+    var siteName = ViewBag.SiteName as string ?? "E-Commerce Store";
+
+    // Build gallery image list: main image (if any) + up to 6 additional images
+    var galleryImages = new List<string>();
+    var fallbackImagePath = Url.Content("~/images/unnamed.jpg");
+    var mediaFallbackImagePath = Url.Content("~/media/800x800/images/unnamed.jpg");
+    var thumbnailFallbackImagePath = Url.Content("~/media/150x150/images/unnamed.jpg");
+    var relatedFallbackImagePath = Url.Content("~/media/400x400/images/unnamed.jpg");
+
+    if (!string.IsNullOrWhiteSpace(Model.ImageUrl)) galleryImages.Add(Model.ImageUrl);
+    if (Model.ProductImages != null && Model.ProductImages.Any())
+    {
+        galleryImages.AddRange(Model.ProductImages
+            .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
+            .Select(pi => pi.ImageUrl!)
+            .Take(6));
+    }
+    var mainImage = galleryImages.FirstOrDefault();
+    var mainImageMediaPath = string.IsNullOrWhiteSpace(mainImage)
+        ? mediaFallbackImagePath
+        : Url.Content($"/media/800x800/{mainImage.TrimStart('/')}");
+    var mainImageLightboxPath = string.IsNullOrWhiteSpace(mainImage)
+        ? fallbackImagePath
+        : Url.Content($"~/images/{mainImage.TrimStart('/')}");
+    mainImage ??= fallbackImagePath;
+
+    var currentUrl = Context?.Request != null
+        ? $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"
+        : string.Empty;
+    var encodedUrl = System.Uri.EscapeDataString(currentUrl);
+    var encodedName = System.Uri.EscapeDataString(Model?.GetLocalizedName() ?? string.Empty);
+    var encodedWhats = System.Uri.EscapeDataString($"{Model?.GetLocalizedName()} - {currentUrl}");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Modern Product Details Page with Pink-Gold Theme */
+        :root {
+            --pink-primary: #F8C8DC;
+            --gold-primary: #e83e8c;
+            --gold-dark: #B8860B;
+            --pink-light: #F9E3EC;
+            --pink-border: #F3D0E0;
+            --shadow-soft: 0 4px 20px rgba(248, 200, 220, 0.15);
+            --shadow-medium: 0 8px 30px rgba(248, 200, 220, 0.25);
+            --gradient-pink: linear-gradient(135deg, #F8C8DC 0%, #e83e8c 100%);
+            --gradient-gold: linear-gradient(135deg, #e83e8c 0%, #B8860B 100%);
+            --card-radius: 20px;
+        }
+
+        .product-hero {
+            background: var(--gradient-pink);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .product-hero h1 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .product-hero .breadcrumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+        }
+
+        .product-hero .breadcrumb-item a {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .product-hero .breadcrumb-item.active {
+            color: white;
+            font-weight: 600;
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-section {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .gallery-main {
+            position: relative;
+            background: #f8f9fb;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-main:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-controls {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            pointer-events: none;
+        }
+
+        .gallery-controls button {
+            pointer-events: all;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: var(--gold-primary);
+            transition: all 0.2s ease;
+        }
+
+        .gallery-controls button:hover {
+            transform: scale(1.1);
+            background: var(--gold-primary);
+            color: white;
+        }
+
+        .zoom-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(232, 62, 140, 0.4);
+        }
+
+        .thumbs-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+
+        .thumb-item {
+            border-radius: 15px;
+            overflow: hidden;
+            background: #f1f3f7;
+            border: 3px solid transparent;
+            cursor: pointer;
+            aspect-ratio: 1/1;
+            transition: all 0.3s ease;
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .thumb-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .thumb-item.active {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 3px rgba(232, 62, 140, 0.2);
+        }
+
+        .product-info-section {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 2.5rem;
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .stars i {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .rating-text {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .price-section {
+            margin-bottom: 2rem;
+        }
+
+        .price-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+        }
+
+        .original-price {
+            font-size: 1.5rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            background: var(--gradient-gold);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+        }
+
+        .stock-status {
+            padding: 0.8rem 1.2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stock-status.in-stock {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .stock-status.out-of-stock {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .quantity-section {
+            margin-bottom: 2rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quantity-label {
+            font-weight: 600;
+            color: #333;
+            min-width: 80px;
+        }
+
+        .quantity-input-group {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--pink-border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--pink-light);
+            border: none;
+            color: var(--gold-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background: var(--gold-primary);
+            color: white;
+        }
+
+        .quantity-input {
+            width: 80px;
+            height: 45px;
+            border: none;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gold-primary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-add-cart {
+            background: var(--gradient-pink);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(232, 62, 140, 0.3);
+        }
+
+        .btn-wishlist {
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wishlist:hover {
+            background: var(--gold-primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .benefits-section {
+            background: var(--pink-light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .benefit-item i {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            width: 24px;
+        }
+
+        .benefit-item span {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .share-section {
+            border-top: 1px solid var(--pink-border);
+            padding-top: 2rem;
+        }
+
+        .share-section h6 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .share-btn.facebook { background: #1877f2; }
+        .share-btn.twitter { background: #1da1f2; }
+        .share-btn.whatsapp { background: #25d366; }
+        .share-btn.pinterest { background: #e60023; }
+        .share-btn.linkedin { background: #0077b5; }
+
+        .product-tabs {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .tabs-header {
+            background: var(--gradient-pink);
+            padding: 0;
+        }
+
+        .nav-tabs-modern {
+            border: none;
+            padding: 0 2rem;
+        }
+
+        .nav-tabs-modern .nav-link {
+            border: none;
+            background: none;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+            padding: 1.5rem 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-modern .nav-link:hover {
+            color: white;
+        }
+
+        .nav-tabs-modern .nav-link.active {
+            color: white;
+            background: none;
+        }
+
+        .nav-tabs-modern .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .tab-content {
+            padding: 2.5rem;
+        }
+
+        .description-content {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .reviews-section {
+            margin-top: 2rem;
+        }
+
+        .review-item {
+            background: var(--pink-light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--pink-border);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-stars {
+            color: #ffd700;
+        }
+
+        .review-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .write-review-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 2px solid var(--pink-border);
+        }
+
+        .write-review-section h5 {
+            color: var(--gold-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-input-group input[type="radio"] {
+            display: none;
+        }
+
+        .rating-input-group label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .rating-input-group input[type="radio"]:checked ~ label,
+        .rating-input-group label:hover,
+        .rating-input-group label:hover ~ label {
+            color: #ffd700;
+        }
+
+        .review-form .form-control {
+            border: 1px solid var(--pink-border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-form .form-control:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25);
+        }
+
+        .btn-submit-review {
+            background: var(--gradient-pink);
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+        }
+
+        /* Lightbox Modal */
+        .lightbox-modal .modal-content {
+            background: #000;
+            border: none;
+            border-radius: var(--card-radius);
+        }
+
+        .lightbox-modal img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--card-radius);
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 992px) {
+            .product-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .product-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .product-hero {
+                padding: 1rem;
+            }
+
+            .product-hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .gallery-section,
+            .product-info-section {
+                padding: 1.5rem;
+            }
+
+            .thumbs-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .share-buttons {
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .thumbs-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .product-title {
+                font-size: 1.8rem;
+            }
+
+            .current-price {
+                font-size: 2rem;
+            }
+
+            .original-price {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Responsive: Related products grid */
+        .related-products .card-img-top {
+            aspect-ratio: 1/1; /* keep square thumbnails */
+            object-fit: cover;
+        }
+        .related-products .card { border: 1px solid var(--pink-border); border-radius: 14px; overflow: hidden; }
+        .related-products .card-body { padding: .75rem !important; }
+
+        @@media (max-width: 768px) {
+            .related-products .col-6 { padding-left: .5rem; padding-right: .5rem; }
+            .related-products h3 { font-size: 1.25rem; }
+        }
+
+        @@media (max-width: 576px) {
+            
+            .thumbs-grid { grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+            .gallery-controls button { width: 40px; height: 40px; }
+            .zoom-btn { width: 40px; height: 40px; }
+            .product-info-section { padding: 1.25rem; }
+            .product-title { font-size: 1.5rem; }
+            .current-price { font-size: 1.7rem; }
+            .quantity-input { width: 64px; height: 42px; }
+            .btn-add-cart, .btn-wishlist { padding: .8rem 1rem; font-size: 1rem; }
+            .tab-content { padding: 1.25rem; }
+        }
+    </style>
+}
+
+<div class="container-fluid px-3 px-md-4 product-page">
+    <!-- Hero Section -->
+    <div class="product-hero">
+        <h1>@Model.GetLocalizedName()</h1>
+        <nav aria-label="breadcrumb" class="mb-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">@L["Home"]</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")">@L["Products"]</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Category", "Product", new { id = Model.CategoryId })">@Model.Category?.GetLocalizedName()</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.GetLocalizedName()</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Product Container -->
+    <div class="product-container">
+        <!-- Gallery Section -->
+        <div class="gallery-section">
+            <div class="gallery-main position-relative" style="aspect-ratio: 1 / 1;">
+                <div id="productCarousel" class="carousel slide h-100" data-ride="carousel" data-interval="4000" data-pause="hover">
+                    <div class="carousel-inner h-100">
+                        <div class="position-absolute top-0 end-0 m-3 px-3 py-2 bg-dark bg-opacity-75 text-white rounded-pill small fw-bold" id="slideCounter" data-total="@galleryImages.Count" style="z-index: 10;">
+                            1/@galleryImages.Count
+                        </div>
+                        @for (int i = 0; i < galleryImages.Count; i++)
+                        {
+                            var img = galleryImages[i];
+                            var mediaImagePath = string.IsNullOrWhiteSpace(img)
+                                ? mediaFallbackImagePath
+                                : Url.Content($"/media/800x800/{img.TrimStart('/')}");
+                            var mediaImageSrcSet = string.IsNullOrWhiteSpace(img)
+                                ? string.Empty
+                                : $"{Url.Content($"/media/400x400/{img.TrimStart('/')}")} 400w, {Url.Content($"/media/800x800/{img.TrimStart('/')}")} 800w, {Url.Content($"/media/1200x1200/{img.TrimStart('/')}")} 1200w";
+
+                            <div class="carousel-item h-100 @(i == 0 ? "active" : "")">
+                                <img src="@mediaImagePath" class="d-block w-100 h-100" alt="@Model.GetLocalizedName() image @(i+1)" srcset="@mediaImageSrcSet" sizes="(max-width: 768px) 100vw, 50vw" onerror="this.onerror=null; this.srcset=''; this.sizes=''; this.src='@mediaFallbackImagePath';" />
+                            </div>
+                        }
+                    </div>
+
+                    @if (galleryImages.Count > 1)
+                    {
+                        <div class="gallery-controls">
+                            <button class="btn" type="button" data-target="#productCarousel" data-slide="prev">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="btn" type="button" data-target="#productCarousel" data-slide="next">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    }
+
+                    <button type="button" class="zoom-btn" id="openLightbox" title="@L["ZoomImage"]">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+
+            @if (galleryImages.Count > 1)
+            {
+                <div class="thumbs-grid">
+                    @for (int i = 0; i < galleryImages.Count; i++)
+                    {
+                        var img = galleryImages[i];
+                        var active = i == 0 ? "active" : string.Empty;
+                        var thumbImagePath = string.IsNullOrWhiteSpace(img)
+                            ? thumbnailFallbackImagePath
+                            : Url.Content($"/media/150x150/{img.TrimStart('/')}");
+
+                        <div class="thumb-item @active" data-index="@i" data-src="@img" data-target="#productCarousel" data-slide-to="@i" role="button" aria-label="Slide @(i+1)">
+                            <img src="@thumbImagePath" alt="@Model.GetLocalizedName() thumbnail @(i+1)" onerror="this.onerror=null; this.src='@thumbnailFallbackImagePath';" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Product Info Section -->
+        <div class="product-info-section">
+            <h1 class="product-title">@Model.GetLocalizedName()</h1>
+
+            <!-- Rating Section -->
+            <div class="rating-section">
+                <div class="stars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Model.AverageRating)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        else if (i - 0.5 <= Model.AverageRating)
+                        {
+                            <i class="fas fa-star-half-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star"></i>
+                        }
+                    }
+                </div>
+                <span class="rating-text">(@Model.ReviewCount @L["reviews"])</span>
+            </div>
+
+            <!-- Price Section -->
+            <div class="price-section">
+                <div class="price-display">
+                    @if (Model.DiscountPrice.HasValue)
+                    {
+                        <span class="current-price">$@Model.DiscountPrice</span>
+                        <span class="original-price">$@Model.Price</span>
+                        <span class="discount-badge">
+                            @Math.Round((decimal)(Model.Price - Model.DiscountPrice.Value) / Model.Price * 100)% OFF
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="current-price">$@Model.Price</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Stock Status -->
+           @* <div class="stock-status @(Model.StockQuantity > 0 ? "in-stock" : "out-of-stock")">
+                @if (Model.StockQuantity > 0)
+                {
+                    <i class="fas fa-check-circle"></i>
+                    <span>@L["InStock"] (@Model.StockQuantity @L["Available"])</span>
+                }
+                else
+                {
+                    <i class="fas fa-times-circle"></i>
+                    <span>@L["OutOfStock"]</span>
+                }
+            </div>*@
+
+            @if (Model.StockQuantity > 0)
+            {
+                <!-- Quantity Section -->
+                <div class="quantity-section">
+                    <div class="quantity-controls">
+                        <span class="quantity-label">@L["Quantity"]</span>
+                        <div class="quantity-input-group">
+                            <button class="quantity-btn" type="button" id="decrease-qty">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="@Model.StockQuantity">
+                            <button class="quantity-btn" type="button" id="increase-qty">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+
+                    <button class="btn-add-cart" id="add-to-cart-btn" data-product-id="@Model.Id">
+                        <i class="fas fa-cart-plus me-2"></i>@L["AddToCart"]
+                    </button>
+                    <button class="btn-wishlist" id="add-to-wishlist-btn" data-product-id="@Model.Id">
+                        <i class="fas fa-heart me-2"></i>@L["AddToWishlist"]
+                    </button>
+
+                  @*  @if (User.Identity!.IsAuthenticated)
+                    {
+                        <button class="btn-add-cart" id="add-to-cart-btn" data-product-id="@Model.Id">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </button>
+                        <button class="btn-wishlist" id="add-to-wishlist-btn" data-product-id="@Model.Id">
+                            <i class="fas fa-heart me-2"></i>Add to Wishlist
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn-add-cart">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Purchase
+                        </a>
+                        <a href="@Url.Action("Login", "Account")" class="btn-wishlist">
+                            <i class="fas fa-heart me-2"></i>Add to Wishlist
+                        </a>
+                    }*@
+                </div>
+            }
+
+            <!-- Benefits Section -->
+            <div class="benefits-section">
+                <div class="benefits-grid">
+                    @*<div class="benefit-item">
+                        <i class="fas fa-shipping-fast"></i>
+                        <span>@L["FreeShipping"]</span>
+                    </div>*@
+                    <div class="benefit-item">
+                        <i class="fas fa-undo"></i>
+                        <span>@L["Returns"]</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>@L["Warranty"]</span>
+                    </div>
+                   @* <div class="benefit-item">
+                        <i class="fas fa-headset"></i>
+                        <span>@L["Support"]</span>
+                    </div>*@
+                </div>
+            </div>
+
+            <!-- Share Section -->
+            <div class="share-section">
+                <h6>@L["ShareProduct"]</h6>
+                <div class="share-buttons">
+                    <button class="share-btn" id="copyLinkBtn" title="@L["CopyLink"]" style="background: var(--gold-primary);">
+                        <i class="fas fa-link"></i>
+                    </button>
+                    <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=@encodedUrl" target="_blank" rel="noopener" title="@L["ShareFacebook"]">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="share-btn twitter" href="https://twitter.com/intent/tweet?url=@encodedUrl&text=@encodedName" target="_blank" rel="noopener" title="@L["ShareTwitter"]">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="share-btn whatsapp" href="https://wa.me/?text=@encodedWhats" target="_blank" rel="noopener" title="@L["ShareWhatsApp"]">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a class="share-btn pinterest" href="https://pinterest.com/pin/create/button/?url=@encodedUrl&media=@mainImage&description=@encodedName" target="_blank" rel="noopener" title="@L["SharePinterest"]">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                    <a class="share-btn linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=@encodedUrl" target="_blank" rel="noopener" title="@L["ShareLinkedIn"]">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Tabs Section -->
+    <div class="product-tabs">
+        <div class="tabs-header">
+            <ul class="nav nav-tabs-modern" id="detailsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">
+                        <i class="fas fa-info-circle me-2"></i>@L["Description"]
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                        <i class="fas fa-star me-2"></i>@L["Reviews"] (@Model.ReviewCount)
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            <!-- Description Tab -->
+            <div class="tab-pane fade show active" id="desc" role="tabpanel">
+                <div class="description-content">
+                    @{
+                        var localizedDesc = Model.GetLocalizedDescription();
+                    }
+                    @if (!string.IsNullOrWhiteSpace(localizedDesc))
+                    {
+                        <p>@localizedDesc</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted">@L["NoDescription"]</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                <div class="reviews-section">
+                    @if (Model.Reviews != null && Model.Reviews.Any(r => r.IsApproved))
+                    {
+                        foreach (var review in Model.Reviews.Where(r => r.IsApproved).OrderByDescending(r => r.CreatedAt))
+                        {
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="reviewer-info">
+                                        <div class="reviewer-name">@review.User?.FirstName @review.User?.LastName</div>
+                                        <div class="review-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="review-date">@review.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                </div>
+                                <div class="review-text">@review.Comment</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">@L["NoReviews"]</h5>
+                            <p class="text-muted">@L["FirstReview"]</p>
+                        </div>
+                    }
+
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        <div class="write-review-section">
+                            <h5 class="mb-4">
+                                <i class="fas fa-edit me-2" style="color: var(--gold-primary);"></i>
+                                @L["WriteReview"]
+                            </h5>
+                            <form id="review-form">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold mb-3">@L["YourRating"]</label>
+                                    <div class="rating-input-group">
+                                        @for (int i = 5; i >= 1; i--)
+                                        {
+                                            <input type="radio" name="rating" value="@i" id="star@i" class="rating-radio">
+                                            <label for="star@i" class="rating-star">
+                                                <i class="fas fa-star"></i>
+                                            </label>
+                                        }
+                                    </div>
+                                    <div class="rating-labels mt-2">
+                                        <small class="text-muted">@L["Poor"]</small>
+                                        <small class="text-muted ms-auto">@L["Excellent"]</small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">@L["YourReview"]</label>
+                                    <textarea class="review-form-control" name="comment" rows="4" placeholder="@L["ReviewPlaceholder"]"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn-submit-review">
+                                    <i class="fas fa-paper-plane me-2"></i>@L["SubmitReview"]
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-3">@L["LoginToReviewText"]</p>
+                            <a href="@Url.Action("Login", "Account")" class="btn-submit-review" style="padding: 0.8rem 2rem;">
+                                <i class="fas fa-sign-in-alt me-2"></i>@L["LoginToReview"]
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.RelatedProducts != null && ((IEnumerable<ECommerceWebsite.Models.Product>)ViewBag.RelatedProducts).Any())
+{
+    <div class="container-fluid px-3 px-md-4 related-products">
+        <h3 class="mb-4">
+            <i class="fas fa-th-large me-2" style="color: var(--gold-primary);"></i>@L["YouMayAlsoLike"]
+        </h3>
+        <div class="row g-3">
+            @foreach (var p in (IEnumerable<ECommerceWebsite.Models.Product>)ViewBag.RelatedProducts)
+            {
+                var img = string.IsNullOrWhiteSpace(p.ImageUrl) ? null : p.ImageUrl;
+                var relatedImagePath = string.IsNullOrWhiteSpace(img)
+                    ? relatedFallbackImagePath
+                    : Url.Content($"/media/400x400/{img.TrimStart('/')}");
+
+                <div class="col-6 col-md-3">
+                    <a href="@Url.Action("Details", "Product", new { id = p.Id })" class="card h-100 text-decoration-none">
+                        <img class="card-img-top" src="@relatedImagePath" alt="@p.GetLocalizedName()" onerror="this.onerror=null; this.src='@relatedFallbackImagePath';" />
+                        <div class="card-body p-2">
+                            <div class="text-truncate small fw-semibold" title="@p.GetLocalizedName()">@p.GetLocalizedName()</div>
+                            <div class="mt-1">
+                                @if (p.DiscountPrice.HasValue)
+                                {
+                                    <span class="text-danger fw-bold">$@p.DiscountPrice</span>
+                                    <span class="text-muted text-decoration-line-through ms-1 small">$@p.Price</span>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold">$@p.Price</span>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Lightbox Modal -->
+<div class="modal fade lightbox-modal" id="lightboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div id="lightboxCarousel" class="carousel slide" data-ride="carousel" data-interval="4000" data-pause="hover">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < galleryImages.Count; i++)
+                        {
+                            var img = galleryImages[i];
+                            var lightboxImagePath = string.IsNullOrWhiteSpace(img)
+                                ? fallbackImagePath
+                                : Url.Content($"~/images/{img.TrimStart('/')}");
+
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@lightboxImagePath" class="d-block w-100" alt="@Model.GetLocalizedName() image @(i+1)" onerror="this.onerror=null; this.src='@fallbackImagePath';" />
+                            </div>
+                        }
+                    </div>
+                    <a class="carousel-control-prev" href="#lightboxCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">@L["Previous"]</span>
+                    </a>
+                    <a class="carousel-control-next" href="#lightboxCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">@L["Next"]</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Thumbnails -> Carousel navigation
+            $('.thumb-item').on('click', function () {
+                $('.thumb-item').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Open lightbox with current slide synced
+            $('#openLightbox').on('click', function () {
+                const mainIdx = $('#productCarousel .carousel-item.active').index();
+                const lb = new bootstrap.Modal(document.getElementById('lightboxModal'));
+                lb.show();
+                const lightboxCar = document.getElementById('lightboxCarousel');
+                const car = bootstrap.Carousel.getOrCreateInstance(lightboxCar);
+                car.to(mainIdx);
+            });
+
+            // Sync lightbox carousel with main carousel when slide changes
+            const mainCarouselEl = document.getElementById('productCarousel');
+            const lightboxCarouselEl = document.getElementById('lightboxCarousel');
+            const counterEl = document.getElementById('slideCounter');
+            function updateCounter(idx) {
+                if (!counterEl) return;
+                const total = parseInt(counterEl.getAttribute('data-total')) || 0;
+                counterEl.textContent = (idx + 1) + '/' + total;
+            }
+            if (mainCarouselEl && lightboxCarouselEl) {
+                $(mainCarouselEl).on('slid.bs.carousel', function () {
+                    const idx = $(mainCarouselEl).find('.carousel-item.active').index();
+                    updateCounter(idx);
+                    $(lightboxCarouselEl).carousel(idx);
+                    $('.thumb').removeClass('active');
+                    $('.thumb').eq(idx).addClass('active');
+                });
+                $(lightboxCarouselEl).on('slid.bs.carousel', function () {
+                    const idx = $(lightboxCarouselEl).find('.carousel-item.active').index();
+                    $(mainCarouselEl).carousel(idx);
+                    updateCounter(idx);
+                    $('.thumb').removeClass('active');
+                    $('.thumb').eq(idx).addClass('active');
+                });
+                // Initialize counter to current index on load
+                const startIdx = $(mainCarouselEl).find('.carousel-item.active').index() || 0;
+                updateCounter(startIdx);
+            }
+
+            // Quantity controls
+            $('#increase-qty').click(function () {
+                var qty = parseInt($('#quantity').val());
+                var max = parseInt($('#quantity').attr('max'));
+                if (qty < max) $('#quantity').val(qty + 1);
+            });
+            $('#decrease-qty').click(function () {
+                var qty = parseInt($('#quantity').val());
+                if (qty > 1) $('#quantity').val(qty - 1);
+            });
+
+            // Copy link button
+            const copyBtn = document.getElementById('copyLinkBtn');
+            if (copyBtn) {
+                try { $(copyBtn).tooltip(); } catch(e) {}
+                copyBtn.addEventListener('click', async function () {
+                    const text = '@currentUrl';
+                    async function clipboardWrite(txt) {
+                        try {
+                            if (navigator.clipboard && window.isSecureContext) {
+                                await navigator.clipboard.writeText(txt);
+                                return true;
+                            }
+                        } catch (e) { /* fall back */ }
+                        try {
+                            const ta = document.createElement('textarea');
+                            ta.value = txt;
+                            ta.style.position = 'fixed';
+                            ta.style.left = '-9999px';
+                            document.body.appendChild(ta);
+                            ta.focus();
+                            ta.select();
+                            const ok = document.execCommand('copy');
+                            document.body.removeChild(ta);
+                            return ok;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                    const ok = await clipboardWrite(text);
+                    if (ok) {
+                        copyBtn.classList.remove('btn-outline-secondary');
+                        copyBtn.classList.add('btn-success');
+                        copyBtn.innerHTML = '<i class="fas fa-check me-1"></i> Copied';
+                        setTimeout(() => {
+                            copyBtn.classList.remove('btn-success');
+                            copyBtn.classList.add('btn-outline-secondary');
+                            copyBtn.innerHTML = '<i class="fas fa-link me-1"></i> Copy Link';
+                        }, 1500);
+                    } else {
+                        alert('Failed to copy link');
+                    }
+                });
+            }
+
+            // Add to cart
+            $('#add-to-cart-btn').click(function () {
+                var productId = $(this).data('product-id');
+                var quantity = parseInt($('#quantity').val());
+                var button = $(this);
+
+                button.prop('disabled', true);
+                button.html('<i class="fas fa-spinner fa-spin me-2"></i>Adding...');
+
+                $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: quantity })
+                    .done(function (response) {
+                        if (response.success) {
+                            button.html('<i class="fas fa-check me-2"></i>Added to Cart!');
+                            button.removeClass('btn-primary').addClass('btn-success');
+
+                            if (typeof updateCartCount === 'function') {
+                                try { updateCartCount(); } catch (_) { $('#cart-count').text(response.cartCount); }
+                            } else {
+                                $('#cart-count').text(response.cartCount);
+                            }
+
+                            setTimeout(function () {
+                                button.html('<i class="fas fa-shopping-cart me-2"></i>Add to Cart');
+                                button.removeClass('btn-success').addClass('btn-primary');
+                                button.prop('disabled', false);
+                            }, 2000);
+                        } else {
+                            alert(response.message);
+                            button.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i>Add to Cart');
+                        }
+                    })
+                    .fail(function () {
+                        alert('Error adding product to cart');
+                        button.prop('disabled', false).html('<i class="fas fa-shopping-cart me-2"></i>Add to Cart');
+                    });
+            });
+
+            // Wishlist
+            $('#add-to-wishlist-btn').click(function () {
+                var productId = $(this).data('product-id');
+                var button = $(this);
+                button.prop('disabled', true);
+                $.ajax({
+                    url: '@Url.Action("AddToWishlist", "Wishlist")',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ ProductId: productId }),
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .done(function (response) {
+                    if (response.success) {
+                        button.html('<i class="fas fa-check me-2"></i>Added to Wishlist');
+                        setTimeout(function() {
+                            button.html('<i class="fas fa-heart me-2"></i>Add to Wishlist');
+                        }, 2000);
+                    } else {
+                        alert(response.message || 'Could not add to wishlist');
+                        button.prop('disabled', false);
+                    }
+                })
+                .fail(function () {
+                    alert('Error adding to wishlist');
+                    button.prop('disabled', false);
+                });
+            });
+        });
+    </script>
+}

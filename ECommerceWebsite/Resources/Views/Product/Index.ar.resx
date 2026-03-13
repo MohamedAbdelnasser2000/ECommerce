@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Sale" xml:space="preserve"><value>خصم</value></data>
+  <data name="New" xml:space="preserve"><value>جديد</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>غير متوفر</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>المنتجات</value></data>
+  <data name="BreadcrumbHome" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="BreadcrumbProducts" xml:space="preserve"><value>المنتجات</value></data>
+  <data name="HeroTitle" xml:space="preserve"><value>اكتشف منتجاتنا</value></data>
+  <data name="HeroSubtitle" xml:space="preserve"><value>مجموعة متنوعة من المنتجات عالية الجودة بأفضل الأسعار.</value></data>
+  <data name="HeroStatProducts" xml:space="preserve"><value>منتج متوفر</value></data>
+  <data name="HeroStatCategories" xml:space="preserve"><value>فئة مختلفة</value></data>
+  <data name="HeroStatSupport" xml:space="preserve"><value>دعم العملاء</value></data>
+  <data name="MobileFilterButton" xml:space="preserve"><value>الفلاتر والبحث</value></data>
+  <data name="FiltersTitleMobile" xml:space="preserve"><value>الفلاتر</value></data>
+  <data name="FiltersTitle" xml:space="preserve"><value>الفلاتر والبحث</value></data>
+  <data name="SearchTitle" xml:space="preserve"><value>البحث</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>البحث عن المنتجات...</value></data>
+  <data name="SearchAriaLabel" xml:space="preserve"><value>البحث في المنتجات</value></data>
+  <data name="CategoriesTitle" xml:space="preserve"><value>الفئات</value></data>
+  <data name="AllCategories" xml:space="preserve"><value>جميع الفئات</value></data>
+  <data name="PriceRangeTitle" xml:space="preserve"><value>نطاق السعر</value></data>
+  <data name="MinPricePlaceholder" xml:space="preserve"><value>من</value></data>
+  <data name="MaxPricePlaceholder" xml:space="preserve"><value>إلى</value></data>
+  <data name="MinPriceAriaLabel" xml:space="preserve"><value>السعر الأدنى</value></data>
+  <data name="MaxPriceAriaLabel" xml:space="preserve"><value>السعر الأعلى</value></data>
+  <data name="ApplyButton" xml:space="preserve"><value>تطبيق</value></data>
+  <data name="AdditionalOptionsTitle" xml:space="preserve"><value>خيارات إضافية</value></data>
+  <data name="InStockOnly" xml:space="preserve"><value>المتوفر فقط</value></data>
+  <data name="OnSaleOnly" xml:space="preserve"><value>العروض فقط</value></data>
+  <data name="NewOnly" xml:space="preserve"><value>الجديد فقط</value></data>
+  <data name="ProductsCount" xml:space="preserve"><value>عرض {0} من {1} منتج</value></data>
+  <data name="SortByLabel" xml:space="preserve"><value>ترتيب المنتجات</value></data>
+  <data name="Newest" xml:space="preserve"><value>الأحدث</value></data>
+  <data name="PriceLowToHigh" xml:space="preserve"><value>السعر: من الأقل إلى الأعلى</value></data>
+  <data name="PriceHighToLow" xml:space="preserve"><value>السعر: من الأعلى إلى الأقل</value></data>
+  <data name="NameAZ" xml:space="preserve"><value>الاسم: أ-ي</value></data>
+  <data name="GridViewTitle" xml:space="preserve"><value>عرض الشبكة</value></data>
+  <data name="GridViewAriaLabel" xml:space="preserve"><value>عرض الشبكة</value></data>
+  <data name="ListViewTitle" xml:space="preserve"><value>عرض القائمة</value></data>
+  <data name="ListViewAriaLabel" xml:space="preserve"><value>عرض القائمة</value></data>
+  <data name="ProductsListAriaLabel" xml:space="preserve"><value>قائمة المنتجات</value></data>
+  <data name="AddToWishlistTitle" xml:space="preserve"><value>إضافة إلى المفضلة</value></data>
+  <data name="AddToWishlistAriaLabel" xml:space="preserve"><value>إضافة {0} إلى المفضلة</value></data>
+  <data name="QuickViewTitle" xml:space="preserve"><value>عرض سريع</value></data>
+  <data name="QuickViewAriaLabel" xml:space="preserve"><value>عرض سريع لـ {0}</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>إضافة إلى السلة</value></data>
+  <data name="NoProductsTitle" xml:space="preserve"><value>لا توجد منتجات حالياً</value></data>
+  <data name="NoProductsSubtitle" xml:space="preserve"><value>سيتم إضافة منتجات جديدة قريباً</value></data>
+  <data name="BackToHome" xml:space="preserve"><value>العودة إلى الرئيسية</value></data>
+  <data name="PaginationAriaLabel" xml:space="preserve"><value>ترقيم المنتجات</value></data>
+  <data name="Previous" xml:space="preserve"><value>السابق</value></data>
+  <data name="Next" xml:space="preserve"><value>التالي</value></data>
+  <data name="SeoPageName" xml:space="preserve"><value>المنتجات - {0}</value></data>
+  <data name="SeoPageDescription" xml:space="preserve"><value>تصفح مجموعتنا الواسعة من المنتجات عالية الجودة بأفضل الأسعار</value></data>
+  <data name="DefaultSiteName" xml:space="preserve"><value>متجر التجارة الإلكترونية</value></data>
+</root>

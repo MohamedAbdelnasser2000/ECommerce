@@ -1,0 +1,386 @@
+@model ReportsViewModel
+
+@{
+    ViewData["Title"] = "Reports Dashboard";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-bar me-2"></i>Reports Dashboard
+                </h3>
+                <div class="card-tools">
+                    <span class="badge badge-info">
+                        Last Updated: @DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.TotalOrders</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a asp-action="Sales" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>$@Model.TotalRevenue.ToString("N2")</h3>
+                <p>Total Revenue</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <a asp-action="Sales" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@Model.TotalProducts</h3>
+                <p>Total Products</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <a asp-action="Products" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@Model.TotalUsers</h3>
+                <p>Total Customers</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <a asp-action="Customers" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Sales Trend (Last 30 Days)
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Order Status Distribution
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Row -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-list-alt me-2"></i>Order Statistics
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><i class="fas fa-clock text-warning me-2"></i>Pending Orders</td>
+                        <td><span class="badge badge-warning">@Model.PendingOrders</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-cog text-info me-2"></i>Processing Orders</td>
+                        <td><span class="badge badge-info">@Model.ProcessingOrders</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-shipping-fast text-primary me-2"></i>Shipped Orders</td>
+                        <td><span class="badge badge-primary">@Model.ShippedOrders</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-check-circle text-success me-2"></i>Delivered Orders</td>
+                        <td><span class="badge badge-success">@Model.DeliveredOrders</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-times-circle text-danger me-2"></i>Cancelled Orders</td>
+                        <td><span class="badge badge-danger">@Model.CancelledOrders</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-box me-2"></i>Product Statistics
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><i class="fas fa-check text-success me-2"></i>Active Products</td>
+                        <td><span class="badge badge-success">@Model.ActiveProducts</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-times text-secondary me-2"></i>Inactive Products</td>
+                        <td><span class="badge badge-secondary">@Model.InactiveProducts</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-star text-warning me-2"></i>Featured Products</td>
+                        <td><span class="badge badge-warning">@Model.FeaturedProducts</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-exclamation-triangle text-warning me-2"></i>Low Stock</td>
+                        <td><span class="badge badge-warning">@Model.LowStockProducts</span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-ban text-danger me-2"></i>Out of Stock</td>
+                        <td><span class="badge badge-danger">@Model.OutOfStockProducts</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-clock me-2"></i>Recent Orders
+                </h3>
+                <div class="card-tools">
+                    <a asp-controller="Order" asp-action="Index" class="btn btn-primary btn-sm">
+                        <i class="fas fa-list me-1"></i>View All Orders
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="text-decoration-none">
+                                                <strong>#@order.OrderNumber</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>@(order.User != null ? ($"{order.User.FirstName} {order.User.LastName}") : "Unknown")</strong>
+                                                <br>
+                                                <small class="text-muted">@(order.User?.Email ?? "-")</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                                            <br>
+                                            <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">@order.OrderItems.Sum(oi => oi.Quantity) items</span>
+                                        </td>
+                                        <td>
+                                            <strong>$@order.TotalAmount.ToString("F2")</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge @(order.Status switch
+                                            {
+                                                ECommerceWebsite.Models.OrderStatus.Pending => "badge-warning",
+                                                ECommerceWebsite.Models.OrderStatus.Processing => "badge-info",
+                                                ECommerceWebsite.Models.OrderStatus.Shipped => "badge-primary",
+                                                ECommerceWebsite.Models.OrderStatus.Delivered => "badge-success",
+                                                ECommerceWebsite.Models.OrderStatus.Cancelled => "badge-danger",
+                                                _ => "badge-secondary"
+                                            })">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Recent Orders</h5>
+                        <p class="text-muted">No orders have been placed recently.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a asp-action="Sales" class="btn btn-outline-primary btn-block">
+                            <i class="fas fa-chart-line me-2"></i>Sales Report
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-action="Products" class="btn btn-outline-success btn-block">
+                            <i class="fas fa-box me-2"></i>Product Report
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-action="Customers" class="btn btn-outline-info btn-block">
+                            <i class="fas fa-users me-2"></i>Customer Report
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a asp-action="ExportSales" class="btn btn-outline-warning btn-block">
+                            <i class="fas fa-download me-2"></i>Export Data
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Sales Chart
+            loadSalesChart();
+            
+            // Order Status Chart
+            loadOrderStatusChart();
+        });
+
+        function loadSalesChart() {
+            $.get('@Url.Action("GetChartData", new { type = "sales", days = 30 })', function(data) {
+                var ctx = document.getElementById('salesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => d.date),
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: data.map(d => d.revenue),
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value.toFixed(2);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function loadOrderStatusChart() {
+            var ctx = document.getElementById('orderStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        data: [@Model.PendingOrders, @Model.ProcessingOrders, @Model.ShippedOrders, @Model.DeliveredOrders, @Model.CancelledOrders],
+                        backgroundColor: [
+                            '#ffc107',
+                            '#17a2b8',
+                            '#e83e8c',
+                            '#28a745',
+                            '#dc3545'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

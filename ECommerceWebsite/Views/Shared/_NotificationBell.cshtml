@@ -1,0 +1,152 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject INotificationService NotificationService
+
+@{
+    var userId = UserManager.GetUserId(User);
+    var unreadCount = 0;
+    
+    if (!string.IsNullOrEmpty(userId))
+    {
+        unreadCount = await NotificationService.GetUnreadCountAsync(userId);
+    }
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="nav-item dropdown" id="notificationDropdown">
+        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            @if (unreadCount > 0)
+            {
+                <span id="unreadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @unreadCount
+                    <span class="visually-hidden">unread notifications</span>
+                </span>
+            }
+            else
+            {
+                <span id="unreadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                    0
+                </span>
+            }
+        </a>
+        <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+            <div class="dropdown-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Notifications</h6>
+                <div>
+                    <a href="#" id="markAllRead" class="small text-muted" title="Mark all as read">
+                        <i class="far fa-check-circle"></i> Mark all read
+                    </a>
+                    <a href="@Url.Action("Index", "Notification")" class="small text-muted ms-2" title="View all notifications">
+                        <i class="fas fa-list"></i> View all
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div id="notificationList" class="notification-list">
+                <div class="text-center p-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown-footer text-center p-2">
+                <a href="@Url.Action("Index", "Notification")" class="small">View all notifications</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Load notifications
+            loadNotifications();
+
+            // Mark all as read
+            $('#markAllRead').click(function(e) {
+                e.preventDefault();
+                markAllAsRead();
+            });
+
+            // Refresh notifications every 30 seconds
+            setInterval(loadNotifications, 30000);
+        });
+
+        function loadNotifications() {
+            $.get('@Url.Action("GetNotifications", "Notification")', function(data) {
+                var $list = $('#notificationList');
+                $list.empty();
+
+                if (data && data.length > 0) {
+                    data.forEach(function(notification) {
+                        var notificationClass = notification.isRead ? '' : 'unread';
+                        var timeAgo = moment(notification.createdAt).fromNow();
+                        
+                        var $item = $( 
+                            '<a href="' + (notification.actionUrl || '#') + '" class="dropdown-item notification-item ' + notificationClass + '" data-id="' + notification.id + '">' +
+                            '   <div class="d-flex align-items-center">' +
+                            '       <div class="notification-icon me-3">' +
+                            '           <i class="' + (notification.icon || 'fas fa-bell') + ' ' + getNotificationIconClass(notification.type) + '"></i>' +
+                            '       </div>' +
+                            '       <div class="flex-grow-1">' +
+                            '           <div class="d-flex justify-content-between">' +
+                            '               <h6 class="mb-1">' + notification.title + '</h6>' +
+                            '               <small class="text-muted">' + timeAgo + '</small>' +
+                            '           </div>' +
+                            '           <p class="mb-0 small text-muted">' + notification.message + '</p>' +
+                            '       </div>' +
+                            '   </div>' +
+                            '</a>' 
+                        );
+
+                        $list.append($item);
+                    });
+
+                    // Update unread count
+                    var unreadCount = data.filter(n => !n.isRead).length;
+                    updateUnreadCount(unreadCount);
+                } else {
+                    $list.append(
+                        '<div class="text-center p-3">' +
+                        '   <p class="text-muted mb-0">No notifications</p>' +
+                        '</div>'
+                    );
+                    updateUnreadCount(0);
+                }
+            }).fail(function() {
+                console.error('Failed to load notifications');
+            });
+        }
+
+        function markAllAsRead() {
+            $.post('@Url.Action("MarkAllAsRead", "Notification")', function() {
+                $('.notification-item').removeClass('unread');
+                updateUnreadCount(0);
+            }).fail(function() {
+                console.error('Failed to mark all as read');
+            });
+        }
+
+        function updateUnreadCount(count) {
+            var $badge = $('#unreadCount');
+            $badge.text(count);
+            
+            if (count > 0) {
+                $badge.show();
+            } else {
+                $badge.hide();
+            }
+        }
+
+        function getNotificationIconClass(type) {
+            switch (type.toLowerCase()) {
+                case 'success': return 'text-success';
+                case 'warning': return 'text-warning';
+                case 'error':
+                case 'danger': return 'text-danger';
+                case 'info':
+                default: return 'text-info';
+            }
+        }
+    </script>
+}

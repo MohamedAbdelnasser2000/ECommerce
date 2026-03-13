@@ -1,0 +1,309 @@
+@model ECommerceWebsite.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-shopping-cart me-2"></i>Order Details - #@Model.OrderNumber
+                </h3>
+                <div class="card-tools">
+                    <span class="badge @(Model.Status switch
+                    {
+                        ECommerceWebsite.Models.OrderStatus.Pending => "badge-warning",
+                        ECommerceWebsite.Models.OrderStatus.Processing => "badge-info",
+                        ECommerceWebsite.Models.OrderStatus.Shipped => "badge-primary",
+                        ECommerceWebsite.Models.OrderStatus.Delivered => "badge-success",
+                        ECommerceWebsite.Models.OrderStatus.Cancelled => "badge-danger",
+                        _ => "badge-secondary"
+                    }) fs-6">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Order Information -->
+                    <div class="col-md-6">
+                        <div class="card card-outline card-info">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Order Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Order Number:</th>
+                                        <td><strong>#@Model.OrderNumber</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Order Date:</th>
+                                        <td>@Model.OrderDate.ToString("MMMM dd, yyyy 'at' hh:mm tt")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td>
+                                            <span class="badge @(Model.Status switch
+                                            {
+                                                ECommerceWebsite.Models.OrderStatus.Pending => "badge-warning",
+                                                ECommerceWebsite.Models.OrderStatus.Processing => "badge-info",
+                                                ECommerceWebsite.Models.OrderStatus.Shipped => "badge-primary",
+                                                ECommerceWebsite.Models.OrderStatus.Delivered => "badge-success",
+                                                ECommerceWebsite.Models.OrderStatus.Cancelled => "badge-danger",
+                                                _ => "badge-secondary"
+                                            })">
+                                                @Model.Status
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Payment Method:</th>
+                                        <td>@Model.PaymentMethod</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Payment Status:</th>
+                                        <td>
+                                            <span class="badge @(Model.PaymentStatus switch
+                                            {
+                                                ECommerceWebsite.Models.PaymentStatus.Paid => "badge-success",
+                                                ECommerceWebsite.Models.PaymentStatus.Pending => "badge-warning",
+                                                ECommerceWebsite.Models.PaymentStatus.Failed => "badge-danger",
+                                                ECommerceWebsite.Models.PaymentStatus.Refunded => "badge-secondary",
+                                                _ => "badge-light"
+                                            })">
+                                                @Model.PaymentStatus
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @if (Model.ShippedDate.HasValue)
+                                    {
+                                        <tr>
+                                            <th>Shipped Date:</th>
+                                            <td>@Model.ShippedDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</td>
+                                        </tr>
+                                    }
+                                    @if (Model.DeliveredDate.HasValue)
+                                    {
+                                        <tr>
+                                            <th>Delivered Date:</th>
+                                            <td>@Model.DeliveredDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <th>Total Amount:</th>
+                                        <td><strong class="text-success">$@Model.TotalAmount.ToString("F2")</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer & Shipping Information -->
+                    <div class="col-md-6">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Customer & Shipping
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="text-primary">Customer Information</h6>
+                                <table class="table table-borderless table-sm">
+                                    @if (Model.User != null)
+                                    {
+                                        <tr>
+                                            <th width="30%">Name:</th>
+                                            <td>@Model.User.FirstName @Model.User.LastName</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email:</th>
+                                            <td>@Model.User.Email</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone:</th>
+                                            <td>@Model.User.PhoneNumber</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <th width="30%">Name:</th>
+                                            <td>Guest</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email:</th>
+                                            <td>@Model.GuestEmail</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone:</th>
+                                            <td>N/A</td>
+                                        </tr>
+                                    }
+                                </table>
+
+                                <hr>
+
+                                <h6 class="text-primary">Shipping Address</h6>
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <th width="30%">Name:</th>
+                                        <td>@Model.ShippingFirstName @Model.ShippingLastName</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>@Model.ShippingAddress</td>
+                                    </tr>
+                                    <tr>
+                                        <th>City:</th>
+                                        <td>@Model.ShippingCity</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Postal Code:</th>
+                                        <td>@Model.ShippingPostalCode</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>@Model.ShippingPhone</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card card-outline card-success">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-box me-2"></i>Order Items (@(Model.OrderItems?.Count ?? 0) items)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Category</th>
+                                                <th>Unit Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.OrderItems != null && Model.OrderItems.Any())
+                                            {
+                                                foreach (var item in Model.OrderItems)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                                                {
+                                                                    <img src="@item.Product.ImageUrl" alt="@item.Product?.Name" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="bg-light d-flex align-items-center justify-content-center me-2" style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-image text-muted"></i>
+                                                                    </div>
+                                                                }
+                                                                <div>
+                                                                    <strong>@(item.Product?.Name ?? "Product")</strong>
+                                                                    @if (!string.IsNullOrEmpty(item.Product?.Description) && item.Product.Description.Length > 50)
+                                                                    {
+                                                                        <br><small class="text-muted">@(item.Product.Description.Substring(0, 50))...</small>
+                                                                    }
+                                                                    else if (!string.IsNullOrEmpty(item.Product?.Description))
+                                                                    {
+                                                                        <br><small class="text-muted">@item.Product.Description</small>
+                                                                    }
+                                                                </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-info">@(item.Product?.Category?.Name ?? "-")</span>
+                                                    </td>
+                                                    <td>
+                                                        $@item.UnitPrice.ToString("F2")
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-primary">@item.Quantity</span>
+                                                    </td>
+                                                    <td>
+                                                        <strong>$@item.TotalPrice.ToString("F2")</strong>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted">No items found</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-success">
+                                                <th colspan="4" class="text-end">Total Amount:</th>
+                                                <th>
+                                                    <strong class="text-success fs-5">$@Model.TotalAmount.ToString("F2")</strong>
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card card-outline card-warning">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-sticky-note me-2"></i>Notes
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-0">@Model.Notes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Orders
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                            <i class="fas fa-edit me-1"></i>Edit Order
+                        </a>
+                        @if (Model.Status == ECommerceWebsite.Models.OrderStatus.Cancelled)
+                        {
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Delete Order
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+@model ECommerceWebsite.Models.ApplicationUser
+@using System.Globalization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>@Localizer["Header"]
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Profile" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="FirstName" class="form-label">@Localizer["FirstNameLabel"]</label>
+                                    <input asp-for="FirstName" class="form-control" required />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="LastName" class="form-label">@Localizer["LastNameLabel"]</label>
+                                    <input asp-for="LastName" class="form-control" required />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="form-label">@Localizer["EmailLabel"]</label>
+                            <input asp-for="Email" class="form-control" readonly />
+                            <small class="form-text text-muted">@Localizer["EmailHint"]</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">@Localizer["PhoneLabel"]</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Address" class="form-label">@Localizer["AddressLabel"]</label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="City" class="form-label">@Localizer["CityLabel"]</label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="PostalCode" class="form-label">@Localizer["PostalCodeLabel"]</label>
+                                    <input asp-for="PostalCode" class="form-control" />
+                                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">@Localizer["MemberSinceLabel"]</label>
+                            <input value="@Model.CreatedAt.ToString("D", CultureInfo.CurrentCulture)" class="form-control" readonly />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Dashboard" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>@Localizer["BackToDashboard"]
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>@Localizer["UpdateProfile"]
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>@Localizer["AccountSettings"]
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a asp-action="ChangePassword" class="btn btn-warning btn-block">
+                                <i class="fas fa-key me-2"></i>@Localizer["ChangePassword"]
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-action="Orders" class="btn btn-info btn-block">
+                                <i class="fas fa-list me-2"></i>@Localizer["ViewOrderHistory"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

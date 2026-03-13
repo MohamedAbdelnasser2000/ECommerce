@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Create your account" xml:space="preserve"><value>أنشئ حسابك</value></data>
+  <data name="First Name" xml:space="preserve"><value>الاسم الأول</value></data>
+  <data name="Last Name" xml:space="preserve"><value>اسم العائلة</value></data>
+  <data name="Email" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="Phone Number (Optional)" xml:space="preserve"><value>رقم الهاتف (اختياري)</value></data>
+  <data name="Password" xml:space="preserve"><value>كلمة المرور</value></data>
+  <data name="Confirm Password" xml:space="preserve"><value>تأكيد كلمة المرور</value></data>
+  <data name="Password must be at least 6 characters long." xml:space="preserve"><value>يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.</value></data>
+  <data name="Create Account" xml:space="preserve"><value>إنشاء حساب</value></data>
+  <data name="Already have an account?" xml:space="preserve"><value>هل لديك حساب بالفعل؟</value></data>
+  <data name="Login" xml:space="preserve"><value>تسجيل الدخول</value></data>
+</root>

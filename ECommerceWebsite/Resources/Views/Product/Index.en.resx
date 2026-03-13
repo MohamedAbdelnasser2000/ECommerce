@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Sale" xml:space="preserve"><value>Sale</value></data>
+  <data name="New" xml:space="preserve"><value>New</value></data>
+  <data name="Out of stock" xml:space="preserve"><value>Out of stock</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>Products</value></data>
+  <data name="BreadcrumbHome" xml:space="preserve"><value>Home</value></data>
+  <data name="BreadcrumbProducts" xml:space="preserve"><value>Products</value></data>
+  <data name="HeroTitle" xml:space="preserve"><value>Discover Our Products</value></data>
+  <data name="HeroSubtitle" xml:space="preserve"><value>A diverse collection of top-quality products at the best prices.</value></data>
+  <data name="HeroStatProducts" xml:space="preserve"><value>Product available</value></data>
+  <data name="HeroStatCategories" xml:space="preserve"><value>Different category</value></data>
+  <data name="HeroStatSupport" xml:space="preserve"><value>Customer support</value></data>
+  <data name="MobileFilterButton" xml:space="preserve"><value>Filters and Search</value></data>
+  <data name="FiltersTitleMobile" xml:space="preserve"><value>Filters</value></data>
+  <data name="FiltersTitle" xml:space="preserve"><value>Filters and Search</value></data>
+  <data name="SearchTitle" xml:space="preserve"><value>Search</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>Search for products...</value></data>
+  <data name="SearchAriaLabel" xml:space="preserve"><value>Search in products</value></data>
+  <data name="CategoriesTitle" xml:space="preserve"><value>Categories</value></data>
+  <data name="AllCategories" xml:space="preserve"><value>All Categories</value></data>
+  <data name="PriceRangeTitle" xml:space="preserve"><value>Price Range</value></data>
+  <data name="MinPricePlaceholder" xml:space="preserve"><value>From</value></data>
+  <data name="MaxPricePlaceholder" xml:space="preserve"><value>To</value></data>
+  <data name="MinPriceAriaLabel" xml:space="preserve"><value>Minimum price</value></data>
+  <data name="MaxPriceAriaLabel" xml:space="preserve"><value>Maximum price</value></data>
+  <data name="ApplyButton" xml:space="preserve"><value>Apply</value></data>
+  <data name="AdditionalOptionsTitle" xml:space="preserve"><value>Additional Options</value></data>
+  <data name="InStockOnly" xml:space="preserve"><value>Available only</value></data>
+  <data name="OnSaleOnly" xml:space="preserve"><value>On sale only</value></data>
+  <data name="NewOnly" xml:space="preserve"><value>New only</value></data>
+  <data name="ProductsCount" xml:space="preserve"><value>Showing {0} of {1} products</value></data>
+  <data name="SortByLabel" xml:space="preserve"><value>Sort products</value></data>
+  <data name="Newest" xml:space="preserve"><value>Newest</value></data>
+  <data name="PriceLowToHigh" xml:space="preserve"><value>Price: Low to High</value></data>
+  <data name="PriceHighToLow" xml:space="preserve"><value>Price: High to Low</value></data>
+  <data name="NameAZ" xml:space="preserve"><value>Name: A-Z</value></data>
+  <data name="GridViewTitle" xml:space="preserve"><value>Grid view</value></data>
+  <data name="GridViewAriaLabel" xml:space="preserve"><value>Grid view</value></data>
+  <data name="ListViewTitle" xml:space="preserve"><value>List view</value></data>
+  <data name="ListViewAriaLabel" xml:space="preserve"><value>List view</value></data>
+  <data name="ProductsListAriaLabel" xml:space="preserve"><value>List of products</value></data>
+  <data name="AddToWishlistTitle" xml:space="preserve"><value>Add to wishlist</value></data>
+  <data name="AddToWishlistAriaLabel" xml:space="preserve"><value>Add {0} to wishlist</value></data>
+  <data name="QuickViewTitle" xml:space="preserve"><value>Quick view</value></data>
+  <data name="QuickViewAriaLabel" xml:space="preserve"><value>Quick view for {0}</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>Add To Cart</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>Out of stock</value></data>
+  <data name="NoProductsTitle" xml:space="preserve"><value>No products currently</value></data>
+  <data name="NoProductsSubtitle" xml:space="preserve"><value>New products will be added soon</value></data>
+  <data name="BackToHome" xml:space="preserve"><value>Back to Home</value></data>
+  <data name="PaginationAriaLabel" xml:space="preserve"><value>Product pagination</value></data>
+  <data name="Previous" xml:space="preserve"><value>Previous</value></data>
+  <data name="Next" xml:space="preserve"><value>Next</value></data>
+  <data name="SeoPageName" xml:space="preserve"><value>Products - {0}</value></data>
+  <data name="SeoPageDescription" xml:space="preserve"><value>Browse our wide collection of high-quality products at the best prices</value></data>
+  <data name="DefaultSiteName" xml:space="preserve"><value>E-Commerce Store</value></data>
+</root>

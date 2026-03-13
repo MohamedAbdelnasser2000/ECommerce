@@ -1,0 +1,27 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@{
+    ViewData["Title"] = L["Cookie Policy"]; 
+}
+
+<section class="container my-4">
+    <h1>@L["Cookie Policy"]</h1>
+    <p>@L["We use cookies and similar technologies to provide, protect, and improve our services. This policy explains what cookies are, how we use them, and your choices."]</p>
+
+    <h3>@L["What are cookies?"]</h3>
+    <p>@L["Cookies are small text files stored on your device by your browser. They help websites remember information about your visit."]</p>
+
+    <h3>@L["How we use cookies"]</h3>
+    <ul>
+        <li>@L["Essential cookies: required for core site functionality (e.g., session, cart)."]</li>
+        <li>@L["Analytics cookies: help us understand site usage and improve performance."]</li>
+        <li>@L["Marketing cookies: used to deliver relevant ads (if enabled)."]</li>
+    </ul>
+
+    <h3>@L["Managing your preferences"]</h3>
+    <p>@L["You can manage cookies in your browser settings. Some features may not function without essential cookies."]</p>
+
+    <h3>@L["Contact"]</h3>
+    <p>@L["If you have questions about this policy, contact us via the Contact page."]</p>
+</section>
+
+

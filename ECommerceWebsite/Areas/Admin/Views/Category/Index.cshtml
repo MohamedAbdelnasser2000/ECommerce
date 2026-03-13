@@ -1,0 +1,214 @@
+@model IEnumerable<ECommerceWebsite.Models.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-tags me-2"></i>Categories Management
+                </h3>
+                <div class="card-tools">
+                    <a asp-action="Create" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add New Category
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Products Count</th>
+                                    <th>Show on Home</th>
+                                    <th>Show in Header</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                            {
+                                                <img src="@category.ImageUrl" alt="@category.Name" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <strong>@category.Name</strong>
+                                            @if (!string.IsNullOrWhiteSpace(category.NameAr))
+                                            {
+                                                <div class="text-muted" dir="rtl">@category.NameAr</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(category.Description))
+                                            {
+                                                <div>@(category.Description.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)</div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No description</span>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(category.DescriptionAr))
+                                            {
+                                                <div class="text-muted mt-1" dir="rtl">@(category.DescriptionAr.Length > 50 ? category.DescriptionAr.Substring(0, 50) + "..." : category.DescriptionAr)</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">@category.Products.Count</span>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input toggle-home" type="checkbox" role="switch" id="homeSwitch_@category.Id" data-id="@category.Id" @(category.ShowOnHome ? "checked" : "") />
+                                                <label class="form-check-label" for="homeSwitch_@category.Id">Home</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input toggle-header" type="checkbox" role="switch" id="headerSwitch_@category.Id" data-id="@category.Id" @(category.ShowInHeader ? "checked" : "") />
+                                                <label class="form-check-label" for="headerSwitch_@category.Id">Header</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm toggle-status @(category.IsActive ? "btn-success" : "btn-secondary")" 
+                                                    data-id="@category.Id" 
+                                                    data-status="@category.IsActive.ToString().ToLower()">
+                                                <i class="fas @(category.IsActive ? "fa-check" : "fa-times") me-1"></i>
+                                                @(category.IsActive ? "Active" : "Inactive")
+                                            </button>
+                                        </td>
+                                        <td>
+                                            @category.CreatedAt.ToString("MMM dd, yyyy")
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-info btn-sm" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Categories Found</h4>
+                        <p class="text-muted">Start by creating your first category.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add First Category
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Toggle status functionality
+            $('.toggle-status').click(function() {
+                var button = $(this);
+                var categoryId = button.data('id');
+                
+                $.ajax({
+                    url: '@Url.Action("ToggleStatus", "Category", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    success: function(response) {
+                        if (response.success) {
+                            if (response.isActive) {
+                                button.removeClass('btn-secondary').addClass('btn-success');
+                                button.html('<i class="fas fa-check me-1"></i>Active');
+                                button.data('status', 'true');
+                            } else {
+                                button.removeClass('btn-success').addClass('btn-secondary');
+                                button.html('<i class="fas fa-times me-1"></i>Inactive');
+                                button.data('status', 'false');
+                            }
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while updating the status.');
+                    }
+                });
+            });
+
+            // Toggle ShowOnHome functionality
+            $('.toggle-home').change(function() {
+                var checkbox = $(this);
+                var categoryId = checkbox.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleShowOnHome", "Category", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    success: function(response) {
+                        if (!response.success) {
+                            alert('Error: ' + response.message);
+                            checkbox.prop('checked', !checkbox.prop('checked'));
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while updating the home visibility.');
+                        checkbox.prop('checked', !checkbox.prop('checked'));
+                    }
+                });
+            });
+
+            // Toggle ShowInHeader functionality
+            $('.toggle-header').change(function() {
+                var checkbox = $(this);
+                var categoryId = checkbox.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleShowInHeader", "Category", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    success: function(response) {
+                        if (!response.success) {
+                            alert('Error: ' + response.message);
+                            checkbox.prop('checked', !checkbox.prop('checked'));
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while updating the header visibility.');
+                        checkbox.prop('checked', !checkbox.prop('checked'));
+                    }
+                });
+            });
+        });
+    </script>
+}

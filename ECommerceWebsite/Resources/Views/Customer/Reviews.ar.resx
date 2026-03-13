@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>تقييماتي</value></data>
+  <data name="Heading" xml:space="preserve"><value>تقييماتي</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>العودة إلى لوحة التحكم</value></data>
+  <data name="RatingValue" xml:space="preserve"><value>({0}/5)</value></data>
+  <data name="ReviewedOn" xml:space="preserve"><value>تم التقييم في {0}</value></data>
+  <data name="Approved" xml:space="preserve"><value>تمت الموافقة</value></data>
+  <data name="PendingApproval" xml:space="preserve"><value>قيد الموافقة</value></data>
+  <data name="ViewProduct" xml:space="preserve"><value>عرض المنتج</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="PaginationAria" xml:space="preserve"><value>ترقيم تقييمات</value></data>
+  <data name="EmptyTitle" xml:space="preserve"><value>لا توجد تقييمات بعد</value></data>
+  <data name="EmptyDescription" xml:space="preserve"><value>لم تقم بكتابة أي تقييم حتى الآن. اشترِ المنتجات وشارك تجربتك!</value></data>
+  <data name="BrowseProducts" xml:space="preserve"><value>تصفح المنتجات</value></data>
+  <data name="DeleteConfirm" xml:space="preserve"><value>هل أنت متأكد أنك تريد حذف هذا التقييم؟ لا يمكن التراجع عن هذا الإجراء.</value></data>
+  <data name="DeleteSuccess" xml:space="preserve"><value>تم حذف التقييم بنجاح!</value></data>
+  <data name="DeleteError" xml:space="preserve"><value>حدث خطأ أثناء حذف التقييم</value></data>
+</root>

@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Unsubscribe from Newsletter";
+    bool success = ViewBag.Success ?? false;
+    string message = ViewBag.Message ?? "";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header @(success ? "bg-success" : "bg-warning") text-white">
+                    <h4 class="mb-0">
+                        <i class="fas @(success ? "fa-check-circle" : "fa-exclamation-triangle") mr-2"></i>
+                        Newsletter Unsubscription
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    @if (success)
+                    {
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                            <h5 class="text-success">Successfully Unsubscribed</h5>
+                            <p class="text-muted">@message</p>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            You will no longer receive marketing emails from us. 
+                            You may still receive transactional emails related to your orders.
+                        </div>
+                        
+                        <p class="text-muted mb-4">
+                            We're sorry to see you go! If you change your mind, 
+                            you can always subscribe again.
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="@Url.Action("Subscribe", "Newsletter")" class="btn btn-outline-primary btn-block">
+                                    <i class="fas fa-undo mr-2"></i>
+                                    Resubscribe
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-block">
+                                    <i class="fas fa-home mr-2"></i>
+                                    Go Home
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                            <h5 class="text-warning">Unsubscription Failed</h5>
+                            <p class="text-muted">@message</p>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            The unsubscribe link may be invalid or expired.
+                        </div>
+                        
+                        <p class="text-muted mb-4">
+                            If you're still receiving unwanted emails, please contact our support team.
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="mailto:support@example.com" class="btn btn-outline-secondary btn-block">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    Contact Support
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-block">
+                                    <i class="fas fa-home mr-2"></i>
+                                    Go Home
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-muted text-center">
+                    <small>
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Your privacy is important to us.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: none;
+        margin-top: 50px;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .fa-4x {
+        font-size: 4rem;
+    }
+</style>

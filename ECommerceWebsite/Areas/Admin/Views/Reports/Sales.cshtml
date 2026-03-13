@@ -1,0 +1,444 @@
+@model SalesReportViewModel
+
+@{
+    ViewData["Title"] = "Sales Report";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Sales Report
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                        <i class="fas fa-download me-1"></i>Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Date Range Filter -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" name="startDate" id="startDate" class="form-control"
+                               value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" name="endDate" id="endDate" class="form-control"
+                               value="@Model.EndDate.ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Generate Report
+                            </button>
+                            <button type="button" id="quickRanges" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                Quick Ranges
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-range="today">Today</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="yesterday">Yesterday</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="week">This Week</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="month">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="quarter">This Quarter</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="year">This Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.TotalOrders</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>$@Model.TotalRevenue.ToString("N2")</h3>
+                <p>Total Revenue</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>$@Model.AverageOrderValue.ToString("N2")</h3>
+                <p>Average Order Value</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>@((Model.EndDate - Model.StartDate).Days + 1)</h3>
+                <p>Days in Period</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Sales Trend
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="salesTrendChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Payment Methods
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="paymentMethodChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-list me-2"></i>Orders in Period (@Model.StartDate.ToString("MMM dd") - @Model.EndDate.ToString("MMM dd, yyyy"))
+                </h3>
+            </div>
+            <div class="card-body">
+                @if (Model.Orders != null && Model.Orders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.Orders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="text-decoration-none">
+                                                <strong>#@order.OrderNumber</strong>
+                                            </a>
+                                        </td>
+                                        <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <div>
+                                                <strong>@(order.User != null ? ($"{order.User.FirstName} {order.User.LastName}") : "Unknown")</strong>
+                                                <br>
+                                                <small class="text-muted">@(order.User?.Email ?? "-")</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">@(order.OrderItems != null ? order.OrderItems.Sum(oi => oi.Quantity) : 0) items</span>
+                                        </td>
+                                        <td>@order.PaymentMethod</td>
+                                        <td>
+                                            <span class="badge @(order.Status switch
+                                            {
+                                                ECommerceWebsite.Models.OrderStatus.Pending => "badge-warning",
+                                                ECommerceWebsite.Models.OrderStatus.Processing => "badge-info",
+                                                ECommerceWebsite.Models.OrderStatus.Shipped => "badge-primary",
+                                                ECommerceWebsite.Models.OrderStatus.Delivered => "badge-success",
+                                                ECommerceWebsite.Models.OrderStatus.Cancelled => "badge-danger",
+                                                _ => "badge-secondary"
+                                            })">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td><strong>$@order.TotalAmount.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-success">
+                                    <th colspan="6" class="text-end">Total:</th>
+                                    <th><strong>$@Model.TotalRevenue.ToString("N2")</strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Sales Data</h4>
+                        <p class="text-muted">No orders found for the selected date range.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Sales Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="ExportSales" method="post" id="exportSalesForm">
+                    <input type="hidden" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                    <input type="hidden" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Export Format</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="excel" id="formatExcel" checked>
+                            <label class="form-check-label" for="formatExcel">
+                                <i class="fas fa-file-excel text-success me-2"></i>Excel (.xlsx)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="csv" id="formatCsv">
+                            <label class="form-check-label" for="formatCsv">
+                                <i class="fas fa-file-csv text-info me-2"></i>CSV (.csv)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="pdf" id="formatPdf">
+                            <label class="form-check-label" for="formatPdf">
+                                <i class="fas fa-file-pdf text-danger me-2"></i>PDF (.pdf)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Include</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includeSummary" id="includeSummary" checked>
+                            <label class="form-check-label" for="includeSummary">Summary Statistics</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includeCharts" id="includeCharts">
+                            <label class="form-check-label" for="includeCharts">Charts and Graphs</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includeDetails" id="includeDetails" checked>
+                            <label class="form-check-label" for="includeDetails">Detailed Order List</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportSalesBtn">
+                    <i class="fas fa-download me-1"></i>Export Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Quick date ranges
+            $('.dropdown-item[data-range]').click(function(e) {
+                e.preventDefault();
+                var range = $(this).data('range');
+                var today = new Date();
+                var startDate, endDate;
+
+                switch(range) {
+                    case 'today':
+                        startDate = endDate = today;
+                        break;
+                    case 'yesterday':
+                        startDate = endDate = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+                        break;
+                    case 'week':
+                        startDate = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
+                        endDate = today;
+                        break;
+                    case 'month':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                        endDate = today;
+                        break;
+                    case 'quarter':
+                        var quarter = Math.floor(today.getMonth() / 3);
+                        startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                        endDate = today;
+                        break;
+                    case 'year':
+                        startDate = new Date(today.getFullYear(), 0, 1);
+                        endDate = today;
+                        break;
+                }
+
+                $('#startDate').val(startDate.toISOString().split('T')[0]);
+                $('#endDate').val(endDate.toISOString().split('T')[0]);
+            });
+
+            // Sales Trend Chart
+            var salesCtx = document.getElementById('salesTrendChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.Orders.GroupBy(o => o.OrderDate.Date).Select(g => g.Key.ToString("MMM dd")).ToArray())),
+                    datasets: [{
+                        label: 'Daily Revenue',
+                        data: @Html.Raw(Json.Serialize(Model.Orders.GroupBy(o => o.OrderDate.Date).Select(g => g.Sum(o => o.TotalAmount)).ToArray())),
+                        borderColor: '#e83e8c',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Payment Method Chart
+            var paymentCtx = document.getElementById('paymentMethodChart').getContext('2d');
+            var paymentMethods = @Html.Raw(Json.Serialize(Model.Orders.GroupBy(o => o.PaymentMethod).Select(g => new { Method = g.Key, Count = g.Count() }).ToArray()));
+
+            new Chart(paymentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: paymentMethods.map(p => p.Method),
+                    datasets: [{
+                        data: paymentMethods.map(p => p.Count),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // DataTable for orders
+            $('#ordersTable').DataTable({
+                responsive: true,
+                pageLength: 25,
+                order: [[1, 'desc']], // Sort by date descending
+                columnDefs: [
+                    { targets: [6], type: 'currency' } // Total column
+                ]
+            });
+
+            // Export functionality
+            $('#exportSalesBtn').click(function() {
+                var btn = $(this);
+                var originalText = btn.html();
+                var format = $('input[name="format"]:checked').val();
+
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Exporting...');
+
+                // Add hidden fields for date range
+                var startDate = '@Model.StartDate.ToString("yyyy-MM-dd")';
+                var endDate = '@Model.EndDate.ToString("yyyy-MM-dd")';
+
+                if ($('#exportSalesForm input[name="startDate"]').length === 0) {
+                    $('#exportSalesForm').append('<input type="hidden" name="startDate" value="' + startDate + '">');
+                    $('#exportSalesForm').append('<input type="hidden" name="endDate" value="' + endDate + '">');
+                }
+
+                if (format === 'csv') {
+                    // For CSV, submit form normally to trigger file download
+                    $('#exportSalesForm')[0].submit();
+
+                    // Reset button after a short delay
+                    setTimeout(function() {
+                        btn.prop('disabled', false).html(originalText);
+                        $('#exportModal').modal('hide');
+                    }, 2000);
+                } else {
+                    // For Excel, use AJAX
+                    var formData = $('#exportSalesForm').serialize();
+
+                    $.post('@Url.Action("ExportSales")', formData)
+                        .done(function(response) {
+                            if (response.success) {
+                                alert(response.message || 'Export completed successfully!');
+                                console.log('Export data:', response.data);
+                                $('#exportModal').modal('hide');
+                            } else {
+                                alert('Export failed: ' + response.message);
+                            }
+                        })
+                        .fail(function() {
+                            alert('Export failed. Please try again.');
+                        })
+                        .always(function() {
+                            btn.prop('disabled', false).html(originalText);
+                        });
+                }
+            });
+        });
+    </script>
+}

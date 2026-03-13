@@ -1,0 +1,990 @@
+@model IEnumerable<ECommerceWebsite.Models.CartItem>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var totalAmount = Model?.Sum(item => item.TotalPrice) ?? 0m;
+    var itemCount = Model?.Sum(item => item.Quantity) ?? 0;
+    var siteName = ViewBag.SiteName as string ?? "E-Commerce Store";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Modern Cart Page Styles with Pink-Gold Theme */
+        :root {
+            --pink-primary: #F8C8DC;
+            --gold-primary: #e83e8c;
+            --gold-dark: #B8860B;
+            --pink-light: #F9E3EC;
+            --pink-border: #F3D0E0;
+            --shadow-soft: 0 4px 20px rgba(248, 200, 220, 0.15);
+            --shadow-medium: 0 8px 30px rgba(248, 200, 220, 0.25);
+            --gradient-pink: linear-gradient(135deg, #F8C8DC 0%, #e83e8c 100%);
+            --gradient-gold: linear-gradient(135deg, #e83e8c 0%, #B8860B 100%);
+        }
+
+        .cart-hero {
+            background: var(--gradient-pink);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cart-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .cart-hero .hero-icon {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 1rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .cart-hero h1 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cart-hero p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            display: block;
+        }
+
+        .summary-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .cart-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .cart-items-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .cart-header {
+            background: var(--gradient-pink);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-header h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .cart-header .item-count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 120px 120px 80px 50px;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--pink-border);
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item:hover {
+            background: var(--pink-light);
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info h6 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .item-info .category {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .item-info .sale-badge {
+            background: var(--gold-primary);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .item-price {
+            text-align: center;
+        }
+
+        .item-price .current {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            display: block;
+        }
+
+        .item-price .original {
+            font-size: 0.9rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--pink-border);
+            background: white;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .quantity-btn:hover {
+            background: var(--gold-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid var(--pink-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            font-weight: 600;
+            color: var(--gold-primary);
+        }
+
+        .item-total {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+        }
+
+        .remove-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #ff6b6b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ee5a52;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .cart-actions {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .cart-actions .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .cart-actions .btn-outline-secondary {
+            background: var(--pink-light);
+            border: 1px solid var(--pink-border);
+            color: var(--gold-primary);
+        }
+
+        .cart-actions .btn-outline-secondary:hover {
+            background: var(--gold-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .cart-actions .btn-outline-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            border: none;
+            color: white;
+        }
+
+        .cart-actions .btn-outline-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary-header {
+            background: var(--gradient-gold);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .order-summary-header h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .order-summary-body {
+            padding: 1.5rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .summary-row strong {
+            font-weight: 700;
+            color: var(--gold-primary);
+        }
+
+        .shipping-info {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border: 1px solid #4caf50;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .shipping-info .shipping-text {
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--gradient-pink);
+            transition: width 0.3s ease;
+        }
+
+        .free-shipping-note {
+            color: #666;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .checkout-btn {
+            background: var(--gradient-pink);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(232, 62, 140, 0.3);
+        }
+
+        .save-later-btn {
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .save-later-btn:hover {
+            background: var(--gold-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .promo-section {
+            background: var(--pink-light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .promo-section h6 {
+            color: var(--gold-primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .promo-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .promo-input-group .form-control {
+            border: 1px solid var(--pink-border);
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .promo-input-group .btn {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .promo-input-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .empty-cart .empty-icon {
+            font-size: 5rem;
+            color: var(--pink-primary);
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .empty-cart h3 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .empty-cart .btn-shop-now {
+            background: var(--gradient-pink);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .empty-cart .btn-shop-now:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(232, 62, 140, 0.3);
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 992px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 0.8rem;
+                padding: 1rem;
+            }
+
+            .item-details-mobile {
+                grid-column: span 2;
+                display: grid;
+                grid-template-columns: 1fr 100px 100px 50px;
+                gap: 0.5rem;
+                margin-top: 0.8rem;
+                padding-top: 0.8rem;
+                border-top: 1px solid #eee;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .cart-hero {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .cart-hero .hero-icon {
+                font-size: 3rem;
+            }
+
+            .cart-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .cart-summary {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+
+            .summary-item {
+                min-width: 100px;
+            }
+
+            .summary-number {
+                font-size: 1.5rem;
+            }
+
+            .cart-actions {
+                flex-direction: column;
+            }
+
+            .cart-actions .btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading states */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .spinner-border {
+            color: var(--gold-primary);
+        }
+    </style>
+}
+
+<div class="container-fluid px-3 px-md-4 cart-page">
+    <div style="display:none">@Html.AntiForgeryToken()</div>
+
+    <!-- Hero Section -->
+    <div class="cart-hero">
+        <div class="position-relative">
+            <i class="fas fa-shopping-cart hero-icon"></i>
+            <h1>Shopping Cart</h1>
+            <p>Review your items and proceed to checkout</p>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Cart Summary Stats -->
+        <div class="cart-summary">
+            <div class="summary-item">
+                <span class="summary-number">@itemCount</span>
+                <div class="summary-label">Items</div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-number">@Model.Count()</span>
+                <div class="summary-label">Products</div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-number">$@totalAmount.ToString("F2")</span>
+                <div class="summary-label">Subtotal</div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-number">@(totalAmount >= 50 ? "FREE" : "$5.99")</span>
+                <div class="summary-label">Shipping</div>
+            </div>
+        </div>
+
+        <!-- Main Cart Container -->
+        <div class="cart-container">
+            <!-- Cart Items Section -->
+            <div class="cart-items-section">
+                <div class="cart-header">
+                    <h4><i class="fas fa-shopping-bag me-2"></i>Cart Items</h4>
+                    <div class="item-count">@itemCount items</div>
+                </div>
+
+                <div class="cart-items-list">
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item" data-cart-item-id="@item.Id" data-product-id="@item.ProductId">
+                            <!-- Item Image -->
+                            <div class="item-image">
+                                <img src="@Url.Content($"~/media/100x100/{(item.Product.ImageUrl ?? "images/unnamed.jpg").TrimStart('/')}")" alt="@item.Product.GetLocalizedName()" onerror="this.onerror=null; this.src='@Url.Content("~/media/100x100/images/unnamed.jpg")';">
+                            </div>
+
+                            <!-- Item Info -->
+                            <div class="item-info">
+                                <h6><a href="@Url.Action("Details", "Product", new { id = item.Product.Id })" class="text-decoration-none">@item.Product.GetLocalizedName()</a></h6>
+                                <div class="category">@item.Product.Category?.GetLocalizedName()</div>
+                                @if (item.Product.DiscountPrice.HasValue)
+                                {
+                                    <div class="sale-badge">Sale</div>
+                                }
+                            </div>
+
+                            <!-- Price -->
+                            <div class="item-price">
+                                @if (item.Product.DiscountPrice.HasValue)
+                                {
+                                    <div class="original">$@item.Product.Price</div>
+                                    <div class="current">$@item.Product.DiscountPrice</div>
+                                }
+                                else
+                                {
+                                    <div class="current">$@item.Product.Price</div>
+                                }
+                            </div>
+
+                            <!-- Quantity Controls -->
+                            <div class="quantity-controls">
+                                <button class="quantity-btn decrease-qty" data-cart-item-id="@item.Id">-</button>
+                                <input type="number" class="quantity-input" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" data-cart-item-id="@item.Id">
+                                <button class="quantity-btn increase-qty" data-cart-item-id="@item.Id">+</button>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="item-total" data-cart-item-id="@item.Id">$@item.TotalPrice.ToString("F2")</div>
+
+                            <!-- Remove -->
+                            <button class="remove-btn remove-item" data-cart-item-id="@item.Id" title="Remove item">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            
+                            <!-- Save for Later -->
+                            <button class="btn btn-outline-secondary save-for-later-btn" data-cart-item-id="@item.Id" title="Save for later">
+                                <i class="fas fa-heart me-2"></i>Save
+                            </button>
+
+                            <!-- Mobile Layout -->
+                            <div class="item-details-mobile d-lg-none">
+                                <div></div> <!-- Empty for alignment -->
+                                <div class="item-price">
+                                    @if (item.Product.DiscountPrice.HasValue)
+                                    {
+                                        <div class="original">$@item.Product.Price</div>
+                                        <div class="current">$@item.Product.DiscountPrice</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="current">$@item.Product.Price</div>
+                                    }
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn decrease-qty" data-cart-item-id="@item.Id">-</button>
+                                    <input type="number" class="quantity-input" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" data-cart-item-id="@item.Id">
+                                    <button class="quantity-btn increase-qty" data-cart-item-id="@item.Id">+</button>
+                                </div>
+                                <div class="item-total">$@item.TotalPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Cart Actions -->
+                <div class="cart-actions">
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    <button class="btn btn-outline-danger" id="clear-cart">
+                        <i class="fas fa-trash me-2"></i>Clear Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="order-summary-header">
+                    <h5><i class="fas fa-calculator me-2"></i>Order Summary</h5>
+                </div>
+                <div class="order-summary-body">
+                    <div class="summary-row">
+                        <span>Subtotal (@itemCount items):</span>
+                        <span id="subtotal">$@totalAmount.ToString("F2")</span>
+                    </div>
+
+                    <!-- Shipping Progress -->
+                    @if (totalAmount < 50)
+                    {
+                        var progress = Math.Min(100, (int)Math.Round((double)(totalAmount / 50m * 100)));
+                        <div class="shipping-info">
+                            <div class="shipping-text">🚚 Add $@(50 - totalAmount) more for FREE shipping!</div>
+                            <div class="progress-container">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="free-shipping-note">@progress% towards free shipping</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="shipping-info">
+                            <div class="shipping-text">🎉 Congratulations! You get FREE shipping!</div>
+                        </div>
+                    }
+
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span class="text-success" id="shipping-display">
+                            @(totalAmount >= 50 ? "FREE" : "$5.99")
+                        </span>
+                    </div>
+
+                    <hr style="border-color: var(--pink-border);">
+
+                    <div class="summary-row">
+                        <strong>Total:</strong>
+                        <strong id="total" class="text-primary">$@((totalAmount + (totalAmount >= 50 ? 0 : 5.99m)).ToString("F2"))</strong>
+                    </div>
+
+                    <a class="checkout-btn d-block text-center" href="@Url.Action("Index", "Checkout")">
+                        <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                    </a>
+
+                    <!-- Promo Code Section -->
+                    <div class="promo-section">
+                        <h6>Have a promo code?</h6>
+                        <div class="promo-input-group">
+                            <input type="text" class="form-control" placeholder="Enter promo code" id="promo-code">
+                            <button class="btn" type="button" id="apply-promo">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Empty Cart State -->
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart empty-icon"></i>
+            <h3>Your cart is empty</h3>
+            <p>Add some amazing products to your cart and start shopping!</p>
+            <a href="@Url.Action("Index", "Product")" class="btn-shop-now">
+                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+            </a>
+        </div>
+    }
+                   
+                </div>
+            </div>
+        </div>
+
+    
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Increase quantity (support guests by passing productId when cartItemId is 0)
+            $('.increase-qty').click(function () {
+                var $item = $(this).closest('.cart-item');
+                var productId = $item.data('product-id');
+                var cartItemId = $(this).data('cart-item-id');
+                var $input = $item.find('.quantity-input');
+                var currentQty = parseInt($input.val());
+                var maxQty = parseInt($input.attr('max'));
+                if (currentQty < maxQty) updateQuantity(cartItemId, currentQty + 1, productId);
+            });
+
+            // Decrease quantity (avoid removing for guests; clamp to 1)
+            $('.decrease-qty').click(function () {
+                var $item = $(this).closest('.cart-item');
+                var productId = $item.data('product-id');
+                var cartItemId = $(this).data('cart-item-id');
+                var $input = $item.find('.quantity-input');
+                var currentQty = parseInt($input.val());
+                if (currentQty > 1) {
+                    updateQuantity(cartItemId, currentQty - 1, productId);
+                } else {
+                    updateQuantity(cartItemId, 1, productId);
+                }
+            });
+
+            // Quantity input change
+            $('.quantity-input').change(function () {
+                var $item = $(this).closest('.cart-item');
+                var productId = $item.data('product-id');
+                var cartItemId = $(this).data('cart-item-id');
+                var newQty = parseInt($(this).val());
+                var maxQty = parseInt($(this).attr('max'));
+                if (newQty <= 0) { updateQuantity(cartItemId, 1, productId); }
+                else if (newQty > maxQty) { $(this).val(maxQty); updateQuantity(cartItemId, maxQty, productId); }
+                else { updateQuantity(cartItemId, newQty, productId); }
+            });
+
+            // Remove item (for guests, fall back to UpdateQuantity with 0)
+            $('.remove-item').click(function () {
+                var $item = $(this).closest('.cart-item');
+                var productId = $item.data('product-id');
+                var cartItemId = $(this).data('cart-item-id');
+                removeItem(cartItemId, productId);
+            });
+
+            function updateQuantity(cartItemId, quantity, productId) {
+                var payload = { cartItemId: cartItemId, quantity: quantity };
+                if (productId) payload.productId = productId;
+                $.post('@Url.Action("UpdateQuantity", "Cart")', payload)
+                    .done(function (response) {
+                        if (response.success) {
+                            var $scope = productId
+                                ? $(`.cart-item[data-product-id="${productId}"]`)
+                                : $(`.cart-item[data-cart-item-id="${cartItemId}"]`);
+                            $scope.find('.item-total').text('$' + response.totalPrice.toFixed(2));
+                            $scope.find('.quantity-input').val(quantity);
+                            $('#cart-count').text(response.cartCount);
+                            calculateTotals();
+                        } else { alert(response.message); }
+                    })
+                    .fail(function () { alert('Error updating quantity'); });
+            }
+
+            function removeItem(cartItemId, productId) {
+                if (confirm('Are you sure you want to remove this item?')) {
+                    if (!cartItemId) { // guest: remove via UpdateQuantity with 0
+                        updateQuantity(0, 0, productId);
+                        return;
+                    }
+                    $.post('@Url.Action("RemoveFromCart", "Cart")', { cartItemId: cartItemId })
+                        .done(function (response) {
+                            if (response.success) {
+                                var selector = cartItemId
+                                    ? `.cart-item[data-cart-item-id="${cartItemId}"]`
+                                    : `.cart-item[data-product-id="${productId}"]`;
+                                $(selector).fadeOut(300, function () {
+                                    $(this).remove();
+                                    if ($('.cart-item').length === 0) location.reload(); else calculateTotals();
+                                });
+                                $('#cart-count').text(response.cartCount);
+                            } else { alert(response.message); }
+                        })
+                        .fail(function () { alert('Error removing item'); });
+                }
+            }
+
+            // Save for later per-item (unchanged)
+            $('.save-for-later-btn').click(function () {
+                var cartItemId = $(this).data('cart-item-id');
+                var itemEl = $(`.cart-item[data-cart-item-id="${cartItemId}"]`);
+                var productId = itemEl.data('product-id');
+                if (!productId) { alert('Product not found'); return; }
+                $.ajax({
+                    url: '@Url.Action("AddToWishlist", "Wishlist")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ productId: productId })
+                })
+                .done(function (resp) {
+                    if (resp.success) {
+                        $.post('@Url.Action("RemoveFromCart", "Cart")', { cartItemId: cartItemId })
+                            .done(function (r2) {
+                                if (r2.success) {
+                                    itemEl.fadeOut(300, function () {
+                                        $(this).remove();
+                                        if ($('.cart-item').length === 0) location.reload(); else calculateTotals();
+                                    });
+                                    $('#cart-count').text(r2.cartCount);
+                                    alert('Saved for later');
+                                } else { alert(r2.message || 'Failed to remove from cart'); }
+                            })
+                            .fail(function () { alert('Error removing from cart'); });
+                    } else {
+                        alert(resp.message || 'Failed to save for later');
+                    }
+                })
+                .fail(function () { alert('Error saving for later'); });
+            });
+
+            // Clear entire cart (unchanged)
+            $('#clear-cart').on('click', function (e) {
+                e.preventDefault();
+                if (!confirm('Are you sure you want to clear your cart?')) return;
+                $.post('@Url.Action("ClearCart", "Cart")')
+                    .done(function (response) {
+                        if (response.success) {
+                            $('.cart-item').remove();
+                            $('#cart-count').text(0);
+                            // Reload to show Empty Cart state and reset totals/summary UI
+                            location.reload();
+                        } else {
+                            alert(response.message || 'Failed to clear cart');
+                        }
+                    })
+                    .fail(function () { alert('Error clearing cart'); });
+            });
+
+            function calculateTotals() {
+                var subtotal = 0;
+                $('.item-total').each(function () { var price = parseFloat($(this).text().replace('$', '')); subtotal += price; });
+                var shipping = subtotal >= 50 ? 0 : 5.99;
+                var total = subtotal + shipping;
+                var progress = Math.min(100, Math.round((subtotal / 50) * 100));
+                $('#subtotal').text('$' + subtotal.toFixed(2));
+                $('#total').text('$' + total.toFixed(2));
+                $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+                $('#shipping-display').text(subtotal >= 50 ? 'Free' : '$5.99');
+            }
+        });
+
+      
+    </script>
+
+    <style>
+        /* Subtle hover and spacing normalization */
+        .cart-page .cart-item { transition: background .15s ease, box-shadow .15s ease; }
+        .cart-page .cart-item:hover { background: #fafafa; }
+        .cart-page .card { border-radius: .6rem; }
+        .cart-page h4, .cart-page h5, .cart-page h6 { letter-spacing: .2px; }
+
+        /* Scoped RTL support */
+        .cart-page.rtl { direction: rtl; }
+        .cart-page.rtl .me-1 { margin-right: 0 !important; margin-left: .25rem !important; }
+        .cart-page.rtl .me-2 { margin-right: 0 !important; margin-left: .5rem !important; }
+        .cart-page.rtl .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+        .cart-page.rtl .ms-1 { margin-left: 0 !important; margin-right: .25rem !important; }
+        .cart-page.rtl .ms-2 { margin-left: 0 !important; margin-right: .5rem !important; }
+        .cart-page.rtl .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+        .cart-page.rtl .text-start { text-align: right !important; }
+        .cart-page.rtl .text-end { text-align: left !important; }
+    </style>
+}

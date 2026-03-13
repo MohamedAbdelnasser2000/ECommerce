@@ -1,0 +1,167 @@
+@model ECommerceWebsite.Models.ApplicationUser
+@inject IViewLocalizer L
+@{
+    ViewData["Title"] = L["Title"];
+}
+
+<div class="container-fluid py-4 dashboard-page">
+    <!-- Welcome / Hero -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-primary text-white rounded-3">
+                <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <div>
+                        <h2 class="mb-1 fw-semibold">
+                            <i class="fas fa-user-circle me-2"></i>
+                            @L["WelcomeBack", Model.FirstName, Model.LastName]
+                        </h2>
+                        <p class="mb-0 text-white-50">@L["HeroDescription"]</p>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <a asp-action="Orders" class="btn btn-light text-primary me-2"><i class="fas fa-list me-2"></i>@L["MyOrders"]</a>
+                        <a asp-action="Wishlist" class="btn btn-outline-light"><i class="fas fa-heart me-2"></i>@L["Wishlist"]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase small text-muted">@L["TotalOrders"]</div>
+                        <div class="h4 mb-0">@ViewBag.TotalOrders</div>
+                    </div>
+                    <div class="text-primary"><i class="fas fa-shopping-cart fa-2x"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase small text-muted">@L["Pending"]</div>
+                        <div class="h4 mb-0">@ViewBag.PendingOrders</div>
+                    </div>
+                    <div class="text-warning"><i class="fas fa-clock fa-2x"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase small text-muted">@L["Completed"]</div>
+                        <div class="h4 mb-0">@ViewBag.CompletedOrders</div>
+                    </div>
+                    <div class="text-success"><i class="fas fa-check-circle fa-2x"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase small text-muted">@L["TotalSpent"]</div>
+                        <div class="h4 mb-0">$@ViewBag.TotalSpent</div>
+                    </div>
+                    <div class="text-info"><i class="fas fa-dollar-sign fa-2x"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2 text-primary"></i>@L["QuickActions"]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-3">
+                            <a asp-action="Orders" class="btn btn-outline-primary w-100"><i class="fas fa-list me-2"></i>@L["ViewOrders"]</a>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <a asp-action="Profile" class="btn btn-outline-info w-100"><i class="fas fa-user-edit me-2"></i>@L["EditProfile"]</a>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <a asp-action="Wishlist" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-heart me-2"></i>@L["WishlistWithCount", ViewBag.WishlistItemsCount ?? 0]
+                            </a>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <a asp-action="ChangePassword" class="btn btn-outline-warning w-100"><i class="fas fa-key me-2"></i>@L["ChangePassword"]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Panels -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0"><i class="fas fa-star me-2 text-warning"></i>@L["ReviewsAndRatings"]</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">@L["TotalReviewsLabel"] <strong>@ViewBag.TotalReviews</strong></p>
+                    <a asp-action="Reviews" class="btn btn-sm btn-primary"><i class="fas fa-eye me-1"></i>@L["ViewAllReviews"]</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0"><i class="fas fa-shopping-bag me-2 text-success"></i>@L["ShoppingCart"]</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">@L["ItemsInCart"] <strong>@ViewBag.CartItemsCount</strong></p>
+                    <a asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-success"><i class="fas fa-shopping-cart me-1"></i>@L["ViewCart"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // RTL toggle (scoped to dashboard page)
+        (function initRtlToggle(){
+            const key='rtl_dashboard_page';
+            const $root=$('.dashboard-page');
+            const saved=sessionStorage.getItem(key)==='1';
+            if(saved) $root.addClass('rtl');
+            const id='rtl-toggle';
+            if(!document.getElementById(id)){
+                const rtlLabel='@L["RtlToggleLabel"]';
+                $('body').append('<button id="'+id+'" class="btn btn-light border shadow-sm position-fixed" style="bottom:120px;right:16px;z-index:1030">'+rtlLabel+'</button>');
+                $('#'+id).on('click', function(){
+                    $root.toggleClass('rtl');
+                    sessionStorage.setItem(key, $root.hasClass('rtl') ? '1' : '0');
+                });
+            }
+        })();
+    </script>
+}
+
+<style>
+    .card { border-radius: .6rem; }
+    .dashboard-page h2, .dashboard-page h5, .dashboard-page h6 { letter-spacing: .2px; }
+
+    /* Scoped RTL */
+    .dashboard-page.rtl { direction: rtl; }
+    .dashboard-page.rtl .me-1 { margin-right: 0 !important; margin-left: .25rem !important; }
+    .dashboard-page.rtl .me-2 { margin-right: 0 !important; margin-left: .5rem !important; }
+    .dashboard-page.rtl .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+    .dashboard-page.rtl .ms-1 { margin-left: 0 !important; margin-right: .25rem !important; }
+    .dashboard-page.rtl .ms-2 { margin-left: 0 !important; margin-right: .5rem !important; }
+    .dashboard-page.rtl .text-start { text-align: right !important; }
+    .dashboard-page.rtl .text-end { text-align: left !important; }
+</style>

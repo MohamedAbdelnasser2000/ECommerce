@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Order #{0}</value></data>
+  <data name="Heading" xml:space="preserve"><value>Order #{0}</value></data>
+  <data name="BackToOrders" xml:space="preserve"><value>Back to Orders</value></data>
+  <data name="OrderInformation" xml:space="preserve"><value>Order Information</value></data>
+  <data name="OrderDateLabel" xml:space="preserve"><value>Order Date:</value></data>
+  <data name="StatusLabel" xml:space="preserve"><value>Status:</value></data>
+  <data name="Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Processing" xml:space="preserve"><value>Processing</value></data>
+  <data name="Shipped" xml:space="preserve"><value>Shipped</value></data>
+  <data name="Delivered" xml:space="preserve"><value>Delivered</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="PaymentMethodLabel" xml:space="preserve"><value>Payment Method:</value></data>
+  <data name="PaymentStatusLabel" xml:space="preserve"><value>Payment Status:</value></data>
+  <data name="Paid" xml:space="preserve"><value>Paid</value></data>
+  <data name="Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Refunded" xml:space="preserve"><value>Refunded</value></data>
+  <data name="ShippedDateLabel" xml:space="preserve"><value>Shipped Date:</value></data>
+  <data name="DeliveredDateLabel" xml:space="preserve"><value>Delivered Date:</value></data>
+  <data name="NotesLabel" xml:space="preserve"><value>Notes:</value></data>
+  <data name="OrderItems" xml:space="preserve"><value>Order Items ({0})</value></data>
+  <data name="Quantity" xml:space="preserve"><value>Qty: {0}</value></data>
+  <data name="OrderSummary" xml:space="preserve"><value>Order Summary</value></data>
+  <data name="SubtotalLabel" xml:space="preserve"><value>Subtotal:</value></data>
+  <data name="ShippingLabel" xml:space="preserve"><value>Shipping:</value></data>
+  <data name="ShippingValue" xml:space="preserve"><value>Free</value></data>
+  <data name="TotalLabel" xml:space="preserve"><value>Total:</value></data>
+  <data name="ShippingAddress" xml:space="preserve"><value>Shipping Address</value></data>
+  <data name="PhoneAbbreviation" xml:space="preserve"><value>Phone</value></data>
+  <data name="PhoneLabel" xml:space="preserve"><value>P:</value></data>
+  <data name="RtlToggleLabel" xml:space="preserve"><value>RTL</value></data>
+</root>

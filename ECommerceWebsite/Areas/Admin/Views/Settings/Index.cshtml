@@ -1,0 +1,558 @@
+@model SettingsViewModel
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-cog me-2"></i>System Settings
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <!-- Settings Navigation -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Settings Menu</h3>
+            </div>
+            <div class="card-body p-0">
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#general">
+                            <i class="fas fa-home me-2"></i>General
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#email">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#payment">
+                            <i class="fas fa-credit-card me-2"></i>Payment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#seo">
+                            <i class="fas fa-search me-2"></i>SEO
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#social">
+                            <i class="fas fa-share-alt me-2"></i>Social Media
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Backup">
+                            <i class="fas fa-database me-2"></i>Backup
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Maintenance">
+                            <i class="fas fa-tools me-2"></i>Maintenance
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="tab-content">
+            <!-- General Settings -->
+            <div class="tab-pane fade show active" id="general">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">General Settings</h3>
+                    </div>
+                    <form asp-action="UpdateGeneral" method="post" enctype="multipart/form-data">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="SiteName" class="form-label">Site Name</label>
+                                        <input asp-for="SiteName" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ContactEmail" class="form-label">Contact Email</label>
+                                        <input asp-for="ContactEmail" class="form-control" type="email" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="SiteDescription" class="form-label">Site Description</label>
+                                <textarea asp-for="SiteDescription" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <!-- Homepage Hero Settings -->
+                            <hr />
+                            <h5 class="text-primary mb-3"><i class="fas fa-image me-2"></i>Homepage Hero</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroTitle" class="form-label">Hero Title</label>
+                                        <input asp-for="HeroTitle" class="form-control" placeholder="Discover Amazing Products" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroSubtitle" class="form-label">Hero Subtitle</label>
+                                        <input asp-for="HeroSubtitle" class="form-control" placeholder="Shop the latest trends..." />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Arabic: Homepage Hero -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroTitleAr" class="form-label">Hero Title (Arabic)</label>
+                                        <input asp-for="HeroTitleAr" class="form-control" placeholder="عنوان الهيرو بالعربية" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroSubtitleAr" class="form-label">Hero Subtitle (Arabic)</label>
+                                        <input asp-for="HeroSubtitleAr" class="form-control" placeholder="وصف الهيرو بالعربية" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroBadge" class="form-label">Hero Badge</label>
+                                        <input asp-for="HeroBadge" class="form-control" placeholder="New Collection" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroButtonText" class="form-label">Button Text</label>
+                                        <input asp-for="HeroButtonText" class="form-control" placeholder="Shop Now" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroButtonLink" class="form-label">Button Link</label>
+                                        <input asp-for="HeroButtonLink" class="form-control" placeholder="/Product" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroBadgeAr" class="form-label">Hero Badge (Arabic)</label>
+                                        <input asp-for="HeroBadgeAr" class="form-control" placeholder="شارة الهيرو بالعربية" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="HeroButtonTextAr" class="form-label">Button Text (Arabic)</label>
+                                        <input asp-for="HeroButtonTextAr" class="form-control" placeholder="نص الزر بالعربية" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <!-- الرابط لا يحتاج ترجمة عادة -->
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Hero Image</label>
+                                <input asp-for="HeroImageFile" type="file" class="form-control" accept="image/*" />
+                                <small class="text-muted d-block">يفضل صورة PNG شفافة أو JPG عريضة. في حال عدم الرفع سيتم استخدام المسار الحالي.</small>
+                                @if (!string.IsNullOrWhiteSpace(Model.HeroImageUrl))
+                                {
+                                    <div class="mt-2">
+                                        <img src="@Model.HeroImageUrl" alt="Current Hero" style="max-height:100px" class="rounded border" />
+                                        <div class="text-muted small mt-1">Current: @Model.HeroImageUrl</div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Homepage CTA Settings -->
+                            <hr />
+                            <h5 class="text-primary mb-3"><i class="fas fa-bullhorn me-2"></i>Homepage CTA</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaBadgeText" class="form-label">Badge Text</label>
+                                        <input asp-for="CtaBadgeText" class="form-control" placeholder="-60%" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaTitle" class="form-label">Title</label>
+                                        <input asp-for="CtaTitle" class="form-control" placeholder="Global Sale" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaButtonText" class="form-label">Button Text</label>
+                                        <input asp-for="CtaButtonText" class="form-control" placeholder="Buy Now" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Arabic: Homepage CTA -->
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaBadgeTextAr" class="form-label">Badge Text (Arabic)</label>
+                                        <input asp-for="CtaBadgeTextAr" class="form-control" placeholder="نص الشارة بالعربية" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaTitleAr" class="form-label">Title (Arabic)</label>
+                                        <input asp-for="CtaTitleAr" class="form-control" placeholder="العنوان بالعربية" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaButtonTextAr" class="form-label">Button Text (Arabic)</label>
+                                        <input asp-for="CtaButtonTextAr" class="form-control" placeholder="نص الزر بالعربية" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaDescription" class="form-label">Description</label>
+                                        <textarea asp-for="CtaDescription" class="form-control" rows="2" placeholder="Short description under CTA title"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaDescriptionAr" class="form-label">Description (Arabic)</label>
+                                        <textarea asp-for="CtaDescriptionAr" class="form-control" rows="2" placeholder="وصف مختصر بالعربية تحت عنوان الـ CTA"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CtaButtonLink" class="form-label">Button Link</label>
+                                        <input asp-for="CtaButtonLink" class="form-control" placeholder="/Product" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Background Image</label>
+                                        <input asp-for="CtaBackgroundFile" type="file" class="form-control" accept="image/*" />
+                                        <small class="text-muted d-block">في حال عدم رفع صورة سيتم استخدام الحالية.</small>
+                                        @if (!string.IsNullOrWhiteSpace(Model.CtaBackgroundUrl))
+                                        {
+                                            <div class="mt-2">
+                                                <img src="@Model.CtaBackgroundUrl" alt="CTA Background" style="max-height:100px" class="rounded border" />
+                                                <div class="text-muted small mt-1">Current: @Model.CtaBackgroundUrl</div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ContactPhone" class="form-label">Contact Phone</label>
+                                        <input asp-for="ContactPhone" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ItemsPerPage" class="form-label">Items Per Page</label>
+                                        <input asp-for="ItemsPerPage" class="form-control" type="number" min="1" max="100" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="Address" class="form-label">Address</label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input asp-for="EnableRegistration" class="form-check-input" type="checkbox" />
+                                        <label asp-for="EnableRegistration" class="form-check-label">Enable Registration</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input asp-for="EnableReviews" class="form-check-input" type="checkbox" />
+                                        <label asp-for="EnableReviews" class="form-check-label">Enable Reviews</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input asp-for="EnableWishlist" class="form-check-input" type="checkbox" />
+                                        <label asp-for="EnableWishlist" class="form-check-label">Enable Wishlist</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save General Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Seed Arabic Defaults -->
+                <div class="card mt-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Populate Arabic defaults for Hero and CTA</h6>
+                            <small class="text-muted">This will create/update Arabic text keys (Hero*Ar, Cta*Ar) with sensible defaults. You can edit them afterwards.</small>
+                        </div>
+                        <form asp-action="SeedArabicHeroCta" method="post" class="mb-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-magic me-1"></i> Seed Arabic Defaults
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Settings -->
+            <div class="tab-pane fade" id="email">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Email Settings</h3>
+                    </div>
+                    <form asp-action="UpdateEmail" method="post">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="SmtpHost" class="form-label">SMTP Host</label>
+                                        <input asp-for="SmtpHost" class="form-control" placeholder="smtp.gmail.com" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="SmtpPort" class="form-label">SMTP Port</label>
+                                        <input asp-for="SmtpPort" class="form-control" type="number" placeholder="587" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="SmtpUsername" class="form-label">SMTP Username</label>
+                                        <input asp-for="SmtpUsername" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="SmtpPassword" class="form-label">SMTP Password</label>
+                                        <input asp-for="SmtpPassword" class="form-control" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input asp-for="EnableSsl" class="form-check-input" type="checkbox" />
+                                <label asp-for="EnableSsl" class="form-check-label">Enable SSL</label>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Test Email:</strong>
+                                <div class="input-group mt-2">
+                                    <input type="email" id="testEmail" class="form-control" placeholder="Enter email to test">
+                                    <button type="button" id="sendTestEmail" class="btn btn-outline-secondary">Send Test</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Email Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Settings -->
+            <div class="tab-pane fade" id="payment">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Payment Settings</h3>
+                    </div>
+                    <form asp-action="UpdatePayment" method="post">
+                        <div class="card-body">
+                            <h5 class="text-primary">PayPal Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="PayPalClientId" class="form-label">PayPal Client ID</label>
+                                        <input asp-for="PayPalClientId" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="PayPalClientSecret" class="form-label">PayPal Client Secret</label>
+                                        <input asp-for="PayPalClientSecret" class="form-control" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <h5 class="text-primary">Stripe Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="StripePublishableKey" class="form-label">Stripe Publishable Key</label>
+                                        <input asp-for="StripePublishableKey" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="StripeSecretKey" class="form-label">Stripe Secret Key</label>
+                                        <input asp-for="StripeSecretKey" class="form-control" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Payment Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SEO Settings -->
+            <div class="tab-pane fade" id="seo">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">SEO Settings</h3>
+                    </div>
+                    <form asp-action="UpdateSeo" method="post">
+                        <div class="card-body">
+                            <div class="form-group mb-3">
+                                <label asp-for="MetaTitle" class="form-label">Meta Title</label>
+                                <input asp-for="MetaTitle" class="form-control" />
+                                <div class="form-text">Recommended length: 50-60 characters</div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="MetaDescription" class="form-label">Meta Description</label>
+                                <textarea asp-for="MetaDescription" class="form-control" rows="3"></textarea>
+                                <div class="form-text">Recommended length: 150-160 characters</div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="MetaKeywords" class="form-label">Meta Keywords</label>
+                                <input asp-for="MetaKeywords" class="form-control" />
+                                <div class="form-text">Separate keywords with commas</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save SEO Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Social Media Settings -->
+            <div class="tab-pane fade" id="social">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Social Media Settings</h3>
+                    </div>
+                    <form asp-action="UpdateSocial" method="post">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="FacebookUrl" class="form-label">
+                                            <i class="fab fa-facebook text-primary me-2"></i>Facebook URL
+                                        </label>
+                                        <input asp-for="FacebookUrl" class="form-control" placeholder="https://facebook.com/yourpage" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="TwitterUrl" class="form-label">
+                                            <i class="fab fa-twitter text-info me-2"></i>Twitter URL
+                                        </label>
+                                        <input asp-for="TwitterUrl" class="form-control" placeholder="https://twitter.com/youraccount" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="InstagramUrl" class="form-label">
+                                            <i class="fab fa-instagram text-danger me-2"></i>Instagram URL
+                                        </label>
+                                        <input asp-for="InstagramUrl" class="form-control" placeholder="https://instagram.com/youraccount" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="LinkedInUrl" class="form-label">
+                                            <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn URL
+                                        </label>
+                                        <input asp-for="LinkedInUrl" class="form-control" placeholder="https://linkedin.com/company/yourcompany" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Social Media Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Activate tab from URL hash if present (e.g., #email, #seo)
+            var hash = window.location.hash;
+            if (hash) {
+                var tabLink = $("a.nav-link[href='" + hash + "']");
+                if (tabLink.length) {
+                    tabLink.tab('show');
+                }
+            }
+
+            // Test Email functionality
+            $('#sendTestEmail').click(function() {
+                var email = $('#testEmail').val();
+                if (!email) {
+                    alert('Please enter an email address');
+                    return;
+                }
+
+                $(this).prop('disabled', true).text('Sending...');
+                
+                $.post('@Url.Action("TestEmail")', { email: email }, function(response) {
+                    if (response.success) {
+                        alert('Test email sent successfully!');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                }).always(function() {
+                    $('#sendTestEmail').prop('disabled', false).text('Send Test');
+                });
+            });
+        });
+    </script>
+}

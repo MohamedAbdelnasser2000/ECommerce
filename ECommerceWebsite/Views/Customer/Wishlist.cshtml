@@ -1,0 +1,207 @@
+@model IEnumerable<ECommerceWebsite.Models.WishlistItem>
+@using System.Globalization
+@using System.Text.Json
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+<div class="container my-5 wishlist-page">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+            <i class="fas fa-heart text-danger me-2" style="font-size:1.5rem"></i>
+            <h2 class="mb-0">@Localizer["Heading"]</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Dashboard" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>@Localizer["Dashboard"]</a>
+            <button class="btn btn-outline-danger" id="clear-wishlist"><i class="fas fa-trash me-1"></i>@Localizer["Clear"]</button>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm product-card">
+                        <div class="position-relative ratio ratio-4x3 bg-light rounded-top overflow-hidden">
+                            @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                            {
+                                <img src="@item.Product.ImageUrl" class="w-100 h-100" alt="@item.Product.GetLocalizedName()" style="object-fit:cover;">
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+                            @if (item.Product.DiscountPrice.HasValue)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">@Localizer["DiscountPercentage", Math.Round(((item.Product.Price - item.Product.DiscountPrice.Value)/item.Product.Price)*100)]</span>
+                            }
+                            <button class="btn btn-sm btn-light border position-absolute top-0 end-0 m-2 text-danger remove-btn" title="@Localizer["RemoveTooltip"]" data-id="@item.Id">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.Id" class="text-decoration-none text-dark">
+                                <h6 class="mb-1">@item.Product.GetLocalizedName()</h6>
+                            </a>
+                            <small class="text-muted">@item.Product.Category?.GetLocalizedName()</small>
+                            <p class="text-muted small mt-2 flex-grow-1">@(string.IsNullOrWhiteSpace(item.Product.GetLocalizedDescription()) ? item.Product.GetLocalizedName() : item.Product.GetLocalizedDescription())</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div>
+                                    @if (item.Product.DiscountPrice.HasValue)
+                                    {
+                                        <div class="d-flex align-items-baseline gap-2">
+                                            <span class="h5 text-primary mb-0">@item.Product.DiscountPrice.Value.ToString("C", CultureInfo.CurrentCulture)</span>
+                                            <small class="text-muted text-decoration-line-through">@item.Product.Price.ToString("C", CultureInfo.CurrentCulture)</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="h5 text-primary mb-0">@item.Product.Price.ToString("C", CultureInfo.CurrentCulture)</span>
+                                    }
+                                </div>
+                                <div class="text-muted small">@Localizer["AddedOn", item.CreatedAt.ToString("MMM dd", CultureInfo.CurrentCulture)]</div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-primary add-cart" data-id="@item.Product.Id">
+                                    <i class="fas fa-cart-plus me-2"></i>@Localizer["AddToCart"]
+                                </button>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.Id" class="btn btn-outline-secondary">
+                                    <i class="fas fa-eye me-2"></i>@Localizer["ViewDetails"]
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-5">
+            <h5 class="mb-3">@Localizer["Recommendations"]</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3"><div class="placeholder-card"></div></div>
+                <div class="col-6 col-md-3"><div class="placeholder-card"></div></div>
+                <div class="col-6 col-md-3"><div class="placeholder-card"></div></div>
+                <div class="col-6 col-md-3"><div class="placeholder-card"></div></div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-heart fa-4x text-muted mb-3"></i>
+            <h4>@Localizer["EmptyTitle"]</h4>
+            <p class="text-muted">@Localizer["EmptyDescription"]</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary"><i class="fas fa-shopping-bag me-2"></i>@Localizer["BrowseProducts"]</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            const resources = {
+                addedToCart: @Html.Raw(JsonSerializer.Serialize(Localizer["AddedToCartMessage"].Value)),
+                error: @Html.Raw(JsonSerializer.Serialize(Localizer["ErrorMessage"].Value)),
+                removeConfirm: @Html.Raw(JsonSerializer.Serialize(Localizer["RemoveConfirm"].Value)),
+                removed: @Html.Raw(JsonSerializer.Serialize(Localizer["RemovedMessage"].Value)),
+                clearConfirm: @Html.Raw(JsonSerializer.Serialize(Localizer["ClearConfirm"].Value))
+            };
+
+            $('.add-cart').on('click', function(){
+                const id = $(this).data('id');
+                const btn = $(this);
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>' + @Html.Raw(JsonSerializer.Serialize(Localizer["AddingLabel"].Value)));
+                fetch('/Cart/AddToCart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: id, quantity: 1 })
+                }).then(r=>r.json()).then(d=>{
+                    if(d.success){
+                        try { toastr.success(resources.addedToCart); } catch(_){ alert(resources.addedToCart); }
+                        if (typeof updateCartCount === 'function') { updateCartCount(); }
+                        btn.html('<i class="fas fa-check me-2"></i>' + @Html.Raw(JsonSerializer.Serialize(Localizer["AddedLabel"].Value)));
+                        setTimeout(()=>{ btn.prop('disabled', false).html('<i class="fas fa-cart-plus me-2"></i>' + @Html.Raw(JsonSerializer.Serialize(Localizer["AddToCart"].Value))); }, 1200);
+                    } else {
+                        const message = d.message || resources.error;
+                        try { toastr.error(message); } catch(_){ alert(message); }
+                        btn.prop('disabled', false).html('<i class="fas fa-cart-plus me-2"></i>' + @Html.Raw(JsonSerializer.Serialize(Localizer["AddToCart"].Value)));
+                    }
+                }).catch(()=>{
+                    try { toastr.error(resources.error); } catch(_){ alert(resources.error); }
+                    btn.prop('disabled', false).html('<i class="fas fa-cart-plus me-2"></i>' + @Html.Raw(JsonSerializer.Serialize(Localizer["AddToCart"].Value)));
+                });
+            });
+
+            $('.remove-btn').on('click', function(){
+                const id = $(this).data('id');
+                if(!confirm(resources.removeConfirm)) return;
+                fetch('/Customer/RemoveFromWishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wishlistItemId: id })
+                }).then(r=>r.json()).then(d=>{
+                    if(d.success){
+                        try { toastr.info(resources.removed); } catch(_){ alert(resources.removed); }
+                        location.reload();
+                    } else {
+                        const message = d.message || resources.error;
+                        try { toastr.error(message); } catch(_){ alert(message); }
+                    }
+                }).catch(()=>{
+                    try { toastr.error(resources.error); } catch(_){ alert(resources.error); }
+                });
+            });
+
+            $('#clear-wishlist').on('click', function(){
+                if(!confirm(resources.clearConfirm)) return;
+                fetch('/Customer/ClearWishlist', { method: 'POST' })
+                    .then(r=>r.ok ? (r.json().catch(()=>({success:true}))) : {success:false})
+                    .then(()=> location.reload());
+            });
+
+            (function initRtlToggle(){
+                const key='rtl_wishlist_page';
+                const resourcesToggle = { rtlLabel: @Html.Raw(JsonSerializer.Serialize(Localizer["RtlToggleLabel"].Value)) };
+                const $root=$('.wishlist-page');
+                const saved=sessionStorage.getItem(key)==='1';
+                if(saved) $root.addClass('rtl');
+                const id='rtl-toggle';
+                if(!document.getElementById(id)){
+                    $('body').append('<button id="'+id+'" class="btn btn-light border shadow-sm position-fixed" style="bottom:184px;right:16px;z-index:1030">'+resourcesToggle.rtlLabel+'</button>');
+                    $('#'+id).on('click', function(){
+                        $root.toggleClass('rtl');
+                        sessionStorage.setItem(key, $root.hasClass('rtl') ? '1' : '0');
+                    });
+                }
+            })();
+        });
+    </script>
+
+    <style>
+        .product-card .ratio img { transition: transform .18s ease; }
+        .product-card:hover .ratio img { transform: scale(1.03); }
+        .product-card { transition: transform .12s ease, box-shadow .12s ease; border-radius: .6rem; }
+        .product-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important; }
+        .wishlist-page h2, .wishlist-page h5, .wishlist-page h6 { letter-spacing: .2px; }
+
+        .placeholder-card { height: 130px; background: linear-gradient(90deg,#f2f2f2,#fafafa,#f2f2f2); border-radius: .6rem; animation: shimmer 1.2s infinite; }
+        @@keyframes shimmer { 0%{background-position:-200px 0} 100%{background-position:200px 0} }
+
+        .wishlist-page.rtl { direction: rtl; }
+        .wishlist-page.rtl .me-1 { margin-right: 0 !important; margin-left: .25rem !important; }
+        .wishlist-page.rtl .me-2 { margin-right: 0 !important; margin-left: .5rem !important; }
+        .wishlist-page.rtl .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+        .wishlist-page.rtl .ms-1 { margin-left: 0 !important; margin-right: .25rem !important; }
+        .wishlist-page.rtl .ms-2 { margin-left: 0 !important; margin-right: .5rem !important; }
+        .wishlist-page.rtl .text-start { text-align: right !important; }
+        .wishlist-page.rtl .text-end { text-align: left !important; }
+    </style>
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="Products" xml:space="preserve"><value>المنتجات</value></data>
+  <data name="Contact Us" xml:space="preserve"><value>اتصل بنا</value></data>
+  <data name="Blog" xml:space="preserve"><value>المدونة</value></data>
+  <data name="Wishlist" xml:space="preserve"><value>المفضلة</value></data>
+  <data name="Cart" xml:space="preserve"><value>السلة</value></data>
+  <data name="Notifications" xml:space="preserve"><value>الإشعارات</value></data>
+  <data name="Mark all as read" xml:space="preserve"><value>تحديد الكل كمقروء</value></data>
+  <data name="View All Notifications" xml:space="preserve"><value>عرض كل الإشعارات</value></data>
+  <data name="Logout" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="Quick Links" xml:space="preserve"><value>روابط سريعة</value></data>
+  <data name="Help &amp; Policies" xml:space="preserve"><value>المساعدة والسياسات</value></data>
+  <data name="FAQ" xml:space="preserve"><value>الأسئلة الشائعة</value></data>
+  <data name="Shipping &amp; Returns" xml:space="preserve"><value>الشحن والإرجاع</value></data>
+  <data name="Privacy Policy" xml:space="preserve"><value>سياسة الخصوصية</value></data>
+  <data name="Terms &amp; Conditions" xml:space="preserve"><value>الشروط والأحكام</value></data>
+  <data name="Newsletter" xml:space="preserve"><value>النشرة البريدية</value></data>
+  <data name="Subscribe to receive the latest offers and products." xml:space="preserve"><value>اشترك لتصلك أحدث العروض والمنتجات.</value></data>
+  <data name="Your email" xml:space="preserve"><value>بريدك الإلكتروني</value></data>
+  <data name="Subscribe" xml:space="preserve"><value>اشترك</value></data>
+  <data name="All rights reserved." xml:space="preserve"><value>جميع الحقوق محفوظة.</value></data>
+</root>

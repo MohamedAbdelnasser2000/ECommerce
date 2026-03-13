@@ -1,0 +1,339 @@
+@model ECommerceWebsite.Models.Order
+
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-edit me-2"></i>Edit Order - #@Model.OrderNumber
+                </h3>
+            </div>
+            <form asp-action="UpdateStatus" method="post">
+                <div class="card-body">
+                    <input asp-for="Id" type="hidden" />
+                    
+                    <!-- Order Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card card-outline card-info">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Order Summary</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless table-sm">
+                                        <tr>
+                                            <th width="40%">Order Number:</th>
+                                            <td><strong>#@Model.OrderNumber</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Order Date:</th>
+                                            <td>@Model.OrderDate.ToString("MMM dd, yyyy")</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Customer:</th>
+                                            <td>
+                                                @if (Model.User != null)
+                                                {
+                                                    @($"{Model.User.FirstName} {Model.User.LastName}")
+                                                }
+                                                else
+                                                {
+                                                    @($"Guest ({Model.GuestEmail})")
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Amount:</th>
+                                            <td><strong class="text-success">$@Model.TotalAmount.ToString("F2")</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Payment:</th>
+                                            <td>
+                                                <span class="badge @(Model.PaymentStatus switch
+                                                {
+                                                    ECommerceWebsite.Models.PaymentStatus.Paid => "badge-success",
+                                                    ECommerceWebsite.Models.PaymentStatus.Pending => "badge-warning",
+                                                    ECommerceWebsite.   Models.PaymentStatus.Failed => "badge-danger",
+                                                    ECommerceWebsite.Models.PaymentStatus.Refunded => "badge-secondary",
+                                                    _ => "badge-light"
+                                                })">
+                                                    @Model.PaymentStatus
+                                                </span>
+                                                <br>
+                                                <small>@Model.PaymentMethod</small>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Order Items</h6>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.OrderItems != null && Model.OrderItems.Any())
+                                    {
+                                        foreach (var item in Model.OrderItems.Take(3))
+                                        {
+                                            <div class="d-flex align-items-center mb-2">
+                                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                                {
+                                                    <img src="@item.Product.ImageUrl" alt="@item.Product?.Name" class="img-thumbnail me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                        <i class="fas fa-image text-muted"></i>
+                                                    </div>
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <small><strong>@(item.Product?.Name ?? "Product")</strong></small>
+                                                    <br>
+                                                    <small class="text-muted">Qty: @item.Quantity × $@item.UnitPrice</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Model.OrderItems.Count > 3)
+                                        {
+                                            <small class="text-muted">And @(Model.OrderItems.Count - 3) more items...</small>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">No items found.</small>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Update Form -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-flag me-1"></i>Current Status
+                                </label>
+                                <div class="form-control-plaintext">
+                                    <span class="badge @(Model.Status switch
+                                    {
+                                        ECommerceWebsite.Models.OrderStatus.Pending => "badge-warning",
+                                        ECommerceWebsite.Models.OrderStatus.Processing => "badge-info",
+                                        ECommerceWebsite.Models.OrderStatus.Shipped => "badge-primary",
+                                        ECommerceWebsite.Models.OrderStatus.Delivered => "badge-success",
+                                        ECommerceWebsite.Models.OrderStatus.Cancelled => "badge-danger",
+                                        _ => "badge-secondary"
+                                    }) fs-6">
+                                        @Model.Status
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="status" class="form-label">
+                                    <i class="fas fa-exchange-alt me-1"></i>Update Status To
+                                </label>
+                                <select name="status" id="status" class="form-control" required>
+                                    <option value="">Select New Status</option>
+                                    @if (Model.Status != ECommerceWebsite.Models.OrderStatus.Pending)
+                                    {
+                                        <option value="Pending">Pending</option>
+                                    }
+                                    @if (Model.Status != ECommerceWebsite.Models.OrderStatus.Processing)
+                                    {
+                                        <option value="Processing">Processing</option>
+                                    }
+                                    @if (Model.Status != ECommerceWebsite.Models.OrderStatus.Shipped)
+                                    {
+                                        <option value="Shipped">Shipped</option>
+                                    }
+                                    @if (Model.Status != ECommerceWebsite.Models.OrderStatus.Delivered)
+                                    {
+                                        <option value="Delivered">Delivered</option>
+                                    }
+                                    @if (Model.Status != ECommerceWebsite.Models.OrderStatus.Cancelled)
+                                    {
+                                        <option value="Cancelled">Cancelled</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Status Timeline
+                                </label>
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <i class="fas fa-check bg-success"></i>
+                                        <div class="timeline-content">
+                                            <h6>Order Placed</h6>
+                                            <small>@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                        </div>
+                                    </div>
+                                    @if (Model.ShippedDate.HasValue)
+                                    {
+                                        <div class="timeline-item">
+                                            <i class="fas fa-shipping-fast bg-primary"></i>
+                                            <div class="timeline-content">
+                                                <h6>Shipped</h6>
+                                                <small>@Model.ShippedDate.Value.ToString("MMM dd, yyyy HH:mm")</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.DeliveredDate.HasValue)
+                                    {
+                                        <div class="timeline-item">
+                                            <i class="fas fa-check-circle bg-success"></i>
+                                            <div class="timeline-content">
+                                                <h6>Delivered</h6>
+                                                <small>@Model.DeliveredDate.Value.ToString("MMM dd, yyyy HH:mm")</small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="notes" class="form-label">
+                            <i class="fas fa-sticky-note me-1"></i>Notes (Optional)
+                        </label>
+                        <textarea name="notes" id="notes" class="form-control" rows="3" placeholder="Add any notes about this status update...">@Model.Notes</textarea>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            These notes will be saved with the order and can be viewed by other administrators.
+                        </div>
+                    </div>
+
+                    <!-- Status Change Warnings -->
+                    <div id="statusWarnings" class="alert alert-info" style="display: none;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span id="warningText"></span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Details
+                        </a>
+                        <div>
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-list me-1"></i>All Orders
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Update Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .timeline-item i {
+            position: absolute;
+            left: -35px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background-color: #dee2e6;
+        }
+        .timeline-content h6 {
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+        .timeline-content small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#status').change(function() {
+                var selectedStatus = $(this).val();
+                var currentStatus = '@Model.Status';
+                var warningDiv = $('#statusWarnings');
+                var warningText = $('#warningText');
+                
+                warningDiv.hide();
+                
+                if (selectedStatus) {
+                    var warnings = [];
+                    
+                    if (selectedStatus === 'Shipped') {
+                        warnings.push('This will automatically set the shipped date to now.');
+                    }
+                    
+                    if (selectedStatus === 'Delivered') {
+                        warnings.push('This will automatically set the delivered date to now.');
+                    }
+                    
+                    if (selectedStatus === 'Cancelled') {
+                        warnings.push('Cancelled orders can be deleted but cannot be changed back to other statuses.');
+                        warningDiv.removeClass('alert-info').addClass('alert-warning');
+                    } else {
+                        warningDiv.removeClass('alert-warning').addClass('alert-info');
+                    }
+                    
+                    if (warnings.length > 0) {
+                        warningText.text(warnings.join(' '));
+                        warningDiv.show();
+                    }
+                }
+            });
+
+            $('form').submit(function(e) {
+                var selectedStatus = $('#status').val();
+                if (!selectedStatus) {
+                    e.preventDefault();
+                    alert('Please select a new status for the order.');
+                    return false;
+                }
+                
+                if (selectedStatus === 'Cancelled') {
+                    if (!confirm('Are you sure you want to cancel this order? This action should be done carefully.')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+}

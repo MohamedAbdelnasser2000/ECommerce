@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>My Wishlist</value></data>
+  <data name="Heading" xml:space="preserve"><value>My Wishlist</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Clear" xml:space="preserve"><value>Clear</value></data>
+  <data name="DiscountPercentage" xml:space="preserve"><value>-{0}%</value></data>
+  <data name="RemoveTooltip" xml:space="preserve"><value>Remove</value></data>
+  <data name="AddedOn" xml:space="preserve"><value>Added {0}</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>Add to Cart</value></data>
+  <data name="ViewDetails" xml:space="preserve"><value>View Details</value></data>
+  <data name="Recommendations" xml:space="preserve"><value>You may also like</value></data>
+  <data name="EmptyTitle" xml:space="preserve"><value>Your wishlist is empty</value></data>
+  <data name="EmptyDescription" xml:space="preserve"><value>Save items you love and shop them later.</value></data>
+  <data name="BrowseProducts" xml:space="preserve"><value>Browse Products</value></data>
+  <data name="AddedToCartMessage" xml:space="preserve"><value>Added to cart</value></data>
+  <data name="ErrorMessage" xml:space="preserve"><value>Error</value></data>
+  <data name="RemoveConfirm" xml:space="preserve"><value>Remove this item from wishlist?</value></data>
+  <data name="RemovedMessage" xml:space="preserve"><value>Removed</value></data>
+  <data name="ClearConfirm" xml:space="preserve"><value>Clear your entire wishlist?</value></data>
+  <data name="AddingLabel" xml:space="preserve"><value>Adding...</value></data>
+  <data name="AddedLabel" xml:space="preserve"><value>Added</value></data>
+  <data name="RtlToggleLabel" xml:space="preserve"><value>RTL</value></data>
+</root>

@@ -1,0 +1,14 @@
+{
+  "name": "e-commerce-sass-build",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sass build for ECommerceWebsite",
+  "devDependencies": {
+    "sass": "^1.77.0"
+  },
+  "scripts": {
+    "sass": "sass --style=expanded --embed-source-map \"ECommerceWebsite/wwwroot/scss/style.scss\":\"ECommerceWebsite/wwwroot/css/style.pink-gold.css\"",
+    "sass:watch": "sass --watch --style=expanded \"ECommerceWebsite/wwwroot/scss/style.scss\":\"ECommerceWebsite/wwwroot/css/style.pink-gold.css\"",
+    "sass:prod": "sass --no-source-map --style=compressed \"ECommerceWebsite/wwwroot/scss/style.scss\":\"ECommerceWebsite/wwwroot/css/style.pink-gold.min.css\""
+  }
+}

@@ -1,0 +1,184 @@
+/* Modern, responsive header with a stable mobile drawer */
+:root {
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --header-backdrop: blur(10px);
+  --header-border: rgba(0,0,0,0.06);
+  --brand-color: #111;
+  --accent: #ff3e81;
+  --header-height: 64px;
+}
+
+/* Reset margins to avoid gaps above header and prevent horizontal scroll */
+html, body { margin: 0; padding: 0; overflow-x: hidden; }
+
+/* Reserve space for fixed header so content doesn't slide under it */
+body { padding-top: var(--header-height); }
+
+.modern-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  z-index: 3000; /* keep header above hero & content */
+  background: var(--header-bg);
+  -webkit-backdrop-filter: var(--header-backdrop);
+  backdrop-filter: var(--header-backdrop);
+  border-bottom: 1px solid var(--header-border);
+  max-width: 100vw; /* ensure header itself never widens the page */
+  overflow-y: visible; /* allow dropdowns to render fully */
+}
+
+/* Fallback if backdrop-filter unsupported */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .modern-header { background: #fffffffa; }
+}
+
+.modern-header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.header-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--header-height);
+  max-width: 100vw;
+}
+/* Prevent grid children from forcing horizontal overflow */
+.header-row > *, .center-area { min-width: 0; }
+
+/* Center nav links */
+.center-area { display: grid; grid-template-columns: 1fr; align-items: center; gap: 16px; }
+.main-links { list-style: none; display: flex; gap: 16px; padding: 0; margin: 0; }
+.main-links { justify-content: center; }
+.main-links a { color: #222; text-decoration: none; padding: 8px 10px; border-radius: 8px; }
+.main-links a:hover { background: #f5f5f5; }
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--brand-color);
+  text-decoration: none;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+.brand i { color: var(--accent); }
+
+.search-inline { position: relative; display: flex; align-items: center; max-width: 640px; width: 100%; }
+.search-inline input[type="search"] {
+  width: 100%; height: 40px; padding: 0 44px 0 14px; border: 1px solid var(--header-border); border-radius: 10px; outline: none; background: #fff;
+}
+.search-inline button { position: absolute; right: 6px; width: 32px; height: 32px; border: none; border-radius: 8px; background: transparent; color: #666; cursor: pointer; }
+
+.actions { display: inline-flex; align-items: center; gap: 10px; }
+.icon-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--header-border); color: #222; background: #fff; text-decoration: none;
+}
+.icon-btn:hover { box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+
+.badge-dot {
+  position: absolute; top: -6px; right: -6px; background: #e11d48; color: #fff; font-size: 11px; line-height: 1; padding: 4px 6px; border-radius: 999px;
+}
+
+/* Dropdown look inside custom header */
+.modern-header .dropdown-menu { 
+  border-radius: 10px; 
+  border-color: var(--header-border); 
+  box-shadow: 0 10px 30px rgba(0,0,0,.08); 
+  z-index: 4000; /* Ensure dropdown appears above hero section */
+}
+
+/* Mobile */
+.hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--header-border); border-radius: 10px; background: #fff; align-items: center; justify-content: center; }
+.hamburger span, .hamburger span::before, .hamburger span::after { content: ""; display: block; width: 18px; height: 2px; background: #111; position: relative; }
+.hamburger span::before { position: absolute; top: -6px; }
+.hamburger span::after { position: absolute; top: 6px; }
+
+/* Redesigned drawer: fixed width, stable on all phones */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: auto;
+  width: min(88vw, 360px);
+  background: #fff;
+  transform: translateX(100%);
+  transition: transform .28s ease-in-out;
+  z-index: 3100; /* above all page content */
+  box-shadow: -10px 0 30px rgba(0,0,0,.12);
+  will-change: transform;
+}
+.mobile-nav.open { transform: translateX(0); }
+
+.mobile-nav .panel { height: 100%; padding: 18px; display: flex; flex-direction: column; gap: 12px; overflow: auto; }
+.mobile-nav .menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.mobile-nav .menu a { display: block; padding: 12px 14px; border-radius: 10px; color: #222; text-decoration: none; }
+.mobile-nav .menu a:hover { background: #f5f5f5; }
+
+.mobile-overlay { display: none; }
+.mobile-overlay.show { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 3090; }
+
+/* Responsive rules */
+@media (max-width: 992px) {
+  .hamburger { display: inline-flex; }
+  .search-inline { display: none; }
+  .mobile-nav { display: block; }
+  /* On mobile: left(hamburger), center(brand), right(actions) */
+  .header-row { grid-template-columns: auto 1fr auto; }
+  .center-area { grid-template-columns: 1fr; }
+  .center-area .main-links { display: none; }
+  /* Hide entire center area on mobile */
+  .center-area { display: none !important; }
+  /* Show only wishlist and cart on mobile */
+  .actions { display: inline-flex; }
+  .actions .dropdown, .actions [asp-controller="Account"], .actions .icon-btn[title="Login"], .actions .icon-btn[title="Register"] { display: none !important; }
+}
+
+/* Desktop: place actions on the far right */
+@media (min-width: 993px) {
+  .header-row { grid-template-columns: auto 1fr auto; }
+  .actions { justify-self: end; }
+}
+
+/* Very small phones: full-width drawer and capped dropdown width */
+@media (max-width: 420px) {
+  .mobile-nav { width: 100vw; }
+  .brand { font-size: 1rem; }
+  .icon-btn { width: 38px; height: 38px; }
+  .modern-header .notification-dropdown { width: calc(100vw - 32px) !important; }
+}
+
+/* Ensure dropdowns are fully visible on phones & small tablets */
+@media (max-width: 992px) {
+  /* Remove backdrop blur on mobile to avoid creating a fixed-position containing block */
+  .modern-header { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+  /* Ensure no ancestor clips the dropdown */
+  .modern-header, .modern-header .container, .modern-header .header-row, .modern-header .actions, .modern-header .dropdown { overflow: visible !important; }
+
+  .modern-header .dropdown-menu {
+    position: fixed !important;
+    top: var(--header-height) !important; /* below fixed header */
+    bottom: 8px !important; /* keep visible above bottom */
+    left: 8px !important;
+    right: 8px !important;
+    transform: none !important;
+    max-width: none !important;
+    width: auto !important;
+    z-index: 3200 !important; /* above overlay and content */
+    max-height: none !important; /* allow full available height */
+    overflow: auto;
+  }
+}
+
+/* Ensure hero doesn't overlay header/drawer */
+.hero-section.hero-modern {
+  position: relative;
+  z-index: 1;
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Products" xml:space="preserve"><value>Products</value></data>
+  <data name="InStock" xml:space="preserve"><value>In Stock</value></data>
+  <data name="Available" xml:space="preserve"><value>available</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>Out of Stock</value></data>
+  <data name="Quantity" xml:space="preserve"><value>Quantity:</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>Add to Cart</value></data>
+  <data name="AddToWishlist" xml:space="preserve"><value>Add to Wishlist</value></data>
+  <data name="FreeShipping" xml:space="preserve"><value>Free shipping over $50</value></data>
+  <data name="Returns" xml:space="preserve"><value>30-day returns</value></data>
+  <data name="Warranty" xml:space="preserve"><value>1-year warranty</value></data>
+  <data name="Support" xml:space="preserve"><value>24/7 support</value></data>
+  <data name="ShareProduct" xml:space="preserve"><value>Share this product</value></data>
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Reviews" xml:space="preserve"><value>Reviews</value></data>
+  <data name="NoDescription" xml:space="preserve"><value>No description available for this product.</value></data>
+  <data name="NoReviews" xml:space="preserve"><value>No reviews yet</value></data>
+  <data name="FirstReview" xml:space="preserve"><value>Be the first to review this product!</value></data>
+  <data name="WriteReview" xml:space="preserve"><value>Write a Review</value></data>
+  <data name="YourRating" xml:space="preserve"><value>Your Rating</value></data>
+  <data name="Poor" xml:space="preserve"><value>Poor</value></data>
+  <data name="Excellent" xml:space="preserve"><value>Excellent</value></data>
+  <data name="YourReview" xml:space="preserve"><value>Your Review</value></data>
+  <data name="ReviewPlaceholder" xml:space="preserve"><value>Share your experience with this product...</value></data>
+  <data name="SubmitReview" xml:space="preserve"><value>Submit Review</value></data>
+  <data name="LoginToReviewText" xml:space="preserve"><value>Please log in to write a review</value></data>
+  <data name="LoginToReview" xml:space="preserve"><value>Login to Review</value></data>
+  <data name="ZoomImage" xml:space="preserve"><value>Zoom Image</value></data>
+  <data name="CopyLink" xml:space="preserve"><value>Copy Link</value></data>
+  <data name="ShareFacebook" xml:space="preserve"><value>Share on Facebook</value></data>
+  <data name="ShareTwitter" xml:space="preserve"><value>Share on X</value></data>
+  <data name="ShareWhatsApp" xml:space="preserve"><value>Share on WhatsApp</value></data>
+  <data name="SharePinterest" xml:space="preserve"><value>Share on Pinterest</value></data>
+  <data name="ShareLinkedIn" xml:space="preserve"><value>Share on LinkedIn</value></data>
+  <data name="Previous" xml:space="preserve"><value>Previous</value></data>
+  <data name="Next" xml:space="preserve"><value>Next</value></data>
+  <data name="reviews" xml:space="preserve"><value>reviews</value></data>
+  <data name="OFF" xml:space="preserve"><value>OFF</value></data>
+  <data name="YouMayAlsoLike" xml:space="preserve"><value>You may also like</value></data>
+</root>

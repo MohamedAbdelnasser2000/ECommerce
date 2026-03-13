@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <i class="fas fa-ban fa-5x text-danger mb-4"></i>
+                    <h2 class="text-danger mb-3">Access Denied</h2>
+                    <p class="lead mb-4">
+                        You don't have permission to access this resource.
+                    </p>
+                    <p class="text-muted mb-4">
+                        This page is restricted to authorized users only. If you believe you should have access, 
+                        please contact your administrator or try logging in with the appropriate account.
+                    </p>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-home me-1"></i>Go Home
+                        </a>
+                        
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Customer"))
+                            {
+                                <a asp-controller="Customer" asp-action="Dashboard" class="btn btn-info">
+                                    <i class="fas fa-user-circle me-1"></i>My Dashboard
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                    </button>
+                                </form>
+                            }
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-success">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

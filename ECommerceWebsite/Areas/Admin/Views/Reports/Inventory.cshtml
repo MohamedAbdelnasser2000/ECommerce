@@ -1,0 +1,89 @@
+@model ECommerceWebsite.ViewModels.InventoryReportViewModel
+@{
+    ViewData["Title"] = "Inventory Analytics";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-warehouse me-2"></i>Inventory Analytics</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Low Stock</h3></div>
+            <div class="card-body">
+                @if(Model.LowStock.Any()){
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>Stock</th><th>Units (30d)</th><th>Days Since Last</th></tr></thead>
+                            <tbody>
+                            @foreach(var row in Model.LowStock){
+                                <tr>
+                                    <td>@row.Product.Name</td>
+                                    <td><span class="badge bg-warning">@row.Stock</span></td>
+                                    <td>@row.UnitsSoldLast30</td>
+                                    <td>@(row.DaysSinceLastSale == int.MaxValue ? "N/A" : row.DaysSinceLastSale)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                } else { <p class="text-muted">No low stock items.</p> }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Out of Stock</h3></div>
+            <div class="card-body">
+                @if(Model.OutOfStock.Any()){
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>Stock</th><th>Units (30d)</th><th>Days Since Last</th></tr></thead>
+                            <tbody>
+                            @foreach(var row in Model.OutOfStock){
+                                <tr>
+                                    <td>@row.Product.Name</td>
+                                    <td><span class="badge bg-danger">@row.Stock</span></td>
+                                    <td>@row.UnitsSoldLast30</td>
+                                    <td>@(row.DaysSinceLastSale == int.MaxValue ? "N/A" : row.DaysSinceLastSale)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                } else { <p class="text-muted">No out of stock items.</p> }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Slow Movers</h3></div>
+            <div class="card-body">
+                @if(Model.SlowMovers.Any()){
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>Stock</th><th>Units (30d)</th><th>Days Since Last</th></tr></thead>
+                            <tbody>
+                            @foreach(var row in Model.SlowMovers){
+                                <tr>
+                                    <td>@row.Product.Name</td>
+                                    <td>@row.Stock</td>
+                                    <td>@row.UnitsSoldLast30</td>
+                                    <td>@(row.DaysSinceLastSale == int.MaxValue ? "N/A" : row.DaysSinceLastSale)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                } else { <p class="text-muted">No slow movers.</p> }
+            </div>
+        </div>
+    </div>
+</div>

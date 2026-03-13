@@ -1,0 +1,264 @@
+@model Coupon
+
+@{
+    ViewData["Title"] = "Coupon Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-ticket-alt me-2"></i>Coupon Details
+                    </h3>
+                    <div class="card-tools">
+                        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>Edit
+                        </a>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Basic Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Code:</strong></td>
+                                    <td><span class="badge bg-secondary fs-6">@Model.Code</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Name:</strong></td>
+                                    <td>@Model.Name</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Description:</strong></td>
+                                    <td>@Model.Description</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Type:</strong></td>
+                                    <td>
+                                        @switch (Model.Type)
+                                        {
+                                            case CouponType.Percentage:
+                                                <span class="badge bg-info">Percentage</span>
+                                                break;
+                                            case CouponType.FixedAmount:
+                                                <span class="badge bg-success">Fixed Amount</span>
+                                                break;
+                                            case CouponType.FreeShipping:
+                                                <span class="badge bg-warning">Free Shipping</span>
+                                                break;
+                                            case CouponType.BOGO:
+                                                <span class="badge bg-primary">BOGO</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Value:</strong></td>
+                                    <td>
+                                        @if (Model.Type == CouponType.Percentage)
+                                        {
+                                            <span>@Model.Value%</span>
+                                        }
+                                        else if (Model.Type == CouponType.FixedAmount)
+                                        {
+                                            <span>$@Model.Value</span>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        @if (Model.IsActive)
+                                        {
+                                            @if (Model.EndDate.HasValue && Model.EndDate < DateTime.Now)
+                                            {
+                                                <span class="badge bg-danger">Expired</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Restrictions & Limits</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Minimum Order:</strong></td>
+                                    <td>
+                                        @if (Model.MinimumOrderAmount.HasValue)
+                                        {
+                                            <span>$@Model.MinimumOrderAmount.Value</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No minimum</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Maximum Discount:</strong></td>
+                                    <td>
+                                        @if (Model.MaximumDiscountAmount.HasValue)
+                                        {
+                                            <span>$@Model.MaximumDiscountAmount.Value</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No limit</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Usage Limit:</strong></td>
+                                    <td>
+                                        @if (Model.UsageLimit.HasValue)
+                                        {
+                                            <span>@Model.UsageLimit.Value times</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Unlimited</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Times Used:</strong></td>
+                                    <td>
+                                        <span class="badge bg-info">@Model.UsedCount</span>
+                                        @if (Model.UsageLimit.HasValue)
+                                        {
+                                            <span class="text-muted">/ @Model.UsageLimit.Value</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Category:</strong></td>
+                                    <td>
+                                        @if (Model.Category != null)
+                                        {
+                                            <span>@Model.Category.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">All Categories</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Product:</strong></td>
+                                    <td>
+                                        @if (Model.Product != null)
+                                        {
+                                            <span>@Model.Product.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">All Products</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Validity Period</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Start Date:</strong></td>
+                                    <td>@Model.StartDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>End Date:</strong></td>
+                                    <td>
+                                        @if (Model.EndDate.HasValue)
+                                        {
+                                            @Model.EndDate.Value.ToString("MMM dd, yyyy hh:mm tt")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No expiry</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created:</strong></td>
+                                    <td>@Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Updated:</strong></td>
+                                    <td>
+                                        @if (Model.UpdatedAt.HasValue)
+                                        {
+                                            @Model.UpdatedAt.Value.ToString("MMM dd, yyyy hh:mm tt")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Never</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    @if (Model.CouponUsages != null && Model.CouponUsages.Any())
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>Usage History</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Order</th>
+                                                <th>Discount Amount</th>
+                                                <th>Used At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var usage in Model.CouponUsages.OrderByDescending(u => u.UsedAt))
+                                            {
+                                                <tr>
+                                                    <td>@usage.User.FirstName @usage.User.LastName</td>
+                                                    <td>
+                                                        <a href="@Url.Action("Details", "Order", new { id = usage.OrderId })">
+                                                            @usage.Order.OrderNumber
+                                                        </a>
+                                                    </td>
+                                                    <td>$@usage.DiscountAmount</td>
+                                                    <td>@usage.UsedAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

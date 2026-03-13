@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Contact Us" xml:space="preserve"><value>اتصل بنا</value></data>
+  <data name="Get in touch" xml:space="preserve"><value>تواصل معنا</value></data>
+  <data name="Get in Touch" xml:space="preserve"><value>تواصل معنا</value></data>
+  <data name="We'd love to hear from you. Send us a message and we'll respond as soon as possible." xml:space="preserve"><value>يسعدنا سماعك. أرسل لنا رسالة وسنرد عليك في أقرب وقت ممكن.</value></data>
+  <data name="We'd love to hear from you. Fill out the form and we'll get back to you shortly." xml:space="preserve"><value>يسعدنا تواصلك معنا. املأ النموذج وسنعاود الاتصال بك قريبًا.</value></data>
+  <data name="Your message has been sent successfully. Thanks!" xml:space="preserve"><value>تم إرسال رسالتك بنجاح. شكرًا لك!</value></data>
+  <data name="Couldn't send your message right now. Please try again later." xml:space="preserve"><value>تعذر إرسال رسالتك الآن. يرجى المحاولة لاحقًا.</value></data>
+  <data name="Send us a Message" xml:space="preserve"><value>أرسل لنا رسالة</value></data>
+  <data name="Send Message" xml:space="preserve"><value>إرسال الرسالة</value></data>
+  <data name="Cancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="Full Name" xml:space="preserve"><value>الاسم الكامل</value></data>
+  <data name="Email Address" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="Email" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="Subject" xml:space="preserve"><value>الموضوع</value></data>
+  <data name="Your Message" xml:space="preserve"><value>رسالتك</value></data>
+  <data name="Phone Number" xml:space="preserve"><value>رقم الهاتف</value></data>
+  <data name="Optional" xml:space="preserve"><value>اختياري</value></data>
+  <data name="I agree to the" xml:space="preserve"><value>أوافق على</value></data>
+  <data name="privacy policy" xml:space="preserve"><value>سياسة الخصوصية</value></data>
+  <data name="and" xml:space="preserve"><value>و</value></data>
+  <data name="terms of service" xml:space="preserve"><value>شروط الخدمة</value></data>
+  <data name="Phone" xml:space="preserve"><value>الهاتف</value></data>
+  <data name="Address" xml:space="preserve"><value>العنوان</value></data>
+  <data name="Contact Information" xml:space="preserve"><value>معلومات الاتصال</value></data>
+  <data name="We'd love to hear from you. Here's how you can reach us." xml:space="preserve"><value>يسعدنا تواصلك معنا. إليك طرق التواصل معنا.</value></data>
+  <data name="Business Hours" xml:space="preserve"><value>ساعات العمل</value></data>
+  <data name="Mon - Fri: 9:00 AM - 6:00 PM" xml:space="preserve"><value>الإثنين - الجمعة: 9:00 ص - 6:00 م</value></data>
+  <data name="Sat: 10:00 AM - 4:00 PM" xml:space="preserve"><value>السبت: 10:00 ص - 4:00 م</value></data>
+  <data name="Follow Us" xml:space="preserve"><value>تابعنا</value></data>
+  <data name="Sending..." xml:space="preserve"><value>جارٍ الإرسال...</value></data>
+</root>

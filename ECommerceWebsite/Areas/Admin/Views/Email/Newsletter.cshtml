@@ -1,0 +1,471 @@
+@model IEnumerable<ECommerceWebsite.Models.NewsletterSubscription>
+@{
+    ViewData["Title"] = "Newsletter Management";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    int subscriberCount = ViewBag.SubscriberCount ?? 0;
+}
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Newsletter Management</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Email")">Email</a></li>
+                        <li class="breadcrumb-item active">Newsletter</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Newsletter Stats -->
+            <div class="row">
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@subscriberCount</h3>
+                            <p>Active Subscribers</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@Model.Count(s => s.SubscribedAt >= DateTime.Today.AddDays(-30))</h3>
+                            <p>New This Month</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@Model.Count(s => s.SubscribedAt >= DateTime.Today.AddDays(-7))</h3>
+                            <p>New This Week</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Send Newsletter -->
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Send Newsletter
+                            </h3>
+                        </div>
+                        <form asp-action="SendNewsletter" method="post">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="subject">Subject</label>
+                                    <input type="text" class="form-control" id="subject" name="subject"
+                                           placeholder="Enter newsletter subject" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="content">Content</label>
+                                    <textarea class="form-control" id="content" name="content" rows="8"
+                                              placeholder="Enter newsletter content (HTML supported)" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="confirmSend" required>
+                                        <label class="custom-control-label" for="confirmSend">
+                                            I confirm sending this newsletter to all @subscriberCount subscribers
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-primary" onclick="confirmSendNewsletter()">
+                                    <i class="fas fa-paper-plane mr-2"></i>
+                                    Send to All Subscribers
+                                </button>
+                                <button type="button" class="btn btn-secondary ml-2" onclick="previewNewsletter()">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Preview
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Newsletter Templates -->
+                <div class="col-md-6">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-file-alt mr-2"></i>
+                                Quick Templates
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="template-item mb-3">
+                                <h6>New Products Announcement</h6>
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="loadTemplate('new-products')">
+                                    Use Template
+                                </button>
+                            </div>
+                            <div class="template-item mb-3">
+                                <h6>Special Offers & Discounts</h6>
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="loadTemplate('special-offers')">
+                                    Use Template
+                                </button>
+                            </div>
+                            <div class="template-item mb-3">
+                                <h6>Monthly Newsletter</h6>
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="loadTemplate('monthly')">
+                                    Use Template
+                                </button>
+                            </div>
+                            <div class="template-item">
+                                <h6>Holiday Greetings</h6>
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="loadTemplate('holiday')">
+                                    Use Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscribers List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Newsletter Subscribers</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-success btn-sm" onclick="exportSubscribers()">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="subscribersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Name</th>
+                                        <th>Subscribed Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var subscriber in Model.OrderByDescending(s => s.SubscribedAt))
+                                    {
+                                        <tr>
+                                            <td>@subscriber.Email</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(subscriber.FirstName) || !string.IsNullOrEmpty(subscriber.LastName))
+                                                {
+                                                    @($"{subscriber.FirstName} {subscriber.LastName}".Trim())
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not provided</span>
+                                                }
+                                            </td>
+                                            <td>@subscriber.SubscribedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (subscriber.IsActive)
+                                                {
+                                                    <span class="badge badge-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">Unsubscribed</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (subscriber.IsActive)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="unsubscribeUser('@subscriber.Email')" title="Unsubscribe">
+                                                        <i class="fas fa-user-times"></i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-success"
+                                                            onclick="resubscribeUser('@subscriber.Email')" title="Resubscribe">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No subscribers yet</h5>
+                            <p class="text-muted">Newsletter subscribers will appear here once users start subscribing.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Newsletter Preview</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            if ($.fn.DataTable) {
+                $('#subscribersTable').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "order": [[2, "desc"]],
+                    "pageLength": 25
+                });
+            }
+        });
+
+        function loadTemplate(templateType) {
+            const templates = {
+                'new-products': {
+                    subject: 'Exciting New Products Just Arrived!',
+                    content: `<h2>New Products Alert!</h2>
+                             <p>Dear Subscriber,</p>
+                             <p>We're excited to announce our latest product arrivals! Check out these amazing new items:</p>
+                             <ul>
+                                <li>Product 1 - Description</li>
+                                <li>Product 2 - Description</li>
+                                <li>Product 3 - Description</li>
+                             </ul>
+                             <p>Visit our store to explore the full collection!</p>`
+                },
+                'special-offers': {
+                    subject: 'Special Offers & Discounts - Limited Time!',
+                    content: `<h2>Special Offers Just for You!</h2>
+                             <p>Dear Valued Customer,</p>
+                             <p>Don't miss out on these incredible deals:</p>
+                             <ul>
+                                <li>Up to 50% off selected items</li>
+                                <li>Free shipping on orders over $50</li>
+                                <li>Buy 2 Get 1 Free on featured products</li>
+                             </ul>
+                             <p>Hurry! Offers valid until [DATE]</p>`
+                },
+                'monthly': {
+                    subject: 'Monthly Newsletter - [MONTH] Edition',
+                    content: `<h2>Monthly Update</h2>
+                             <p>Dear Subscriber,</p>
+                             <p>Here's what's happening this month:</p>
+                             <h3>New Arrivals</h3>
+                             <p>[New products content]</p>
+                             <h3>Customer Spotlight</h3>
+                             <p>[Customer story]</p>
+                             <h3>Upcoming Events</h3>
+                             <p>[Events and promotions]</p>`
+                },
+                'holiday': {
+                    subject: 'Holiday Greetings & Special Wishes',
+                    content: `<h2>Holiday Greetings!</h2>
+                             <p>Dear Friends,</p>
+                             <p>Wishing you and your loved ones a wonderful holiday season!</p>
+                             <p>As our way of saying thank you, enjoy these special holiday offers:</p>
+                             <ul>
+                                <li>Holiday Special: 25% off everything</li>
+                                <li>Free gift wrapping on all orders</li>
+                                <li>Extended return policy through January</li>
+                             </ul>
+                             <p>Happy Holidays!</p>`
+                }
+            };
+
+            if (templates[templateType]) {
+                $('#subject').val(templates[templateType].subject);
+                $('#content').val(templates[templateType].content);
+            }
+        }
+
+        function confirmSendNewsletter() {
+            const subject = $('#subject').val();
+            const content = $('#content').val();
+            const confirmCheckbox = $('#confirmSend').is(':checked');
+
+            // Validation
+            if (!subject || !content) {
+                toastr.error('Please enter both subject and content before sending.');
+                return;
+            }
+
+            if (!confirmCheckbox) {
+                toastr.error('Please confirm that you want to send this newsletter to all subscribers.');
+                return;
+            }
+
+            // Show confirmation dialog
+            const subscriberCount = @subscriberCount;
+            if (confirm(`Are you sure you want to send this newsletter to all ${subscriberCount} subscribers?\n\nSubject: ${subject}\n\nThis action cannot be undone.`)) {
+                // Show loading state
+                const sendBtn = $('button[onclick="confirmSendNewsletter()"]');
+                const originalHtml = sendBtn.html();
+                sendBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Sending...').prop('disabled', true);
+
+                // Submit the form
+                $('form[asp-action="SendNewsletter"]').submit();
+            }
+        }
+
+        function previewNewsletter() {
+            const subject = $('#subject').val();
+            const content = $('#content').val();
+
+            if (!subject || !content) {
+                toastr.warning('Please enter both subject and content before previewing.');
+                return;
+            }
+
+            $('#previewContent').html(`
+                <div class="border p-3">
+                    <h4><i class="fas fa-envelope mr-2"></i>Subject: ${subject}</h4>
+                    <hr>
+                    <div style="background: white; padding: 15px; border-radius: 5px;">${content}</div>
+                </div>
+            `);
+            $('#previewModal').modal('show');
+        }
+
+        function exportSubscribers() {
+            // Show loading state
+            const exportBtn = $('button[onclick="exportSubscribers()"]');
+            const originalHtml = exportBtn.html();
+            exportBtn.html('<i class="fas fa-spinner fa-spin"></i> Exporting...').prop('disabled', true);
+
+            // Redirect to export action
+            window.location.href = '/Admin/Email/ExportSubscribers';
+
+            // Reset button after a delay
+            setTimeout(() => {
+                exportBtn.html(originalHtml).prop('disabled', false);
+            }, 3000);
+        }
+
+        function unsubscribeUser(email) {
+            if (confirm(`Are you sure you want to unsubscribe ${email}?`)) {
+                // Show loading state
+                const unsubBtn = $(`button[onclick="unsubscribeUser('${email}')"]`);
+                const originalHtml = unsubBtn.html();
+                unsubBtn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.post('/Admin/Email/UnsubscribeUser', { email: email })
+                    .done(function(response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            // Update the row
+                            const row = unsubBtn.closest('tr');
+                            row.find('.badge').removeClass('badge-success').addClass('badge-secondary').text('Unsubscribed');
+                            unsubBtn.removeClass('btn-warning').addClass('btn-success')
+                                   .attr('onclick', `resubscribeUser('${email}')`)
+                                   .attr('title', 'Resubscribe')
+                                   .html('<i class="fas fa-user-check"></i>');
+                        } else {
+                            toastr.error(response.message);
+                            unsubBtn.html(originalHtml).prop('disabled', false);
+                        }
+                    })
+                    .fail(function() {
+                        toastr.error('Failed to unsubscribe user');
+                        unsubBtn.html(originalHtml).prop('disabled', false);
+                    });
+            }
+        }
+
+        function resubscribeUser(email) {
+            if (confirm(`Are you sure you want to resubscribe ${email}?`)) {
+                // Show loading state
+                const resubBtn = $(`button[onclick="resubscribeUser('${email}')"]`);
+                const originalHtml = resubBtn.html();
+                resubBtn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.post('/Admin/Email/ResubscribeUser', { email: email })
+                    .done(function(response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            // Update the row
+                            const row = resubBtn.closest('tr');
+                            row.find('.badge').removeClass('badge-secondary').addClass('badge-success').text('Active');
+                            resubBtn.removeClass('btn-success').addClass('btn-warning')
+                                   .attr('onclick', `unsubscribeUser('${email}')`)
+                                   .attr('title', 'Unsubscribe')
+                                   .html('<i class="fas fa-user-times"></i>');
+                        } else {
+                            toastr.error(response.message);
+                            resubBtn.html(originalHtml).prop('disabled', false);
+                        }
+                    })
+                    .fail(function() {
+                        toastr.error('Failed to resubscribe user');
+                        resubBtn.html(originalHtml).prop('disabled', false);
+                    });
+            }
+        }
+    </script>
+}
+
+<style>
+    .template-item {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+
+    .template-item h6 {
+        margin-bottom: 5px;
+        color: #495057;
+    }
+
+    .small-box {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>

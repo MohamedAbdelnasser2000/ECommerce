@@ -1,0 +1,555 @@
+@model ECommerceWebsite.ViewModels.ContactViewModel
+@{
+    ViewData["Title"] = @L["Contact Us"];
+    ViewData["ActivePage"] = "Contact";
+}
+
+@section Styles {
+    <style>
+        /* Modern Contact Page with Pink-Gold Theme */
+        :root {
+            --pink-primary: #e83e8c;
+            --pink-light: #F8C8DC;
+            --pink-soft: #F9E3EC;
+            --gold-primary: #ffd700;
+            --gold-dark: #B8860B;
+            --shadow-soft: 0 4px 20px rgba(232, 62, 140, 0.15);
+            --shadow-medium: 0 8px 30px rgba(232, 62, 140, 0.25);
+            --gradient-pink: linear-gradient(135deg, #F8C8DC 0%, #e83e8c 100%);
+            --gradient-gold: linear-gradient(135deg, #e83e8c 0%, #ffd700 100%);
+            --card-radius: 20px;
+        }
+
+        /* Hero Section */
+        .contact-hero {
+            background: var(--gradient-pink);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .contact-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Contact Form Section */
+        .contact-form-section {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(232, 62, 140, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .contact-form-section h3 {
+            color: var(--pink-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Form Styling */
+        .form-floating > label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .form-control {
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            border-color: var(--pink-primary);
+            box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25);
+            background: white;
+        }
+
+        .form-control.is-valid {
+            border-color: #28a745;
+            background: white;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background: white;
+        }
+
+        /* Buttons */
+        .btn-contact {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--pink-primary);
+            color: var(--pink-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Contact Info Cards */
+        .contact-info-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(232, 62, 140, 0.1);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .contact-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .contact-info-card h3 {
+            color: var(--pink-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: var(--pink-soft);
+            transform: translateX(5px);
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-pink);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .info-content h6 {
+            color: var(--pink-primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-content a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .info-content a:hover {
+            color: var(--pink-primary);
+        }
+
+        /* Social Icons */
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-pink);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            color: white;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(232, 62, 140, 0.1);
+            margin-top: 2rem;
+        }
+
+        .map-content {
+            padding: 2rem;
+        }
+
+        .map-content h3 {
+            color: var(--pink-primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .contact-hero {
+                padding: 2rem 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .contact-hero h1 {
+                font-size: 2rem;
+            }
+
+            .contact-form-section,
+            .contact-info-card {
+                padding: 1.5rem;
+            }
+
+            .info-item {
+                text-align: center;
+            }
+
+            .info-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <h1>@L["Get in Touch"]</h1>
+        <p>@L["We'd love to hear from you. Send us a message and we'll respond as soon as possible."]</p>
+    </div>
+</section>
+
+<!-- Contact Form and Info Section -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-section">
+                    <h3><i class="fas fa-paper-plane me-2"></i>@L["Send us a Message"]</h3>
+
+                    @if (TempData["ContactStatus"] as string == "success")
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @L["Your message has been sent successfully. Thanks!"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else if (TempData["ContactStatus"] as string == "error")
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            @L["Couldn't send your message right now. Please try again later."]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Contact" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <label asp-for="Name"><i class="fas fa-user me-2"></i>@L["Full Name"]</label>
+
+                                    <input asp-for="Name" class="form-control" placeholder=" " required />
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <label asp-for="Email"><i class="fas fa-envelope me-2"></i>@L["Email Address"]</label>
+
+                                    <input asp-for="Email" type="email" class="form-control" placeholder=" " required />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <label asp-for="Subject"><i class="fas fa-tag me-2"></i>@L["Subject"]</label>
+
+                                    <input asp-for="Subject" class="form-control" placeholder=" " required />
+                                    <span asp-validation-for="Subject" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <label asp-for="Message"><i class="fas fa-comment-dots me-2"></i>@L["Your Message"]</label>
+
+                                    <textarea asp-for="Message" class="form-control" style="height: 120px" placeholder=" " required></textarea>
+                                    <span asp-validation-for="Message" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <label asp-for="Phone"><i class="fas fa-phone-alt me-2"></i>@L["Phone Number"] <small class="text-muted">(@L["Optional"])</small></label>
+
+                                    <input asp-for="Phone" class="form-control" placeholder=" " />
+                                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check">
+                                    <label class="form-check-label small" for="consentCheck">
+                                        @L["I agree to the"] <a href="#" class="text-decoration-none" style="color: var(--pink-primary);">@L["privacy policy"]</a> @L["and"] <a href="#" class="text-decoration-none" style="color: var(--pink-primary);">@L["terms of service"]</a>
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" asp-for="Consent" id="consentCheck" required />
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-4">
+                            <button type="submit" class="btn btn-contact">
+                                <i class="fas fa-paper-plane me-2"></i>@L["Send Message"]
+                            </button>
+                      
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h3><i class="fas fa-info-circle me-2"></i>@L["Contact Information"]</h3>
+                    <p class="text-muted mb-4">@L["We'd love to hear from you. Here's how you can reach us."]</p>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6>@L["Email"]</h6>
+                            <a href="mailto:@(ViewBag.ContactEmail)">@ViewBag.ContactEmail</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6>@L["Phone"]</h6>
+                            <a href="tel:@(ViewBag.ContactPhone)">@ViewBag.ContactPhone</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6>@L["Address"]</h6>
+                            <address class="mb-0">@ViewBag.Address</address>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6>@L["Business Hours"]</h6>
+                            <p class="mb-1">@L["Mon - Fri: 9:00 AM - 6:00 PM"]</p>
+                            <p class="mb-0">@L["Sat: 10:00 AM - 4:00 PM"]</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-3" style="color: var(--pink-primary);">@L["Follow Us"]</h6>
+                        <div class="social-icons">
+                            @if (!string.IsNullOrWhiteSpace(ViewBag.FacebookUrl)) { <a href="@ViewBag.FacebookUrl" class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a> }
+                            @if (!string.IsNullOrWhiteSpace(ViewBag.TwitterUrl)) { <a href="@ViewBag.TwitterUrl" class="social-icon" target="_blank"><i class="fab fa-x-twitter"></i></a> }
+                            @if (!string.IsNullOrWhiteSpace(ViewBag.InstagramUrl)) { <a href="@ViewBag.InstagramUrl" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a> }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+@*         <!-- Map Section -->
+        <div class="map-section">
+            <div class="row g-0">
+                <div class="col-lg-6">
+                    <div class="map-content">
+                        <h3><i class="fas fa-map-marker-alt me-2"></i>@L["Our Location"]</h3>
+                        <p class="text-muted mb-4">@L["Visit our store or get in touch with us for any inquiries."]</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="info-icon me-3" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-semibold" style="color: var(--pink-primary);">@L["Address"]</h6>
+                                <p class="mb-0">@ViewBag.Address</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="info-icon me-3" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-semibold" style="color: var(--pink-primary);">@L["Call Us"]</h6>
+                                <p class="mb-0">@ViewBag.ContactPhone</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0187086348914!2d31.20082121511434!3d30.04002208188432!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzI0LjEiTiAzMcKwMTInMDkuOCJF!5e0!3m2!1sen!2seg!4v1620000000000!5m2!1sen!2seg"
+                                allowfullscreen="" loading="lazy" aria-label="Location on Google Maps"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div> *@
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form.needs-validation');
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) { 
+                        event.preventDefault(); 
+                        event.stopPropagation(); 
+                    } else if (submitBtn) { 
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>@L["Sending..."]'; 
+                        submitBtn.disabled = true; 
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            }
+            
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert'); 
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert && alert.classList.contains('show')) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+}

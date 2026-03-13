@@ -1,0 +1,81 @@
+@model IEnumerable<ECommerceWebsite.Models.ContactMessage>
+@{
+    ViewData["Title"] = "Contact Messages";
+    var page = ViewBag.Page as int? ?? 1;
+    var pageSize = ViewBag.PageSize as int? ?? 20;
+    var total = ViewBag.Total as int? ?? Model.Count();
+    var unreadOnly = ViewBag.UnreadOnly as bool? ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0"><i class="fas fa-envelope me-2"></i>Contact Messages</h2>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" asp-route-unreadOnly="true" class="btn btn-outline-warning @(unreadOnly ? "active" : "")">
+            <i class="fas fa-envelope-open-text"></i> Unread Only
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-list"></i> All
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var m in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!m.IsRead)
+                                {
+                                    <span class="badge bg-warning">Unread</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Read</span>
+                                }
+                            </td>
+                            <td>@m.Name</td>
+                            <td><a href="mailto:@m.Email">@m.Email</a></td>
+                            <td>@m.Subject</td>
+                            <td>@m.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@m.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this message?');">
+                                    <input type="hidden" name="id" value="@m.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No messages found.</p>
+            </div>
+        }
+    </div>
+</div>

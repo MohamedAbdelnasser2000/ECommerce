@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="ShopByCategory" xml:space="preserve"><value>تسوق حسب الفئة</value></data>
+  <data name="CategoriesSubtitle" xml:space="preserve"><value>اكتشف أكثر الفئات شعبية وتصفح منتجاتها.</value></data>
+  <data name="ShopNow" xml:space="preserve"><value>تسوق الآن</value></data>
+  <data name="CtaBadgeText" xml:space="preserve"><value>-60%</value></data>
+  <data name="GlobalSale" xml:space="preserve"><value>التخفيض العالمي</value></data>
+  <data name="BuyNow" xml:space="preserve"><value>اشترِ الآن</value></data>
+  <data name="SubscribeToNewsletter" xml:space="preserve"><value>اشترك في نشرتنا الإخبارية</value></data>
+  <data name="NewsletterUpdates" xml:space="preserve"><value>احصل على أحدث التحديثات حول المنتجات الجديدة والتخفيضات القادمة.</value></data>
+  <data name="YourEmailAddress" xml:space="preserve"><value>عنوان بريدك الإلكتروني</value></data>
+  <data name="Subscribe" xml:space="preserve"><value>اشترك</value></data>
+  <data name="BrowseByCategory" xml:space="preserve"><value>تصفح حسب الفئة</value></data>
+  <data name="FindWhatYouNeed" xml:space="preserve"><value>ابحث عما تحتاجه بسرعة</value></data>
+  <data name="Shop" xml:space="preserve"><value>تسوق</value></data>
+  <data name="FeaturedProducts" xml:space="preserve"><value>المنتجات المميزة</value></data>
+  <data name="FeaturedProductsSubtitle" xml:space="preserve"><value>اكتشف أحدث منتجاتنا المميزة مع تخفيضات حصرية</value></data>
+  <data name="NoFeaturedProducts" xml:space="preserve"><value>لا توجد منتجات مميزة متاحة حاليًا</value></data>
+  <data name="ViewAllProducts" xml:space="preserve"><value>عرض جميع المنتجات</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>غير متوفر</value></data>
+  <data name="FastDeliveryTitle" xml:space="preserve"><value>توصيل سريع</value></data>
+  <data name="FastDeliveryDesc" xml:space="preserve"><value>شحن مجاني للطلبات التي تزيد عن 50$</value></data>
+  <data name="SecurePaymentTitle" xml:space="preserve"><value>دفع آمن</value></data>
+  <data name="SecurePaymentDesc" xml:space="preserve"><value>معالجة دفع آمنة بنسبة 100%</value></data>
+  <data name="EasyReturnsTitle" xml:space="preserve"><value>إرجاع سهل</value></data>
+  <data name="EasyReturnsDesc" xml:space="preserve"><value>سياسة إرجاع خلال 30 يومًا</value></data>
+  <data name="Support247Title" xml:space="preserve"><value>دعم 24/7</value></data>
+  <data name="Support247Desc" xml:space="preserve"><value>خدمة عملاء على مدار الساعة</value></data>
+</root>

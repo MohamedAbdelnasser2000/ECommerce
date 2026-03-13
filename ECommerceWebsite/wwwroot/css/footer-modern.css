@@ -1,0 +1,52 @@
+/* Modern Footer - keeps existing background from theme.pink-gold.css (.site-footer) */
+:root {
+  --footer-text: #2c3e50;
+  --footer-muted: #6c757d;
+  --footer-border: #F3D0E0;
+  --footer-accent: var(--gold);
+}
+
+.site-footer {
+  /* background color comes from theme.pink-gold.css to preserve the look */
+  color: var(--footer-text);
+}
+
+.footer-wrap { padding: 3rem 0 1.5rem; 
+               padding-left:3%;
+               padding-right:3%;
+}
+.footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.6fr; gap: 2rem; }
+
+@media (max-width: 991.98px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 575.98px) { .footer-top { grid-template-columns: 1fr; } }
+
+/* Brand */
+.footer-brand { display:flex; align-items:center; gap:.75rem; font-weight:700; font-size:1.15rem; }
+.footer-brand i { color: var(--footer-accent); }
+.footer-desc { color: var(--footer-muted); margin-top:.5rem; }
+
+/* Social */
+.footer-social { display:flex; gap:.75rem; margin-top:1rem; }
+.footer-social a { width:36px; height:36px; display:grid; place-items:center; border-radius:8px; border:1px solid var(--footer-border); background:#fff; color: var(--footer-accent); transition:all .2s ease; }
+.footer-social a:hover { transform: translateY(-2px); box-shadow:0 6px 16px rgba(232,62,140,.2); }
+
+/* Columns */
+.footer-col h6 { font-weight:700; margin-bottom: .75rem; color:#1a1a1a; }
+.footer-links { list-style:none; padding:0; margin:0; display:grid; gap:.4rem; }
+.footer-links a { color: var(--footer-text); text-decoration:none; }
+.footer-links a:hover { color: var(--footer-accent); }
+
+/* Newsletter */
+.footer-newsletter p { color: var(--footer-muted); margin-bottom:.75rem; }
+.footer-newsletter .input-group { overflow:hidden; border-radius:10px; border:1px solid var(--footer-border); background:#fff; }
+.footer-newsletter input { border:0; box-shadow:none; padding:.75rem 1rem; }
+.footer-newsletter button { border:0; background: var(--footer-accent); color:#fff; padding:.75rem 1rem; }
+
+/* Bottom */
+.footer-bottom { display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--footer-border); padding-top:1rem; margin-top:2rem; font-size:.95rem; }
+.footer-legal a { color: var(--footer-text); margin-inline-start:1rem; }
+.footer-legal a:hover { color: var(--footer-accent); }
+
+/* Payment icons placeholder style */
+.footer-payments { display:flex; gap:.5rem; opacity:.85; }
+.footer-payments img { height:22px; filter: grayscale(15%); }

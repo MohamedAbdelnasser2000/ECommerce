@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+
+    <!-- Bootstrap CSS (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
+                        <i class="fas fa-home me-1"></i>Visit Store
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Admin Notifications -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="adminNotificationDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge" id="admin-notification-count" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                        <div class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-bell me-2"></i>Admin Notifications</span>
+                            <button type="button" class="btn btn-sm btn-link p-0 text-primary" onclick="markAllAdminNotificationsAsRead()">
+                                Mark all as read
+                            </button>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div id="admin-notification-list">
+                            <div class="dropdown-item-text text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item text-center">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="testNotifications()">
+                                <i class="fas fa-sync me-1"></i>Refresh
+                            </button>
+                            <a asp-area="Admin" asp-controller="Notifications" asp-action="Index" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye me-1"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- User Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-user me-1"></i>@User.Identity!.Name
+                        <i class="fas fa-caret-down ms-1"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-circle me-2"></i>Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="brand-link">
+                <i class="fas fa-shopping-bag brand-image"></i>
+                <span class="brand-text font-weight-light">Admin Panel</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <!-- Products -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link has-treeview">
+                                <i class="nav-icon fas fa-box"></i>
+                                <p>
+                                    Products
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>All Products</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Product</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Categories</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Orders -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <p>Orders</p>
+                            </a>
+                        </li>
+
+                        <!-- Users -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="User" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+
+                        <!-- Contact -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Contact" asp-action="Index" class="nav-link">
+                                <i class="nav-icon  fas fa-envelope"></i>
+                                <p>Contact Messages</p>
+                            </a>
+                        </li>
+                        <!-- Notifications -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Notifications" asp-action="Index" class="nav-link">
+                                <i class="nav-icon  fas fa-bell"></i>
+                                <p>Notifications</p>
+                            </a>
+                        </li>
+                        <!-- Reviews -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Reviews" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-star"></i>
+                                <p>Reviews</p>
+                            </a>
+                        </li>
+
+                        <!-- Coupons -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Coupon" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>Coupons</p>
+                            </a>
+                        </li>
+
+                        <!-- Shipping -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Shipping" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-truck"></i>
+                                <p>Shipping</p>
+                            </a>
+                        </li>
+
+                        <!-- Tax -->
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="Tax" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-percentage"></i>
+                                <p>Tax</p>
+                            </a>
+                        </li>
+
+
+                        <!-- Email & Notifications -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-envelope"></i>
+                                <p>
+                                    Email & Notifications
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Email" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Email Logs</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Email" asp-action="Templates" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Email Templates</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Email" asp-action="Newsletter" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Newsletter</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Email" asp-action="EmailStats" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Email Statistics</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Reports -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>
+                                    Reports
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Dashboard</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Sales" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Report</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Products" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Product Report</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Customers" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customer Report</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Advanced" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Advanced Analytics</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="Inventory" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Inventory Analytics</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Reports" asp-action="CustomerBehavior" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customer Behavior</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Settings -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>
+                                    Settings
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Settings" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>General Settings</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Settings" asp-action="Backup" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Backup & Restore</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Settings" asp-action="Maintenance" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Maintenance</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">@ViewData["Title"]</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { area = "Admin" })">Home</a></li>
+                                @if (ViewData["Title"]?.ToString() != "Dashboard")
+                                {
+                                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                                }
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Alert Messages -->
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2025 <a href="#">E-Commerce Store</a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <!-- jQuery and Bootstrap Bundle (CDN) -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <!-- Fallback: manual treeview toggle if AdminLTE doesn't initialize -->
+    <script>
+        (function($){
+            $(function(){
+                // Only add fallback if AdminLTE treeview wasn't initialized
+                var treeviewInitialized = false;
+                try {
+                    // AdminLTE attaches a data('lte.treeview') on nav with data-widget="treeview"
+                    treeviewInitialized = $('[data-widget="treeview"]').first().data('lte.treeview') !== undefined;
+                } catch (e) { treeviewInitialized = false; }
+
+                if (!treeviewInitialized) {
+                    var $sidebar = $('.nav-sidebar');
+                    var isAccordion = ($sidebar.attr('data-accordion') || 'true') !== 'false';
+
+                    $('.nav-sidebar .has-treeview > a.nav-link').off('click.z-fallback').on('click.z-fallback', function(e){
+                        e.preventDefault();
+                        var $parent = $(this).closest('.has-treeview');
+                        var $menu = $parent.children('.nav-treeview');
+                        var open = $parent.hasClass('menu-open');
+
+                        if (open) {
+                            $menu.slideUp(200);
+                            $parent.removeClass('menu-open');
+                            $(this).removeClass('active');
+                        } else {
+                            if (isAccordion) {
+                                var $siblings = $parent.siblings('.has-treeview.menu-open');
+                                $siblings.removeClass('menu-open').children('.nav-treeview').slideUp(200);
+                                $siblings.children('a.nav-link').removeClass('active');
+                            }
+                            $menu.slideDown(200);
+                            $parent.addClass('menu-open');
+                            $(this).addClass('active');
+                        }
+                    });
+                    // Ensure all submenus are hidden initially
+                    $('.nav-sidebar .nav-treeview').hide();
+                    console.info('Admin sidebar: fallback treeview initialized');
+                }
+            });
+        })(jQuery);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Admin Notifications Script -->
+    <script>
+        $(document).ready(function() {
+            loadAdminNotifications();
+
+            // Refresh notifications every 30 seconds
+            setInterval(loadAdminNotifications, 30000);
+        });
+
+        function loadAdminNotifications() {
+            console.log('Loading admin notifications...');
+            $.get('/api/notification')
+                .done(function(notifications) {
+                    console.log('Notifications loaded:', notifications);
+                    updateAdminNotificationDropdown(notifications);
+                    // update count based on unread
+                    var unread = 0;
+                    if (Array.isArray(notifications)) {
+                        notifications.forEach(function(n){ if (!n.isRead) unread++; });
+                    }
+                    const badge = $('#admin-notification-count');
+                    if (unread > 0) { badge.text(unread).show(); } else { badge.hide(); }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Failed to load admin notifications:', status, error);
+                    $('#admin-notification-list').html(`
+                        <div class="dropdown-item-text text-center text-danger">
+                            <i class="fas fa-exclamation-triangle mb-2"></i><br>
+                            Failed to load notifications
+                        </div>
+                    `);
+                });
+        }
+
+        function updateAdminNotificationDropdown(notifications) {
+            const notificationList = $('#admin-notification-list');
+
+            if (notifications.length === 0) {
+                notificationList.html(`
+                    <div class="dropdown-item-text text-center text-muted">
+                        <i class="fas fa-bell-slash mb-2"></i><br>
+                        No notifications
+                    </div>
+                `);
+                return;
+            }
+
+            let html = '';
+            notifications.slice(0, 5).forEach(function(notification) {
+                const isUnread = !notification.isRead;
+                const iconColor = getAdminNotificationIconColor(notification.type);
+
+                html += `
+                    <div class="dropdown-item ${isUnread ? 'bg-light' : ''}" style="white-space: normal; border-left: 3px solid var(--${iconColor});">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-2">
+                                <i class="${notification.icon} text-${iconColor}" style="font-size: 1.2em;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="dropdown-header p-0 mb-1 ${isUnread ? 'fw-bold' : ''}" style="font-size: 0.9em;">${notification.title}</h6>
+                                <p class="mb-1 small text-muted">${notification.message}</p>
+                                <small class="text-muted"><i class="fas fa-clock me-1"></i>${formatAdminDate(notification.createdAt)}</small>
+                            </div>
+                            ${isUnread ? '<div class="flex-shrink-0"><span class="badge bg-warning text-dark">New</span></div>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            notificationList.html(html);
+        }
+
+        // Count is handled in loadAdminNotifications by computing unread
+
+        function getRequestVerificationToken() {
+            var el = document.querySelector('input[name="__RequestVerificationToken"]');
+            return el ? el.value : null;
+        }
+
+        function markAllAdminNotificationsAsRead() {
+            var token = getRequestVerificationToken();
+            $.ajax({
+                url: '/api/notification/mark-all-read',
+                method: 'POST',
+                headers: token ? { 'RequestVerificationToken': token } : {},
+            })
+                .done(function() {
+                    loadAdminNotifications();
+                    toastr.success('All notifications marked as read', 'Success');
+                })
+                .fail(function() {
+                    toastr.error('Failed to mark notifications as read', 'Error');
+                });
+        }
+
+        function getAdminNotificationIconColor(type) {
+            switch(type) {
+                case 'Success': return 'success';
+                case 'Warning': return 'warning';
+                case 'Error': return 'danger';
+                case 'OrderUpdate': return 'info';
+                case 'LowStock': return 'warning';
+                case 'NewReview': return 'success';
+                case 'Welcome': return 'primary';
+                case 'Newsletter': return 'info';
+                default: return 'secondary';
+            }
+        }
+
+        function formatAdminDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Auto-hide dropdown after clicking an item
+        $(document).on('click', '.notification-dropdown .dropdown-item', function(e) {
+            if (!$(this).hasClass('dropdown-header') && !$(this).find('button').length) {
+                // Use Bootstrap 5 syntax
+                // For Bootstrap 4, just manually close via jQuery
+                $('#adminNotificationDropdown').dropdown('hide');
+            }
+        });
+
+        // Debug: Check if notifications are loading
+        console.log('Admin notification system initialized');
+
+        // Test notification loading manually
+        window.testNotifications = function() {
+            console.log('Testing notification loading...');
+            loadAdminNotifications();
+        };
+                document.addEventListener('DOMContentLoaded', function () {
+            // Initialize AdminLTE sidebar
+            var treeview = $('[data-widget="treeview"]');
+            if (treeview.length) {
+                treeview.Treeview('init');
+            }
+        });
+    </script>
+
+    <!-- Add some custom CSS for better styling -->
+    <style>
+        .notification-dropdown {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e3e6f0;
+        }
+
+        .notification-dropdown .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f8f9fc;
+        }
+
+        .notification-dropdown .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-dropdown .dropdown-item:hover {
+            background-color: #f8f9fc;
+        }
+
+        .navbar-badge {
+            font-size: 0.7em;
+            padding: 0.25em 0.4em;
+        }
+
+        #adminNotificationDropdown {
+            position: relative;
+        }
+
+        #admin-notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        /* Pulsing animation for new notifications */
+        @@keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .animate__animated.animate__pulse {
+            animation: pulse 1s infinite;
+        }
+    </style>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

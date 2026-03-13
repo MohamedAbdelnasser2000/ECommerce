@@ -1,0 +1,257 @@
+@model ECommerceWebsite.Models.Review
+
+@{
+    ViewData["Title"] = "Review Details";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-star me-2"></i>Review Details
+                </h3>
+                <div class="card-tools">
+                    <span class="badge @(Model.IsApproved ? "badge-success" : "badge-warning") fs-6">
+                        @(Model.IsApproved ? "Approved" : "Pending")
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Review Information -->
+                    <div class="col-md-8">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-comment me-2"></i>Review Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Rating -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary">Rating</h6>
+                                    <div class="rating mb-2">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= Model.Rating)
+                                            {
+                                                <i class="fas fa-star text-warning fa-lg"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star text-muted fa-lg"></i>
+                                            }
+                                        }
+                                        <span class="ms-2 fs-5 fw-bold">@Model.Rating out of 5</span>
+                                    </div>
+                                </div>
+
+                                <!-- Comment -->
+                                @if (!string.IsNullOrEmpty(Model.Comment))
+                                {
+                                    <div class="mb-4">
+                                        <h6 class="text-primary">Comment</h6>
+                                        <div class="bg-light p-3 rounded">
+                                            <blockquote class="blockquote mb-0">
+                                                <p>"@Model.Comment"</p>
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mb-4">
+                                        <h6 class="text-primary">Comment</h6>
+                                        <div class="bg-light p-3 rounded">
+                                            <em class="text-muted">No comment provided</em>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Review Dates -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-primary">Review Date</h6>
+                                        <p class="mb-0">
+                                            <i class="fas fa-calendar me-2"></i>
+                                            @Model.CreatedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                        </p>
+                                    </div>
+                                    @if (Model.IsApproved && Model.ApprovedAt.HasValue)
+                                    {
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary">Approved Date</h6>
+                                            <p class="mb-0">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                @Model.ApprovedAt.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer & Product Information -->
+                    <div class="col-md-4">
+                        <!-- Customer Info -->
+                        <div class="card card-outline card-info mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Customer
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <th width="30%">Name:</th>
+                                        <td>@Model.User.FirstName @Model.User.LastName</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>@Model.User.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>@Model.User.PhoneNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Member Since:</th>
+                                        <td>@Model.User.CreatedAt.ToString("MMM yyyy")</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="card card-outline card-success">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-box me-2"></i>Product
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    @if (!string.IsNullOrEmpty(Model.Product.ImageUrl))
+                                    {
+                                        <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" class="img-thumbnail" style="max-width: 120px; max-height: 120px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; margin: 0 auto;">
+                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <th width="30%">Name:</th>
+                                        <td><strong>@Model.Product.Name</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Category:</th>
+                                        <td>
+                                            <span class="badge badge-info">@Model.Product.Category.Name</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Price:</th>
+                                        <td>
+                                            <strong class="text-success">$@Model.Product.FinalPrice.ToString("F2")</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Stock:</th>
+                                        <td>
+                                            <span class="badge @(Model.Product.StockQuantity > 0 ? "badge-success" : "badge-danger")">
+                                                @Model.Product.StockQuantity units
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="text-center">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Product.Id" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View Product
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card card-outline card-warning">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-cogs me-2"></i>Review Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @if (!Model.IsApproved)
+                                        {
+                                            <form asp-action="Approve" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@Model.Id" />
+                                                <button type="submit" class="btn btn-success me-2" onclick="return confirm('Are you sure you want to approve this review?')">
+                                                    <i class="fas fa-check me-1"></i>Approve Review
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Reject" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@Model.Id" />
+                                                <button type="submit" class="btn btn-warning me-2" onclick="return confirm('Are you sure you want to reject this review?')">
+                                                    <i class="fas fa-times me-1"></i>Reject Review
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                            <i class="fas fa-trash me-1"></i>Delete Review
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <div class="alert alert-info mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Note:</strong> 
+                                            @if (Model.IsApproved)
+                                            {
+                                                <span>This review is currently visible to customers.</span>
+                                            }
+                                            else
+                                            {
+                                                <span>This review is pending approval and not visible to customers.</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Reviews
+                    </a>
+                    <div>
+                        <a asp-action="ProductReviews" asp-route-productId="@Model.ProductId" class="btn btn-outline-info me-2">
+                            <i class="fas fa-list me-1"></i>All Product Reviews
+                        </a>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Product.Id" class="btn btn-outline-primary">
+                            <i class="fas fa-box me-1"></i>View Product
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

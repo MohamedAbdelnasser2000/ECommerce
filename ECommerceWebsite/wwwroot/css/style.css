@@ -1,0 +1,34 @@
+/* New Products Carousel - Custom Navigation */
+.new-products-carousel .owl-nav .owl-prev,
+.new-products-carousel .owl-nav .owl-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+.new-products-carousel .owl-nav .owl-prev {
+    left: -20px;
+}
+
+.new-products-carousel .owl-nav .owl-next {
+    right: -20px;
+}
+
+.new-products-carousel .owl-nav .owl-prev:hover,
+.new-products-carousel .owl-nav .owl-next:hover {
+    background-color: #0315ff; /* Blue from the theme */
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}

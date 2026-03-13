@@ -1,0 +1,728 @@
+/* Advanced Animations and Visual Effects for Product Page */
+
+/* CSS Custom Properties for Animations */
+:root {
+    --animation-duration-fast: 0.2s;
+    --animation-duration-normal: 0.3s;
+    --animation-duration-slow: 0.5s;
+    --animation-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
+    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --animation-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hero Section Animations */
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroStatsSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes floatingPattern {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(2deg);
+    }
+    75% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+}
+
+.hero-content {
+    animation: heroFadeIn 0.8s var(--animation-easing) forwards;
+}
+
+.hero-stats .stat-item {
+    animation: heroStatsSlideIn 0.6s var(--animation-easing) forwards;
+}
+
+.hero-stats .stat-item:nth-child(1) { animation-delay: 0.1s; }
+.hero-stats .stat-item:nth-child(2) { animation-delay: 0.2s; }
+.hero-stats .stat-item:nth-child(3) { animation-delay: 0.3s; }
+
+.hero-pattern {
+    animation: floatingPattern 20s ease-in-out infinite;
+}
+
+/* Product Card Animations */
+@keyframes cardSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardHover {
+    from {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    to {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    }
+}
+
+@keyframes imageZoom {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes priceGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(232, 62, 140, 0.3);
+    }
+    50% {
+        text-shadow: 0 0 15px rgba(232, 62, 140, 0.6);
+    }
+}
+
+.product-card-grid {
+    animation: cardSlideUp 0.6s var(--animation-easing) forwards;
+    opacity: 0;
+}
+
+.product-card-grid.animate-in {
+    opacity: 1;
+}
+
+.product-card-grid:hover {
+    animation: cardHover var(--animation-duration-normal) var(--animation-easing) forwards;
+}
+
+.product-card-grid:hover .product-image {
+    animation: imageZoom var(--animation-duration-slow) var(--animation-easing) forwards;
+}
+
+.product-badge.sale {
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+.current-price {
+    animation: priceGlow 3s ease-in-out infinite;
+}
+
+/* Button Animations */
+@keyframes buttonPress {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes buttonSuccess {
+    0% {
+        background: var(--gradient-primary);
+        transform: scale(1);
+    }
+    50% {
+        background: var(--success-color);
+        transform: scale(1.05);
+    }
+    100% {
+        background: var(--success-color);
+        transform: scale(1);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.btn-add-cart:active {
+    animation: buttonPress var(--animation-duration-fast) var(--animation-easing);
+}
+
+.btn-add-cart.success {
+    animation: buttonSuccess 0.6s var(--animation-easing) forwards;
+}
+
+.btn-add-cart::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-add-cart:active::before {
+    width: 300px;
+    height: 300px;
+    animation: ripple 0.6s ease-out;
+}
+
+/* Wishlist Heart Animation */
+@keyframes heartBeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.2);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    75% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes heartFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.wishlist-btn.active {
+    animation: heartBeat 0.6s var(--animation-easing-bounce);
+}
+
+.floating-heart {
+    position: absolute;
+    color: var(--danger-color);
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 1000;
+    animation: heartFloat 1s ease-out forwards;
+}
+
+/* Filter Animations */
+@keyframes filterSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes filterExpand {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+@keyframes chipSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.filter-group {
+    animation: filterSlideIn 0.4s var(--animation-easing) forwards;
+}
+
+.filter-group:nth-child(1) { animation-delay: 0.1s; }
+.filter-group:nth-child(2) { animation-delay: 0.2s; }
+.filter-group:nth-child(3) { animation-delay: 0.3s; }
+
+.filter-content {
+    animation: filterExpand 0.3s var(--animation-easing) forwards;
+}
+
+.filter-chip {
+    animation: chipSlideIn 0.3s var(--animation-easing-bounce) forwards;
+}
+
+/* Loading Animations */
+@keyframes skeletonLoading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+@keyframes spinnerRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: skeletonLoading 1.5s infinite;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spinnerRotate 1s linear infinite;
+}
+
+.pulse-loading {
+    animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+/* Scroll Animations */
+@keyframes scrollFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scrollSlideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scrollSlideRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+}
+
+.animate-on-scroll.animate-in {
+    animation: scrollFadeIn 0.6s var(--animation-easing) forwards;
+}
+
+.animate-slide-left.animate-in {
+    animation: scrollSlideLeft 0.6s var(--animation-easing) forwards;
+}
+
+.animate-slide-right.animate-in {
+    animation: scrollSlideRight 0.6s var(--animation-easing) forwards;
+}
+
+/* Pagination Animations */
+@keyframes pageSlide {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.pagination-item {
+    animation: pageSlide 0.3s var(--animation-easing) forwards;
+}
+
+.pagination-item:nth-child(1) { animation-delay: 0.1s; }
+.pagination-item:nth-child(2) { animation-delay: 0.2s; }
+.pagination-item:nth-child(3) { animation-delay: 0.3s; }
+.pagination-item:nth-child(4) { animation-delay: 0.4s; }
+.pagination-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* Toast Notifications */
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes toastProgress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+.toast-notification {
+    animation: toastSlideIn 0.3s var(--animation-easing) forwards;
+}
+
+.toast-notification.removing {
+    animation: toastSlideOut 0.3s var(--animation-easing) forwards;
+}
+
+.toast-notification::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--primary-color);
+    animation: toastProgress 3s linear forwards;
+}
+
+/* Scroll to Top Button */
+@keyframes scrollTopSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes scrollTopBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.scroll-to-top.visible {
+    animation: scrollTopSlide 0.3s var(--animation-easing-bounce) forwards;
+}
+
+.scroll-to-top:hover {
+    animation: scrollTopBounce 0.6s ease-in-out infinite;
+}
+
+/* Mobile Filter Sidebar */
+@keyframes sidebarSlideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes sidebarSlideOut {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.filters-sidebar-modern.show {
+    animation: sidebarSlideIn 0.3s var(--animation-easing) forwards;
+}
+
+.filters-sidebar-modern.hiding {
+    animation: sidebarSlideOut 0.3s var(--animation-easing) forwards;
+}
+
+.mobile-filter-overlay.show {
+    animation: overlayFadeIn 0.3s ease forwards;
+}
+
+/* Price Slider Animations */
+@keyframes sliderThumbGlow {
+    0%, 100% {
+        box-shadow: 0 2px 6px rgba(232, 62, 140, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 12px rgba(232, 62, 140, 0.6);
+    }
+}
+
+.slider-min:active::-webkit-slider-thumb,
+.slider-max:active::-webkit-slider-thumb {
+    animation: sliderThumbGlow 0.3s ease-in-out;
+}
+
+/* Search Suggestions */
+@keyframes suggestionsSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-suggestions {
+    animation: suggestionsSlideDown 0.2s var(--animation-easing) forwards;
+}
+
+/* Flying Cart Animation */
+@keyframes flyToCart {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.flying-product {
+    animation: flyToCart 0.8s var(--animation-easing) forwards;
+}
+
+/* Stagger Animation Delays */
+.products-grid .product-card-grid:nth-child(1) { animation-delay: 0.1s; }
+.products-grid .product-card-grid:nth-child(2) { animation-delay: 0.2s; }
+.products-grid .product-card-grid:nth-child(3) { animation-delay: 0.3s; }
+.products-grid .product-card-grid:nth-child(4) { animation-delay: 0.4s; }
+.products-grid .product-card-grid:nth-child(5) { animation-delay: 0.5s; }
+.products-grid .product-card-grid:nth-child(6) { animation-delay: 0.6s; }
+.products-grid .product-card-grid:nth-child(7) { animation-delay: 0.7s; }
+.products-grid .product-card-grid:nth-child(8) { animation-delay: 0.8s; }
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .hero-pattern {
+        animation: none !important;
+    }
+    
+    .product-badge.sale {
+        animation: none !important;
+    }
+    
+    .current-price {
+        animation: none !important;
+    }
+}
+
+/* High Performance Mode */
+.performance-mode * {
+    animation: none !important;
+    transition: none !important;
+}
+
+.performance-mode .product-card-grid:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* Custom Easing Functions */
+.ease-out-back {
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ease-in-out-circ {
+    animation-timing-function: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.ease-out-expo {
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* 3D Transform Animations */
+@keyframes flip3D {
+    0% {
+        transform: perspective(400px) rotateY(0);
+    }
+    100% {
+        transform: perspective(400px) rotateY(180deg);
+    }
+}
+
+@keyframes cube3D {
+    0% {
+        transform: perspective(400px) rotateX(0) rotateY(0);
+    }
+    100% {
+        transform: perspective(400px) rotateX(360deg) rotateY(360deg);
+    }
+}
+
+.flip-3d {
+    animation: flip3D 0.6s var(--animation-easing) forwards;
+}
+
+.cube-3d {
+    animation: cube3D 1s var(--animation-easing) infinite;
+}
+
+/* Particle Effects */
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) translateX(50px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    animation: particleFloat 2s ease-out forwards;
+}
+
+/* Glow Effects */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(232, 62, 140, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(232, 62, 140, 0.8);
+    }
+}
+
+.glow-effect {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Morphing Animations */
+@keyframes morphShape {
+    0% {
+        border-radius: 0;
+    }
+    25% {
+        border-radius: 50% 0 50% 0;
+    }
+    50% {
+        border-radius: 50%;
+    }
+    75% {
+        border-radius: 0 50% 0 50%;
+    }
+    100% {
+        border-radius: 0;
+    }
+}
+
+.morph-shape {
+    animation: morphShape 4s ease-in-out infinite;
+}

@@ -1,0 +1,145 @@
+@model ECommerceWebsite.ViewModels.AdvancedDashboardViewModel
+@{
+    ViewData["Title"] = "Advanced Analytics";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-tachometer-alt me-2"></i>Advanced Analytics</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>$@Model.RevenueToday.ToString("N2")</h3>
+                <p>Revenue Today</p>
+            </div>
+            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.OrdersToday</h3>
+                <p>Orders Today</p>
+            </div>
+            <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3>$@Model.Revenue7Days.ToString("N2")</h3>
+                <p>Revenue (7 days)</p>
+            </div>
+            <div class="icon"><i class="fas fa-calendar-week"></i></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>$@Model.Revenue30Days.ToString("N2")</h3>
+                <p>Revenue (30 days)</p>
+            </div>
+            <div class="icon"><i class="fas fa-calendar"></i></div>
+        </div>
+    </div>
+</div>
+
+<!-- Trend + Payments -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-line me-2"></i>Sales Trend</h3></div>
+            <div class="card-body">
+                <canvas id="trendChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-pie me-2"></i>Payment Methods</h3></div>
+            <div class="card-body">
+                <canvas id="paymentChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Products & Categories -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-box-open me-2"></i>Top Products</h3></div>
+            <div class="card-body">
+                <canvas id="topProductsChart" height="240"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-tags me-2"></i>Top Categories</h3></div>
+            <div class="card-body">
+                <canvas id="topCategoriesChart" height="240"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+    // Trend
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.SalesDates)),
+            datasets: [{
+                label: 'Revenue',
+                data: @Html.Raw(Json.Serialize(Model.SalesValues)),
+                fill: false,
+                borderColor: '#36A2EB'
+            }]
+        }
+    });
+
+    // Payment Methods
+    const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(paymentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.PaymentLabels)),
+            datasets: [{ data: @Html.Raw(Json.Serialize(Model.PaymentCounts)), backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF'] }]
+        }
+    });
+
+    // Top Products
+    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+    new Chart(topProductsCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.TopProductsLabels)),
+            datasets: [{ label: 'Revenue', data: @Html.Raw(Json.Serialize(Model.TopProductsRevenue)), backgroundColor: '#4BC0C0' }]
+        },
+        options: { indexAxis: 'y' }
+    });
+
+    // Top Categories
+    const topCategoriesCtx = document.getElementById('topCategoriesChart').getContext('2d');
+    new Chart(topCategoriesCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.TopCategoriesLabels)),
+            datasets: [{ label: 'Revenue', data: @Html.Raw(Json.Serialize(Model.TopCategoriesRevenue)), backgroundColor: '#9966FF' }]
+        },
+        options: { indexAxis: 'y' }
+    });
+</script>
+}

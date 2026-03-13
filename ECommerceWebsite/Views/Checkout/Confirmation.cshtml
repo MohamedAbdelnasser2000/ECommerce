@@ -1,0 +1,156 @@
+@model ECommerceWebsite.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="/css/confirmation.css" />
+}
+
+<noscript>
+    <style>
+        /* إخفاء أي كود JS قد يُطبع كنص في حال تعطيل الجافاسكربت */
+        .js-inline, script { display: none !important; }
+    </style>
+</noscript>
+
+<div class="container my-5 confirmation-page">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="text-center mb-5">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="text-success">Order Confirmed!</h1>
+                <p class="lead text-muted">Thank you for your purchase. Your order has been successfully placed.</p>
+            </div>
+
+            <div id="order-details" class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0"><i class="fas fa-receipt me-2 text-primary"></i>Order Details</h4>
+                    <span class="badge bg-light text-dark">#@Model.OrderNumber</span>
+                </div>
+                <div class="card-body" data-order-number="@Model.OrderNumber">
+                    <div class="row g-4 mb-2">
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted small">Order</h6>
+                            <p class="mb-1"><strong>Order Number:</strong> @Model.OrderNumber</p>
+                            <p class="mb-1"><strong>Order Date:</strong> @Model.OrderDate.ToString("MMMM dd, yyyy")</p>
+                            <p class="mb-1"><strong>Status:</strong>
+                                <span class="badge bg-@(Model.Status == OrderStatus.Processing ? "info" : "primary")">@Model.Status</span>
+                            </p>
+                            <p class="mb-1"><strong>Payment Status:</strong>
+                                <span class="badge bg-@(Model.PaymentStatus == PaymentStatus.Paid ? "success" : "warning")">@Model.PaymentStatus</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted small">Shipping</h6>
+                            <p class="mb-1"><strong>Name:</strong> @Model.ShippingFirstName @Model.ShippingLastName</p>
+                            <p class="mb-1"><strong>Address:</strong> @Model.ShippingAddress</p>
+                            <p class="mb-1"><strong>City:</strong> @Model.ShippingCity, @Model.ShippingPostalCode</p>
+                            <p class="mb-1"><strong>Phone:</strong> @Model.ShippingPhone</p>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-2">Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@(item.Product.ImageUrl ?? "/images/no-image.png")" alt="@item.Product.GetLocalizedName()" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                <div>
+                                                    <h6 class="mb-0">@item.Product.GetLocalizedName()</h6>
+                                                    <small class="text-muted">@(string.IsNullOrWhiteSpace(item.Product.GetLocalizedDescription()) ? item.Product.GetLocalizedName() : item.Product.GetLocalizedDescription().Substring(0, Math.Min(50, item.Product.GetLocalizedDescription().Length)))...</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@item.Product.Category?.GetLocalizedName()</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">$@item.UnitPrice</td>
+                                        <td class="text-end"><strong>$@item.TotalPrice</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6 offset-md-6">
+                            <div class="order-summary p-3 rounded-3 bg-light">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span>$@Model.Subtotal.ToString("F2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span>$@Model.ShippingCost.ToString("F2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax:</span>
+                                    <span>$@Model.TaxAmount.ToString("F2")</span>
+                                </div>
+
+                                @if (Model.DiscountAmount > 0)
+                                {
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Discount:</span>
+                                        <span class="text-success">-$@Model.DiscountAmount.ToString("F2")</span>
+                                    </div>
+                                }
+
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between mb-0">
+                                    <strong>Total:</strong>
+                                    <strong class="text-success">$@Model.TotalAmount.ToString("F2")</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mt-3">
+                            <h6 class="mb-1">Order Notes</h6>
+                            <p class="text-muted mb-0">@Model.Notes</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="btn-group" role="group">
+                     <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="fas fa-print me-1"></i>Print Receipt
+                    </button>
+                   @* <button id="btn-download-order" class="btn btn-primary">
+                        <i class="fas fa-download me-1"></i>Download Order
+                    </button> *@
+                    <button id="btn-download-pdf" class="btn btn-outline-primary">
+                        <i class="fas fa-file-pdf me-1"></i>Download PDF
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- PDF dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/confirmation.js" asp-append-version="true"></script>
+}

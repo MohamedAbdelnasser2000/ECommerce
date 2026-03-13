@@ -1,0 +1,985 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    var totalProducts = ViewBag.TotalProducts as int? ?? 0;
+    var totalCategories = ViewBag.TotalCategories as int? ?? 0;
+    var totalOrders = ViewBag.TotalOrders as int? ?? 0;
+    var totalUsers = ViewBag.TotalUsers as int? ?? 0;
+    var activeProducts = ViewBag.ActiveProducts as int? ?? 0;
+    var inactiveProducts = ViewBag.InactiveProducts as int? ?? 0;
+    var pendingOrders = ViewBag.PendingOrders as int? ?? 0;
+    var processingOrders = ViewBag.ProcessingOrders as int? ?? 0;
+    var shippedOrders = ViewBag.ShippedOrders as int? ?? 0;
+    var deliveredOrders = ViewBag.DeliveredOrders as int? ?? 0;
+    var cancelledOrders = ViewBag.CancelledOrders as int? ?? 0;
+    var recentOrders = ViewBag.RecentOrders as IEnumerable<ECommerceWebsite.Models.Order>;
+    var lowStockProducts = ViewBag.LowStockProducts as IEnumerable<ECommerceWebsite.Models.Product>;
+    var totalRevenue = ViewBag.TotalRevenue as decimal? ?? 0;
+    var thisMonthRevenue = ViewBag.ThisMonthRevenue as decimal? ?? 0;
+    var topProducts = ViewBag.TopProducts;
+    var productsByCategory = ViewBag.ProductsByCategory;
+    var monthlySales = ViewBag.MonthlySales as List<decimal>;
+    var monthLabels = ViewBag.MonthLabels as List<string>;
+    var totalCoupons = ViewBag.TotalCoupons as int? ?? 0;
+    var activeCoupons = ViewBag.ActiveCoupons as int? ?? 0;
+    var expiredCoupons = ViewBag.ExpiredCoupons as int? ?? 0;
+    var totalCouponUsages = ViewBag.TotalCouponUsages as int? ?? 0;
+    var totalDiscountGiven = ViewBag.TotalDiscountGiven as decimal? ?? 0;
+    var unreadContacts = ViewBag.UnreadContacts as int? ?? 0;
+    var recentContacts = ViewBag.RecentContacts as IEnumerable<ECommerceWebsite.Models.ContactMessage>;
+}
+
+<!-- Main Statistics Cards -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@totalProducts</h3>
+                <p>Total Products</p>
+                <small class="text-light">@activeProducts Active, @inactiveProducts Inactive</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <a asp-controller="Product" asp-action="Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+<!-- Contact Messages Overview Row -->
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-teal">
+            <div class="inner">
+                <h3>@unreadContacts</h3>
+                <p>Unread Contact Messages</p>
+                <small class="text-light">@((recentContacts?.Count() ?? 0)) recent messages</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <a asp-controller="Contact" asp-action="Index" class="small-box-footer">
+                View messages <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@totalOrders</h3>
+                <p>Total Orders</p>
+                <small class="text-light">@pendingOrders Pending, @deliveredOrders Delivered</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a asp-controller="Order" asp-action="Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@totalUsers</h3>
+                <p>Total Users</p>
+                <small class="text-light">Registered Customers</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <a asp-controller="User" asp-action="Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>$@totalRevenue.ToString("N0")</h3>
+                <p>Total Revenue</p>
+                <small class="text-light">$@thisMonthRevenue.ToString("N0") This Month</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-purple">
+            <div class="inner">
+                <h3>@totalCoupons</h3>
+                <p>Total Coupons</p>
+                <small class="text-light">@activeCoupons Active, @expiredCoupons Expired</small>
+            </div>
+            <div class="icon">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <a asp-controller="Coupon" asp-action="Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Order Status Cards -->
+<div class="row">
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Pending</span>
+                <span class="info-box-number">@pendingOrders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-info"><i class="fas fa-cog"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Processing</span>
+                <span class="info-box-number">@processingOrders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-primary"><i class="fas fa-shipping-fast"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Shipped</span>
+                <span class="info-box-number">@shippedOrders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-success"><i class="fas fa-check"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Delivered</span>
+                <span class="info-box-number">@deliveredOrders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-danger"><i class="fas fa-times"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Cancelled</span>
+                <span class="info-box-number">@cancelledOrders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-secondary"><i class="fas fa-tags"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Categories</span>
+                <span class="info-box-number">@totalCategories</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Coupons Statistics Row -->
+<div class="row">
+
+
+    <div class="col-lg-3 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-gradient-success"><i class="fas fa-percentage"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Active Coupons</span>
+                <span class="info-box-number">@activeCoupons</span>
+                <div class="progress">
+                    <div class="progress-bar bg-success" style="width: @(totalCoupons > 0 ? (activeCoupons * 100 / totalCoupons) : 0)%"></div>
+                </div>
+                <span class="progress-description">
+                    @(totalCoupons > 0 ? Math.Round((double)activeCoupons * 100 / totalCoupons, 1) : 0)% of total coupons
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-gradient-info"><i class="fas fa-chart-line"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Coupon Usage</span>
+                <span class="info-box-number">@totalCouponUsages</span>
+                <div class="progress">
+                    <div class="progress-bar bg-info" style="width: 70%"></div>
+                </div>
+                <span class="progress-description">
+                    Total times coupons used
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="info-box">
+            <span class="info-box-icon bg-gradient-warning"><i class="fas fa-dollar-sign"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Total Discounts</span>
+                <span class="info-box-number">$@totalDiscountGiven.ToString("N0")</span>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" style="width: 85%"></div>
+                </div>
+                <span class="progress-description">
+                    Total savings for customers
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-inbox me-2"></i>Latest Contact Messages</h3>
+            <div class="card-tools">
+                <a asp-controller="Contact" asp-action="Index" class="btn btn-tool">
+                    <i class="fas fa-eye"></i> View All
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (recentContacts != null && recentContacts.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Name</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in recentContacts)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-@(c.IsRead ? "secondary" : "warning")">@(c.IsRead ? "Read" : "Unread")</span>
+                                    </td>
+                                    <td>@c.Name<br /><small class="text-muted">@c.Email</small></td>
+                                    <td>@c.Subject</td>
+                                    <td>@c.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td class="text-end">
+                                        <a asp-controller="Contact" asp-action="Details" asp-route-id="@c.Id" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">No recent messages</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="row">
+    <!-- Recent Orders -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-shopping-cart me-2"></i>Recent Orders
+                </h3>
+                <div class="card-tools">
+                    <a asp-controller="Order" asp-action="Index" class="btn btn-tool">
+                        <i class="fas fa-eye"></i> View All
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (recentOrders != null && recentOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in recentOrders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="text-decoration-none">
+                                                <strong>#@order.OrderNumber</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                @if (order.User != null)
+                                                {
+                                                    <strong>@order.User.FirstName @order.User.LastName</strong>
+                                                    <br />
+                                                    <small class="text-muted">@order.User.Email</small>
+                                                }
+                                                else
+                                                {
+                                                    <strong>Guest</strong>
+                                                    <br />
+                                                    <small class="text-muted">@order.GuestEmail</small>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                                            <br>
+                                            <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@((order.OrderItems?.Sum(oi => oi.Quantity) ?? 0)) items</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(order.Status switch
+                                            {
+                                                ECommerceWebsite.Models.OrderStatus.Pending => "warning",
+                                                ECommerceWebsite.Models.OrderStatus.Processing => "info",
+                                                ECommerceWebsite.Models.OrderStatus.Shipped => "primary",
+                                                ECommerceWebsite.Models.OrderStatus.Delivered => "success",
+                                                ECommerceWebsite.Models.OrderStatus.Cancelled => "danger",
+                                                _ => "secondary"
+                                            })">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>$@order.TotalAmount.ToString("N2")</strong>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id"
+                                                   class="btn btn-outline-primary btn-sm" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-controller="Order" asp-action="Edit" asp-route-id="@order.Id"
+                                                   class="btn btn-outline-secondary btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent orders found.</p>
+                        <a asp-controller="Order" asp-action="Index" class="btn btn-primary">View All Orders</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Low Stock Alert
+                </h3>
+                <div class="card-tools">
+                    <span class="badge bg-warning">@(lowStockProducts?.Count() ?? 0)</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (lowStockProducts != null && lowStockProducts.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var product in lowStockProducts)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <img src="@(product.ImageUrl ?? "/images/no-image.jpg")"
+                                                 alt="@product.Name" class="rounded me-2"
+                                                 style="width: 40px; height: 40px; object-fit: cover;">
+                                            <div>
+                                                <strong class="d-block">@product.Name</strong>
+                                                <small class="text-muted">@product.Category.Name</small>
+                                            </div>
+                                        </div>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar bg-@(product.StockQuantity <= 5 ? "danger" : "warning")"
+                                                 style="width: @(Math.Min(product.StockQuantity * 10, 100))%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end ms-2">
+                                        <span class="badge bg-@(product.StockQuantity <= 5 ? "danger" : "warning")">
+                                            @product.StockQuantity left
+                                        </span>
+                                        <div class="mt-1">
+                                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id"
+                                               class="btn btn-outline-primary btn-xs">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                    <div class="card-footer text-center">
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-primary">
+                            <i class="fas fa-boxes me-1"></i>Manage All Products
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h6 class="text-success">All Good!</h6>
+                        <p class="text-muted">All products are well stocked!</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Analytics Row -->
+<div class="row">
+    <!-- Sales Chart -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Monthly Sales Overview
+                </h3>
+                <div class="card-tools">
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-default">6M</button>
+                        <button type="button" class="btn btn-default active">1Y</button>
+                        <button type="button" class="btn btn-default">All</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-trophy me-2"></i>Top Selling Products
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                @if (topProducts != null)
+                {
+                    <ul class="list-group list-group-flush">
+                        @{int rank = 1;}
+                        @foreach (var item in topProducts)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <span class="badge bg-@(rank == 1 ? "warning" : rank == 2 ? "secondary" : rank == 3 ? "dark" : "light") rounded-pill">
+                                            @rank
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <strong class="d-block">@item.Product.Name</strong>
+                                        <small class="text-muted">@item.Product.Category.Name</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success">@item.TotalSold sold</span>
+                                        <div class="small text-muted">$@item.Product.FinalPrice</div>
+                                    </div>
+                                </div>
+                            </li>
+                            rank++;
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No sales data available</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Charts Row -->
+<div class="row">
+    <!-- Category Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Products by Category
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-doughnut me-2"></i>Order Status Distribution
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Product" asp-action="Create" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-plus-circle fa-2x d-block mb-2"></i>
+                            Add New Product
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Category" asp-action="Create" class="btn btn-info btn-lg w-100">
+                            <i class="fas fa-tags fa-2x d-block mb-2"></i>
+                            Add Category
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Order" asp-action="Index" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-shopping-cart fa-2x d-block mb-2"></i>
+                            Manage Orders
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="User" asp-action="Index" class="btn btn-warning btn-lg w-100">
+                            <i class="fas fa-users fa-2x d-block mb-2"></i>
+                            Manage Users
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Coupon" asp-action="Create" class="btn btn-purple btn-lg w-100">
+                            <i class="fas fa-ticket-alt fa-2x d-block mb-2"></i>
+                            Create Coupon
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Coupon" asp-action="Index" class="btn btn-gradient-purple btn-lg w-100">
+                            <i class="fas fa-tags fa-2x d-block mb-2"></i>
+                            Manage Coupons
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Reviews" asp-action="Index" class="btn btn-secondary btn-lg w-100">
+                            <i class="fas fa-star fa-2x d-block mb-2"></i>
+                            Manage Reviews
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Setting" asp-action="Index" class="btn btn-dark btn-lg w-100">
+                            <i class="fas fa-cog fa-2x d-block mb-2"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Email" asp-action="Index" class="btn btn-info btn-lg w-100">
+                            <i class="fas fa-envelope fa-2x d-block mb-2"></i>
+                            Email Logs
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Shipping" asp-action="Index" class="btn btn-gradient-teal btn-lg w-100">
+                            <i class="fas fa-truck fa-2x d-block mb-2"></i>
+                            Manage Shipping
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a asp-controller="Tax" asp-action="Index" class="btn btn-gradient-purple btn-lg w-100">
+                            <i class="fas fa-percentage fa-2x d-block mb-2"></i>
+                            Manage Tax
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <form asp-action="CreateSampleNotifications" method="post" class="d-inline w-100">
+                            <button type="submit" class="btn btn-gradient-orange btn-lg w-100" onclick="return confirm('Create sample admin notifications?')">
+                                <i class="fas fa-bell fa-2x d-block mb-2"></i>
+                                Test Notifications
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <a href="/Notification" class="btn btn-gradient-teal btn-lg w-100">
+                            <i class="fas fa-eye fa-2x d-block mb-2"></i>
+                            View Notifications
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(monthLabels ?? new List<string>())),
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: @Html.Raw(Json.Serialize(monthlySales ?? new List<decimal>())),
+                        borderColor: '#e83e8c',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#e83e8c',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Revenue: $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)'
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryLabels = ['Electronics', 'Clothing', 'Books', 'Sports', 'Home & Garden'];
+            const categoryData = [30, 25, 15, 20, 10];
+
+            const categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryData,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9F40',
+                            '#FF6384',
+                            '#C9CBCF'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Order Status Chart
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            const orderStatusChart = new Chart(orderStatusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        data: [@pendingOrders, @processingOrders, @shippedOrders, @deliveredOrders, @cancelledOrders],
+                        backgroundColor: [
+                            '#ffc107', // warning - pending
+                            '#17a2b8', // info - processing
+                            '#e83e8c', // primary - shipped
+                            '#28a745', // success - delivered
+                            '#dc3545'  // danger - cancelled
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Auto-refresh dashboard every 5 minutes
+            setInterval(function() {
+                location.reload();
+            }, 300000); // 5 minutes
+
+            // Add hover effects to cards
+            $('.small-box, .info-box').hover(
+                function() {
+                    $(this).addClass('shadow-lg').css('transform', 'translateY(-2px)');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg').css('transform', 'translateY(0)');
+                }
+            );
+
+            // Add click animation to quick action buttons
+            $('.btn-lg').on('click', function() {
+                $(this).addClass('animate__animated animate__pulse');
+                setTimeout(() => {
+                    $(this).removeClass('animate__animated animate__pulse');
+                }, 1000);
+            });
+        });
+    </script>
+
+    <style>
+        .small-box, .info-box {
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg {
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+
+        .badge {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Purple theme for coupons */
+        .bg-purple {
+            background: linear-gradient(45deg, #6f42c1, #8e44ad) !important;
+        }
+
+        .btn-purple {
+            background: linear-gradient(45deg, #6f42c1, #8e44ad);
+            border: none;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background: linear-gradient(45deg, #5a2d91, #7d3c98);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+        }
+
+        .btn-gradient-purple {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-purple:hover {
+            background: linear-gradient(45deg, #8e24aa, #5e35b1);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(45deg, #28a745, #20c997) !important;
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1) !important;
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14) !important;
+        }
+
+        /* Coupon statistics animations */
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .small-box.bg-purple:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3);
+        }
+
+        /* New gradient buttons for notifications */
+        .btn-gradient-orange {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-orange:hover {
+            background: linear-gradient(45deg, #e55a2b, #e8851a);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-gradient-teal {
+            background: linear-gradient(45deg, #20c997, #17a2b8);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-teal:hover {
+            background: linear-gradient(45deg, #1cb584, #138496);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(32, 201, 151, 0.3);
+        }
+    </style>
+}

@@ -1,0 +1,71 @@
+/* Pink–Gold Visual Identity Theme Overrides */
+:root {
+  --pink: #F8C8DC;           /* Pale Pink */
+  --gold: #e83e8c;           /* Metallic Gold */
+  --gold-dark: #B8860B;      /* Darker gold for hover */
+  --white: #ffffff;
+  /* Header modern CSS uses --accent for brand icon */
+  --accent: var(--gold);
+}
+
+/* Links */
+a { color: var(--gold); }
+a:hover, a:focus { color: var(--gold-dark); }
+
+/* Headings & section accents */
+.section-heading h2 { color: #1a1a1a; }
+.section-heading::after { content: ""; display: block; width: 60px; height: 3px; margin-top: 10px; background: var(--gold); }
+hr { border-top: 1px solid #F3D0E0; }
+.card, .dropdown-menu, .icon-btn { border-color: #F3D0E0; }
+
+/* Primary button from theme */
+.essence-btn { 
+  background-color: var(--pink) !important; 
+  color: #111 !important; 
+}
+.essence-btn:hover, .essence-btn:focus { 
+  background-color: var(--gold) !important; 
+  color: #fff !important; 
+}
+
+/* Scroll to top */
+#scrollUp { background-color: var(--gold) !important; }
+
+/* Header counters color override (was blue) */
+.header_area .favourite-area a span,
+.header_area .user-login-info a span,
+.header_area .cart-area a span { color: var(--gold) !important; }
+
+/* Default/primary backgrounds */
+.bg-default, .primary-bg { background-color: var(--pink) !important; }
+
+/* Buttons commonly used in layout (fallback for bootstrap-like classes) */
+.btn-primary, .btn-outline-primary { border-color: var(--gold) !important; color: var(--gold) !important; }
+.btn-primary { background-color: var(--gold) !important; color: #fff !important; }
+.btn-outline-primary:hover { background-color: var(--gold) !important; color: #fff !important; }
+
+/* Badges */
+.badge, .badge-dot { background: var(--gold) !important; color: #fff !important; }
+
+/* Modern header tweaks */
+.modern-header .brand i { color: var(--gold) !important; }
+.modern-header .main-links a:hover { background: rgba(248,200,220, .35) !important; }
+.icon-btn:hover { box-shadow: 0 2px 10px rgba(212,175,55, .25) !important; }
+.search-inline button { color: var(--gold) !important; }
+
+/* General accents that were hard-coded */
+/* Links inside menus */
+.header_area .classynav ul li a:hover,
+.header_area .classynav ul li .megamenu li a:hover,
+.header_area .classynav ul li .dropdown li a:hover { background: rgba(248,200,220, .25) !important; color: #111 !important; }
+
+/* Optional: price or highlight tags could use gold */
+.price, .highlight { color: var(--gold); }
+
+/* Topbar & Footer skins (if markup exists) */
+.topbar { background: #F9E3EC; color: #5a4100; border-bottom: 1px solid #F3D0E0; }
+.topbar a { color: var(--gold); }
+.topbar a:hover { color: var(--gold-dark); }
+.site-footer { background: #F9E3EC; border-top: 1px solid #F3D0E0; }
+.site-footer a { color: var(--gold); }
+.site-footer a:hover { color: var(--gold-dark); }

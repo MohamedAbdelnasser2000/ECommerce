@@ -1,0 +1,316 @@
+@model MaintenanceViewModel
+
+@{
+    ViewData["Title"] = "Maintenance Mode";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-tools me-2"></i>Maintenance Mode
+                </h3>
+                <div class="card-tools">
+                    <span class="badge @(Model.MaintenanceMode ? "badge-warning" : "badge-success") fs-6">
+                        @(Model.MaintenanceMode ? "Maintenance Active" : "Site Online")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Maintenance Settings -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-cog me-2"></i>Maintenance Settings
+                </h3>
+            </div>
+            <form asp-action="UpdateMaintenance" method="post">
+                <div class="card-body">
+                    <!-- Maintenance Mode Toggle -->
+                    <div class="form-group mb-4">
+                        <div class="custom-control custom-switch custom-switch-lg">
+                            <input type="checkbox" class="custom-control-input" name="maintenanceMode" 
+                                   id="maintenanceMode" @(Model.MaintenanceMode ? "checked" : "")>
+                            <label class="custom-control-label" for="maintenanceMode">
+                                <strong>Enable Maintenance Mode</strong>
+                            </label>
+                        </div>
+                        <small class="form-text text-muted">
+                            When enabled, visitors will see a maintenance page instead of your site.
+                        </small>
+                    </div>
+
+                    <!-- Maintenance Message -->
+                    <div class="form-group mb-4">
+                        <label for="maintenanceMessage" class="form-label">
+                            <i class="fas fa-comment me-1"></i>Maintenance Message
+                        </label>
+                        <textarea name="maintenanceMessage" id="maintenanceMessage" class="form-control" rows="4" 
+                                  placeholder="Enter the message visitors will see during maintenance...">@Model.MaintenanceMessage</textarea>
+                        <div class="form-text">
+                            This message will be displayed to visitors when maintenance mode is active.
+                        </div>
+                    </div>
+
+                    <!-- Allowed IP Addresses -->
+                    <div class="form-group mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-network-wired me-1"></i>Allowed IP Addresses
+                        </label>
+                        <div id="allowedIPs">
+                            @for (int i = 0; i < Model.AllowedIPs.Count; i++)
+                            {
+                                <div class="input-group mb-2">
+                                    <input type="text" name="AllowedIPs[@i]" value="@Model.AllowedIPs[i]" 
+                                           class="form-control" placeholder="192.168.1.1">
+                                    <button type="button" class="btn btn-outline-danger remove-ip">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <button type="button" id="addIP" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add IP Address
+                        </button>
+                        <div class="form-text">
+                            IP addresses that can access the site during maintenance mode.
+                        </div>
+                    </div>
+
+                    <!-- Cache Settings -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="cacheEnabled" 
+                                           id="cacheEnabled" @(Model.CacheEnabled ? "checked" : "")>
+                                    <label class="form-check-label" for="cacheEnabled">
+                                        <strong>Enable Caching</strong>
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Improves site performance by caching frequently accessed data.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cacheExpiration" class="form-label">Cache Expiration (minutes)</label>
+                                <input type="number" name="cacheExpiration" id="cacheExpiration" 
+                                       class="form-control" value="@Model.CacheExpiration" min="1" max="1440">
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.MaintenanceMode)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Warning:</strong> Maintenance mode is currently active. 
+                            Visitors cannot access your site except from allowed IP addresses.
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Save Maintenance Settings
+                    </button>
+                    <button type="button" id="clearCache" class="btn btn-warning ms-2">
+                        <i class="fas fa-broom me-1"></i>Clear Cache
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Maintenance Status -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle me-2"></i>Status Information
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon @(Model.MaintenanceMode ? "bg-warning" : "bg-success")">
+                        <i class="fas @(Model.MaintenanceMode ? "fa-tools" : "fa-check-circle")"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Site Status</span>
+                        <span class="info-box-number">
+                            @(Model.MaintenanceMode ? "Maintenance" : "Online")
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-box mb-3">
+                    <span class="info-box-icon @(Model.CacheEnabled ? "bg-success" : "bg-secondary")">
+                        <i class="fas fa-memory"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Cache Status</span>
+                        <span class="info-box-number">
+                            @(Model.CacheEnabled ? "Enabled" : "Disabled")
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-info">
+                        <i class="fas fa-network-wired"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Allowed IPs</span>
+                        <span class="info-box-number">@Model.AllowedIPs.Count</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Tip:</strong> Always test maintenance mode with a staging environment first.
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Note:</strong> Make sure to add your IP address to the allowed list before enabling maintenance mode.
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.MaintenanceMode)
+                    {
+                        <button type="button" id="quickDisable" class="btn btn-success">
+                            <i class="fas fa-play me-1"></i>Disable Maintenance
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" id="quickEnable" class="btn btn-warning">
+                            <i class="fas fa-pause me-1"></i>Enable Maintenance
+                        </button>
+                    }
+                    
+                    <button type="button" id="previewMaintenance" class="btn btn-info">
+                        <i class="fas fa-eye me-1"></i>Preview Maintenance Page
+                    </button>
+                    
+                    <button type="button" id="getCurrentIP" class="btn btn-outline-primary">
+                        <i class="fas fa-map-marker-alt me-1"></i>Get My IP Address
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add IP address
+            $('#addIP').click(function() {
+                var index = $('#allowedIPs .input-group').length;
+                var html = `
+                    <div class="input-group mb-2">
+                        <input type="text" name="AllowedIPs[${index}]" class="form-control" placeholder="192.168.1.1">
+                        <button type="button" class="btn btn-outline-danger remove-ip">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                $('#allowedIPs').append(html);
+            });
+
+            // Remove IP address
+            $(document).on('click', '.remove-ip', function() {
+                $(this).closest('.input-group').remove();
+                // Re-index the inputs
+                $('#allowedIPs .input-group').each(function(index) {
+                    $(this).find('input').attr('name', 'AllowedIPs[' + index + ']');
+                });
+            });
+
+            // Clear cache
+            $('#clearCache').click(function() {
+                var btn = $(this);
+                var originalText = btn.html();
+                
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Clearing...');
+                
+                $.post('@Url.Action("ClearCache")', function(response) {
+                    if (response.success) {
+                        alert('Cache cleared successfully!');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                }).always(function() {
+                    btn.prop('disabled', false).html(originalText);
+                });
+            });
+
+            // Quick enable/disable maintenance
+            $('#quickEnable, #quickDisable').click(function() {
+                var enable = $(this).attr('id') === 'quickEnable';
+                var action = enable ? 'enable' : 'disable';
+                
+                if (confirm('Are you sure you want to ' + action + ' maintenance mode?')) {
+                    $('#maintenanceMode').prop('checked', enable);
+                    $('form').submit();
+                }
+            });
+
+            // Preview maintenance page
+            $('#previewMaintenance').click(function() {
+                window.open('/maintenance-preview', '_blank');
+            });
+
+            // Get current IP
+            $('#getCurrentIP').click(function() {
+                var btn = $(this);
+                btn.prop('disabled', true);
+                
+                // Simulate getting IP (in real app, you'd call an API)
+                setTimeout(function() {
+                    var currentIP = '127.0.0.1'; // Mock IP
+                    if (confirm('Your current IP address is: ' + currentIP + '\n\nDo you want to add it to the allowed list?')) {
+                        var index = $('#allowedIPs .input-group').length;
+                        var html = `
+                            <div class="input-group mb-2">
+                                <input type="text" name="AllowedIPs[${index}]" value="${currentIP}" class="form-control">
+                                <button type="button" class="btn btn-outline-danger remove-ip">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                        $('#allowedIPs').append(html);
+                    }
+                    btn.prop('disabled', false);
+                }, 1000);
+            });
+
+            // Enable/disable cache expiration based on cache enabled
+            $('#cacheEnabled').change(function() {
+                $('#cacheExpiration').prop('disabled', !$(this).prop('checked'));
+            });
+
+            // Initialize cache expiration state
+            $('#cacheExpiration').prop('disabled', !$('#cacheEnabled').prop('checked'));
+        });
+    </script>
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Home" xml:space="preserve"><value>Home</value></data>
+  <data name="ShopByCategory" xml:space="preserve"><value>Shop by category</value></data>
+  <data name="CategoriesSubtitle" xml:space="preserve"><value>Discover the most popular categories and browse their products.</value></data>
+  <data name="ShopNow" xml:space="preserve"><value>Shop Now</value></data>
+  <data name="CtaBadgeText" xml:space="preserve"><value>-60%</value></data>
+  <data name="GlobalSale" xml:space="preserve"><value>Global Sale</value></data>
+  <data name="BuyNow" xml:space="preserve"><value>Buy Now</value></data>
+  <data name="SubscribeToNewsletter" xml:space="preserve"><value>Subscribe to Our Newsletter</value></data>
+  <data name="NewsletterUpdates" xml:space="preserve"><value>Get the latest updates on new products and upcoming sales.</value></data>
+  <data name="YourEmailAddress" xml:space="preserve"><value>Your email address</value></data>
+  <data name="Subscribe" xml:space="preserve"><value>Subscribe</value></data>
+  <data name="BrowseByCategory" xml:space="preserve"><value>Browse by Category</value></data>
+  <data name="FindWhatYouNeed" xml:space="preserve"><value>Find what you need quickly</value></data>
+  <data name="Shop" xml:space="preserve"><value>Shop</value></data>
+  <data name="FeaturedProducts" xml:space="preserve"><value>Featured Products</value></data>
+  <data name="FeaturedProductsSubtitle" xml:space="preserve"><value>Discover our latest featured products with exclusive discounts</value></data>
+  <data name="NoFeaturedProducts" xml:space="preserve"><value>No featured products available at the moment</value></data>
+  <data name="ViewAllProducts" xml:space="preserve"><value>View all products</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>Out of stock</value></data>
+  <data name="FastDeliveryTitle" xml:space="preserve"><value>Fast Delivery</value></data>
+  <data name="FastDeliveryDesc" xml:space="preserve"><value>Free shipping on orders over $50</value></data>
+  <data name="SecurePaymentTitle" xml:space="preserve"><value>Secure Payment</value></data>
+  <data name="SecurePaymentDesc" xml:space="preserve"><value>100% secure payment processing</value></data>
+  <data name="EasyReturnsTitle" xml:space="preserve"><value>Easy Returns</value></data>
+  <data name="EasyReturnsDesc" xml:space="preserve"><value>30-day return policy</value></data>
+  <data name="Support247Title" xml:space="preserve"><value>24/7 Support</value></data>
+  <data name="Support247Desc" xml:space="preserve"><value>Round-the-clock customer service</value></data>
+</root>

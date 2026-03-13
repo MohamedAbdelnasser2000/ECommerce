@@ -1,0 +1,523 @@
+@model IEnumerable<CustomerReportItem>
+
+@{
+    ViewData["Title"] = "Customer Report";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-users me-2"></i>Customer Analytics Report
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                        <i class="fas fa-download me-1"></i>Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@Model.Count()</h3>
+                <p>Total Customers</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@Model.Count(c => c.TotalOrders > 0)</h3>
+                <p>Active Customers</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>$@(Model.Any() ? Model.Average(c => c.TotalSpent).ToString("N0") : "0")</h3>
+                <p>Avg. Customer Value</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>$@Model.Sum(c => c.TotalSpent).ToString("N0")</h3>
+                <p>Total Revenue</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-bar me-2"></i>Top 10 Customers by Spending
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="spendingChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Customer Segments
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="segmentChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Segments -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-success">
+                <i class="fas fa-crown"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">VIP Customers</span>
+                <span class="info-box-number">@Model.Count(c => c.TotalSpent >= 1000)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-success" style="width: @(Model.Any() ? (Model.Count(c => c.TotalSpent >= 1000) * 100.0 / Model.Count()).ToString("F1") : "0")%"></div>
+                </div>
+                <span class="progress-description">$1000+ spent</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-warning">
+                <i class="fas fa-star"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Regular Customers</span>
+                <span class="info-box-number">@Model.Count(c => c.TotalSpent >= 100 && c.TotalSpent < 1000)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" style="width: @(Model.Any() ? (Model.Count(c => c.TotalSpent >= 100 && c.TotalSpent < 1000) * 100.0 / Model.Count()).ToString("F1") : "0")%"></div>
+                </div>
+                <span class="progress-description">$100-$999 spent</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-info">
+                <i class="fas fa-user"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">New Customers</span>
+                <span class="info-box-number">@Model.Count(c => c.TotalSpent > 0 && c.TotalSpent < 100)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-info" style="width: @(Model.Any() ? (Model.Count(c => c.TotalSpent > 0 && c.TotalSpent < 100) * 100.0 / Model.Count()).ToString("F1") : "0")%"></div>
+                </div>
+                <span class="progress-description">$1-$99 spent</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-secondary">
+                <i class="fas fa-user-times"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Inactive Customers</span>
+                <span class="info-box-number">@Model.Count(c => c.TotalSpent == 0)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-secondary" style="width: @(Model.Any() ? (Model.Count(c => c.TotalSpent == 0) * 100.0 / Model.Count()).ToString("F1") : "0")%"></div>
+                </div>
+                <span class="progress-description">No purchases</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="segment" class="form-label">Customer Segment</label>
+                        <select name="segment" id="segment" class="form-control">
+                            <option value="">All Customers</option>
+                            <option value="vip">VIP ($1000+)</option>
+                            <option value="regular">Regular ($100-$999)</option>
+                            <option value="new">New ($1-$99)</option>
+                            <option value="inactive">Inactive ($0)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="sortBy" class="form-label">Sort By</label>
+                        <select name="sortBy" id="sortBy" class="form-control">
+                            <option value="spending">Total Spending (High to Low)</option>
+                            <option value="orders">Total Orders (High to Low)</option>
+                            <option value="recent">Most Recent Order</option>
+                            <option value="name">Customer Name (A-Z)</option>
+                            <option value="joined">Date Joined (Newest First)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="minSpent" class="form-label">Min. Amount Spent</label>
+                        <input type="number" name="minSpent" id="minSpent" class="form-control" placeholder="0" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-1"></i>Apply Filters
+                            </button>
+                            <button type="button" id="resetFilters" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-1"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customers Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-list me-2"></i>Customer Details
+                </h3>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="customersTable">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Joined</th>
+                                    <th>Total Orders</th>
+                                    <th>Total Spent</th>
+                                    <th>Last Order</th>
+                                    <th>Segment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong>@customer.User.FirstName @customer.User.LastName</strong>
+                                                @if (customer.TotalSpent >= 1000)
+                                                {
+                                                    <br><span class="badge badge-warning"><i class="fas fa-crown me-1"></i>VIP</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>@customer.User.Email</td>
+                                        <td>@(customer.User.PhoneNumber ?? "N/A")</td>
+                                        <td>@customer.User.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="badge @(customer.TotalOrders > 0 ? "badge-info" : "badge-secondary")">
+                                                @customer.TotalOrders orders
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong class="@(customer.TotalSpent > 0 ? "text-success" : "text-muted")">
+                                                $@customer.TotalSpent.ToString("N2")
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            @if (customer.LastOrderDate.HasValue)
+                                            {
+                                                <span>@customer.LastOrderDate.Value.ToString("MMM dd, yyyy")</span>
+                                                <br>
+                                                <small class="text-muted">
+                                                    @((DateTime.Now - customer.LastOrderDate.Value).Days) days ago
+                                                </small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Never</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (customer.TotalSpent >= 1000)
+                                            {
+                                                <span class="badge badge-success">VIP</span>
+                                            }
+                                            else if (customer.TotalSpent >= 100)
+                                            {
+                                                <span class="badge badge-warning">Regular</span>
+                                            }
+                                            else if (customer.TotalSpent > 0)
+                                            {
+                                                <span class="badge badge-info">New</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-info" title="View Profile"
+                                                        onclick="viewCustomer('@customer.User.Id')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-primary" title="View Orders"
+                                                        onclick="viewCustomerOrders('@customer.User.Id')">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success" title="Send Email"
+                                                        onclick="sendEmail('@customer.User.Email')">
+                                                    <i class="fas fa-envelope"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Customers Found</h4>
+                        <p class="text-muted">No customers match your current filters.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Customer Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="ExportCustomers" method="post" id="exportCustomersForm">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Export Format</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="excel" id="formatExcel" checked>
+                            <label class="form-check-label" for="formatExcel">
+                                <i class="fas fa-file-excel text-success me-2"></i>Excel (.xlsx)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="csv" id="formatCsv">
+                            <label class="form-check-label" for="formatCsv">
+                                <i class="fas fa-file-csv text-info me-2"></i>CSV (.csv)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Include</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includePersonalInfo" id="includePersonalInfo" checked>
+                            <label class="form-check-label" for="includePersonalInfo">Personal Information</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includeOrderHistory" id="includeOrderHistory" checked>
+                            <label class="form-check-label" for="includeOrderHistory">Order History</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="includeSegmentation" id="includeSegmentation" checked>
+                            <label class="form-check-label" for="includeSegmentation">Customer Segmentation</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportCustomersBtn">
+                    <i class="fas fa-download me-1"></i>Export Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Spending Chart
+            var spendingCtx = document.getElementById('spendingChart').getContext('2d');
+            var topCustomers = @Html.Raw(Json.Serialize(Model.Take(10).Select(c => new { Name = c.User.FirstName + " " + c.User.LastName, Spending = c.TotalSpent }).ToArray()));
+
+            new Chart(spendingCtx, {
+                type: 'bar',
+                data: {
+                    labels: topCustomers.map(c => c.Name.length > 15 ? c.Name.substring(0, 15) + '...' : c.Name),
+                    datasets: [{
+                        label: 'Total Spent ($)',
+                        data: topCustomers.map(c => c.Spending),
+                        backgroundColor: '#28a745',
+                        borderColor: '#1e7e34',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Segment Chart
+            var segmentCtx = document.getElementById('segmentChart').getContext('2d');
+            var segments = [
+                { name: 'VIP ($1000+)', count: @Model.Count(c => c.TotalSpent >= 1000) },
+                { name: 'Regular ($100-$999)', count: @Model.Count(c => c.TotalSpent >= 100 && c.TotalSpent < 1000) },
+                { name: 'New ($1-$99)', count: @Model.Count(c => c.TotalSpent > 0 && c.TotalSpent < 100) },
+                { name: 'Inactive ($0)', count: @Model.Count(c => c.TotalSpent == 0) }
+            ];
+
+            new Chart(segmentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: segments.map(s => s.name),
+                    datasets: [{
+                        data: segments.map(s => s.count),
+                        backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#6c757d']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // DataTable
+            $('#customersTable').DataTable({
+                responsive: true,
+                pageLength: 25,
+                order: [[5, 'desc']], // Sort by total spent descending
+                columnDefs: [
+                    { targets: [5], type: 'currency' } // Total Spent column
+                ]
+            });
+
+            // Reset filters
+            $('#resetFilters').click(function() {
+                $('#segment, #sortBy').val('');
+                $('#minSpent').val('');
+                $('form').submit();
+            });
+
+            // Export functionality
+            $('#exportCustomersBtn').click(function() {
+                var btn = $(this);
+                var originalText = btn.html();
+                var format = $('input[name="format"]:checked').val();
+
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Exporting...');
+
+                if (format === 'csv') {
+                    // For CSV, submit form normally to trigger file download
+                    $('#exportCustomersForm')[0].submit();
+
+                    // Reset button after a short delay
+                    setTimeout(function() {
+                        btn.prop('disabled', false).html(originalText);
+                        $('#exportModal').modal('hide');
+                    }, 2000);
+                } else {
+                    // For Excel, use AJAX
+                    var formData = $('#exportCustomersForm').serialize();
+
+                    $.post('@Url.Action("ExportCustomers")', formData)
+                        .done(function(response) {
+                            if (response.success) {
+                                alert(response.message || 'Export completed successfully!');
+                                console.log('Export data:', response.data);
+                                $('#exportModal').modal('hide');
+                            } else {
+                                alert('Export failed: ' + response.message);
+                            }
+                        })
+                        .fail(function() {
+                            alert('Export failed. Please try again.');
+                        })
+                        .always(function() {
+                            btn.prop('disabled', false).html(originalText);
+                        });
+                }
+            });
+        });
+
+        // Customer actions
+        function viewCustomer(userId) {
+            // In a real app, this would open customer details
+            alert('View customer details for ID: ' + userId);
+        }
+
+        function viewCustomerOrders(userId) {
+            // In a real app, this would show customer's order history
+            window.open('/Admin/Order?customerId=' + userId, '_blank');
+        }
+
+        function sendEmail(email) {
+            // In a real app, this would open email composer
+            window.location.href = 'mailto:' + email;
+        }
+    </script>
+}

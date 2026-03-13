@@ -1,0 +1,441 @@
+@model IEnumerable<Product>
+@using ECommerceWebsite.Models
+@using System
+@{
+    ViewData["Title"] = "نتائج البحث";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var searchQuery = Context.Request.Query["query"].ToString() ?? "";
+    var categoryId = Context.Request.Query["categoryId"].ToString();
+    var minPrice = Context.Request.Query["minPrice"].ToString();
+    var maxPrice = Context.Request.Query["maxPrice"].ToString();
+    var minRating = Context.Request.Query["minRating"].ToString();
+    var inStock = Context.Request.Query["inStock"].ToString();
+    var onSale = Context.Request.Query["onSale"].ToString();
+    var sort = Context.Request.Query["sort"].ToString();
+    var view = Context.Request.Query["view"].ToString();
+    var page = Context.Request.Query["page"].ToString();
+
+    // Get ViewBag data
+    var categories = ViewBag.Categories as IEnumerable<Category> ?? new List<Category>();
+    var minPriceRange = ViewBag.MinPriceRange as decimal? ?? 0;
+    var maxPriceRange = ViewBag.MaxPriceRange as decimal? ?? 1000;
+    var currentCategory = ViewBag.CurrentCategory as int?;
+    var currentMinPrice = ViewBag.MinPrice as decimal?;
+    var currentMaxPrice = ViewBag.MaxPrice as decimal?;
+    var currentMinRating = ViewBag.MinRating as int?;
+    var currentInStock = ViewBag.InStock as bool?;
+    var currentOnSale = ViewBag.OnSale as bool?;
+    var currentSort = ViewBag.SortBy as string ?? "relevance";
+    var currentView = ViewBag.ViewMode as string ?? "grid";
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var totalResults = ViewBag.TotalResults as int? ?? 0;
+}
+
+@section Styles {
+    <link href="~/css/search.css" rel="stylesheet" />
+    <style>
+        .search-filters {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .price-range-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-range-inputs input {
+            flex: 1;
+        }
+
+        .sort-controls {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .product-card {
+            transition: transform 0.2s;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .product-original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        .discount-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+        }
+
+        .stock-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .in-stock {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .out-of-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pagination {
+            margin-top: 30px;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-suggestion {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .search-suggestion:hover {
+            background: #f8f9fa;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .no-results i {
+            font-size: 4em;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+    </style>
+}
+
+<div class="container">
+    <div class="row">
+        <!-- الفلاتر الجانبية -->
+        <div class="col-lg-3">
+            <div class="search-filters">
+                <h5><i class="fas fa-filter"></i> فلترة النتائج</h5>
+
+                <form id="searchForm" method="get" action="/Search">
+                    <div class="filter-group">
+                        <label>الفئة</label>
+                        <select name="categoryId" class="form-control" onchange="this.form.submit()">
+                            <option value="">جميع الفئات</option>
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category.Id">@category.GetLocalizedName()</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>نطاق السعر</label>
+                        <div class="price-range-inputs">
+                            <input type="number" name="minPrice" class="form-control" placeholder="من" value="@currentMinPrice?.ToString("F2")" onchange="this.form.submit()" min="0" step="0.01">
+                            <span>-</span>
+                            <input type="number" name="maxPrice" class="form-control" placeholder="إلى" value="@currentMaxPrice?.ToString("F2")" onchange="this.form.submit()" min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>التقييم الأدنى</label>
+                        <select name="minRating" class="form-control" onchange="this.form.submit()">
+                            <option value="">أي تقييم</option>
+                            <option value="5">5 نجوم</option>
+                            <option value="4">4 نجوم فما فوق</option>
+                            <option value="3">3 نجوم فما فوق</option>
+                            <option value="2">2 نجوم فما فوق</option>
+                            <option value="1">نجمة واحدة فما فوق</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="form-check">
+                            <input type="checkbox" name="inStock" class="form-check-input" onchange="this.form.submit()" value="true">
+                            <label class="form-check-label">
+                                متوفر في المخزون فقط
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="form-check">
+                            <input type="checkbox" name="onSale" class="form-check-input" onchange="this.form.submit()" value="true">
+                            <label class="form-check-label">
+                                في تخفيض فقط
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields for other parameters -->
+                    <input type="hidden" name="query" value="@searchQuery">
+                    <input type="hidden" name="sort" value="@currentSort">
+                    <input type="hidden" name="view" value="@currentView">
+                    <input type="hidden" name="page" value="@currentPage">
+                </form>
+            </div>
+        </div>
+
+        <!-- نتائج البحث -->
+        <div class="col-lg-9">
+            <div class="sort-controls">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>ترتيب حسب:</label>
+                        <select name="sort" class="form-control d-inline-block w-auto" onchange="changeSort()">
+                            <option value="relevance">الأهمية</option>
+                            <option value="price-low">السعر: من الأقل للأعلى</option>
+                            <option value="price-high">السعر: من الأعلى للأقل</option>
+                            <option value="top-rated">الأعلى تقييماً</option>
+                            <option value="newest">الأحدث</option>
+                            <option value="popular">الأكثر شعبية</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <span id="resultsCount">@totalResults نتيجة</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-results" id="searchResults">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row">
+                        @foreach (var product in Model)
+                        {
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="product-card">
+                                    @if (product.DiscountPrice.HasValue)
+                                    {
+                                        <div class="discount-badge">
+                                            @(Math.Round(((product.Price - product.DiscountPrice.Value) / product.Price) * 100))% خصم
+                                        </div>
+                                    }
+                                    <img src="@(product.ImageUrl ?? "/images/no-image.png")" alt="@product.GetLocalizedName()" class="product-image">
+                                    <div class="product-info">
+                                        <h6 class="product-title">@product.GetLocalizedName()</h6>
+                                        <div class="product-price">
+                                            @if (product.DiscountPrice.HasValue)
+                                            {
+                                                <span class="product-original-price">@product.Price.ToString("C")</span>
+                                                <span>@product.DiscountPrice.Value.ToString("C")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@product.Price.ToString("C")</span>
+                                            }
+                                        </div>
+                                        <div class="rating-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= product.AverageRating)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+                                                else if (i - 0.5 <= product.AverageRating)
+                                                {
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            }
+                                            <small>(@product.Reviews.Count تقييم)</small>
+                                        </div>
+                                        <div class="stock-status @(product.StockQuantity > 0 ? "in-stock" : "out-of-stock")">
+                                            @(product.StockQuantity > 0 ? "متوفر" : "غير متوفر")
+                                        </div>
+                                        <a href="/Product/Details/@product.Id" class="btn btn-primary btn-sm mt-2">عرض التفاصيل</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>لا توجد نتائج</h3>
+                        <p>جرب تغيير كلمات البحث أو الفلاتر</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <nav class="pagination">
+                    <ul class="pagination justify-content-center">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetSearchUrl(currentPage - 1, searchQuery, currentCategory, currentMinPrice, currentMaxPrice, currentMinRating, currentInStock, currentOnSale, currentSort, currentView)">السابق</a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@GetSearchUrl(i, searchQuery, currentCategory, currentMinPrice, currentMaxPrice, currentMinRating, currentInStock, currentOnSale, currentSort, currentView)">@i</a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetSearchUrl(currentPage + 1, searchQuery, currentCategory, currentMinPrice, currentMaxPrice, currentMinRating, currentInStock, currentOnSale, currentSort, currentView)">التالي</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetSearchUrl(int page, string searchQuery, int? currentCategory, decimal? currentMinPrice, decimal? currentMaxPrice, int? currentMinRating, bool? currentInStock, bool? currentOnSale, string currentSort, string currentView)
+    {
+        var categoryIdParam = currentCategory?.ToString() ?? "";
+        var minPriceParam = currentMinPrice?.ToString("F2") ?? "";
+        var maxPriceParam = currentMaxPrice?.ToString("F2") ?? "";
+        var minRatingParam = currentMinRating?.ToString() ?? "";
+        var inStockParam = currentInStock == true ? "true" : "";
+        var onSaleParam = currentOnSale == true ? "true" : "";
+        var sortParam = currentSort ?? "relevance";
+        var viewParam = currentView ?? "grid";
+
+        var url = $"/Search?query={Uri.EscapeDataString(searchQuery)}&categoryId={categoryIdParam}&minPrice={minPriceParam}&maxPrice={maxPriceParam}&minRating={minRatingParam}&inStock={inStockParam}&onSale={onSaleParam}&sort={sortParam}&view={viewParam}&page={page}";
+        return url;
+    }
+}
+
+@section Scripts {
+    <script>
+        function changeSort() {
+            const sortSelect = document.querySelector('select[name="sort"]');
+            const currentUrl = new URL(window.location);
+
+            currentUrl.searchParams.set('sort', sortSelect.value);
+            currentUrl.searchParams.set('page', '1'); // Reset to first page when sorting changes
+
+            window.location.href = currentUrl.toString();
+        }
+
+        function changeViewMode(viewMode) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('view', viewMode);
+            window.location.href = currentUrl.toString();
+        }
+
+        // Auto-submit form when filters change
+        $(document).ready(function() {
+            // Set selected values for dropdowns and checkboxes
+            setSelectedValues();
+
+            console.log('Search page loaded with @totalResults results');
+        });
+
+        function setSelectedValues() {
+            // Set category selection
+            const categorySelect = document.querySelector('select[name="categoryId"]');
+            if (categorySelect && '@currentCategory' !== '') {
+                categorySelect.value = '@currentCategory';
+            }
+
+            // Set rating selection
+            const ratingSelect = document.querySelector('select[name="minRating"]');
+            if (ratingSelect && '@currentMinRating' !== '') {
+                ratingSelect.value = '@currentMinRating';
+            }
+
+            // Set checkboxes
+            const inStockCheckbox = document.querySelector('input[name="inStock"]');
+            if (inStockCheckbox && '@(currentInStock == true ? "checked" : "")' === 'checked') {
+                inStockCheckbox.checked = true;
+            }
+
+            const onSaleCheckbox = document.querySelector('input[name="onSale"]');
+            if (onSaleCheckbox && '@(currentOnSale == true ? "checked" : "")' === 'checked') {
+                onSaleCheckbox.checked = true;
+            }
+
+            // Set sort selection
+            const sortSelect = document.querySelector('select[name="sort"]');
+            if (sortSelect && '@currentSort' !== '') {
+                sortSelect.value = '@currentSort';
+            }
+        }
+    </script>
+}

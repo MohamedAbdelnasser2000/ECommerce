@@ -1,0 +1,296 @@
+@model ECommerceWebsite.Models.ApplicationUser
+@{
+    ViewData["Title"] = $"User Details - {Model.FirstName} {Model.LastName}";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-user me-2"></i>User Details
+    </h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i>Edit User
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Users
+        </a>
+    </div>
+</div>
+
+<!-- User Info Card -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="avatar-circle-large mb-3">
+                    @Model.FirstName?.Substring(0, 1).ToUpper()@Model.LastName?.Substring(0, 1).ToUpper()
+                </div>
+                <h4>@Model.FirstName @Model.LastName</h4>
+                <p class="text-muted">@Model.Email</p>
+                
+                @if (Model.EmailConfirmed)
+                {
+                    <span class="badge bg-success mb-2">
+                        <i class="fas fa-check-circle me-1"></i>Verified
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-warning mb-2">
+                        <i class="fas fa-exclamation-circle me-1"></i>Unverified
+                    </span>
+                }
+                
+                <div class="mt-3">
+                    <small class="text-muted">Member since @Model.CreatedAt.ToString("MMMM dd, yyyy")</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-warning btn-sm" onclick="resetPassword('@Model.Id')">
+                        <i class="fas fa-key me-1"></i>Reset Password
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="toggleLockout('@Model.Id')">
+                        <i class="fas fa-lock me-1"></i>Toggle Lockout
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="sendNotification('@Model.Id')">
+                        <i class="fas fa-envelope me-1"></i>Send Notification
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3>@ViewBag.TotalOrders</h3>
+                        <small>Total Orders</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3>@ViewBag.CompletedOrders</h3>
+                        <small>Completed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h3>@ViewBag.PendingOrders</h3>
+                        <small>Pending</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3>$@ViewBag.TotalSpent</h3>
+                        <small>Total Spent</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Personal Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>First Name:</strong> @Model.FirstName</p>
+                        <p><strong>Last Name:</strong> @Model.LastName</p>
+                        <p><strong>Email:</strong> @Model.Email</p>
+                        <p><strong>Phone:</strong> @(Model.PhoneNumber ?? "Not provided")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Address:</strong> @(Model.Address ?? "Not provided")</p>
+                        <p><strong>City:</strong> @(Model.City ?? "Not provided")</p>
+                        <p><strong>Postal Code:</strong> @(Model.PostalCode ?? "Not provided")</p>
+                        <p><strong>Joined:</strong> @Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Activity Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h4 class="text-primary">@ViewBag.TotalReviews</h4>
+                            <small class="text-muted">Reviews Written</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h4 class="text-success">@ViewBag.CartItemsCount</h4>
+                            <small class="text-muted">Items in Cart</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h4 class="text-danger">@ViewBag.WishlistItemsCount</h4>
+                            <small class="text-muted">Wishlist Items</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+@if (Model.Orders.Any())
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h6 class="mb-0">Recent Orders</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate).Take(5))
+                        {
+                            <tr>
+                                <td>@order.OrderNumber</td>
+                                <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <span class="badge bg-@(order.Status == OrderStatus.Delivered ? "success" : order.Status == OrderStatus.Pending ? "warning" : "info")">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td>$@order.TotalAmount</td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function resetPassword(userId) {
+            if (confirm('Are you sure you want to reset this user\'s password?')) {
+                fetch(`/Admin/User/ResetPassword/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Password reset successfully! New temporary password: ${data.tempPassword}`);
+                    } else {
+                        toastr.error(data.message || 'Error resetting password');
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Error resetting password');
+                });
+            }
+        }
+
+        function toggleLockout(userId) {
+            fetch(`/Admin/User/ToggleLockout/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success(data.message);
+                } else {
+                    toastr.error(data.message || 'Error toggling lockout');
+                }
+            })
+            .catch(error => {
+                toastr.error('Error toggling lockout');
+            });
+        }
+
+        function sendNotification(userId) {
+            const subject = prompt('Enter notification subject:');
+            if (subject) {
+                const message = prompt('Enter notification message:');
+                if (message) {
+                    fetch(`/Admin/User/SendNotification/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        body: JSON.stringify({ subject: subject, message: message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success('Notification sent successfully!');
+                        } else {
+                            toastr.error(data.message || 'Error sending notification');
+                        }
+                    })
+                    .catch(error => {
+                        toastr.error('Error sending notification');
+                    });
+                }
+            }
+        }
+    </script>
+}
+
+<style>
+    .avatar-circle-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #e83e8c, #6f42c1);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 24px;
+        margin: 0 auto;
+    }
+</style>

@@ -1,0 +1,73 @@
+/* Confirmation page styles moved out of Razor to avoid @ parsing conflicts */
+.success-icon { animation: bounce 1s ease-in-out; }
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+.order-summary { background-color: #f8f9fa; padding: 1rem; border-radius: .6rem; }
+
+/* Print only order details */
+@media print {
+  body * { visibility: hidden !important; }
+  #order-details, #order-details * { visibility: visible !important; }
+  #order-details { position: absolute; left: 0; top: 0; width: 100%; }
+}
+
+/* Subtle typography and spacing normalization */
+.confirmation-page h1, .confirmation-page h4, .confirmation-page h6 { letter-spacing: .2px; }
+.card { border-radius: .6rem; }
+
+/* Scoped RTL support */
+.confirmation-page.rtl { direction: rtl; }
+.confirmation-page.rtl .me-1 { margin-right: 0 !important; margin-left: .25rem !important; }
+.confirmation-page.rtl .me-2 { margin-right: 0 !important; margin-left: .5rem !important; }
+.confirmation-page.rtl .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+.confirmation-page.rtl .ms-1 { margin-left: 0 !important; margin-right: .25rem !important; }
+.confirmation-page.rtl .ms-2 { margin-left: 0 !important; margin-right: .5rem !important; }
+.confirmation-page.rtl .text-start { text-align: right !important; }
+.confirmation-page.rtl .text-end { text-align: left !important; }
+
+/* ------------------------------ */
+/* Mobile & small screens tweaks  */
+/* ------------------------------ */
+@media (max-width: 767.98px) {
+  /* Hero section */
+  .confirmation-page .success-icon i { font-size: 3rem !important; }
+  .confirmation-page .text-center.mb-5 h1 { font-size: 1.5rem; }
+  .confirmation-page .text-center.mb-5 .lead { font-size: .98rem; }
+
+  /* Card header wraps nicely with badge on new line */
+  #order-details .card-header { flex-wrap: wrap; gap: .25rem .5rem; }
+  #order-details .card-header h4 { font-size: 1.05rem; }
+  #order-details .card-header .badge { font-size: .85rem; }
+
+  /* Table: lighten density and reduce image size */
+  .confirmation-page table.table td, .confirmation-page table.table th {
+    padding: .5rem .5rem;
+    font-size: .92rem;
+  }
+  .confirmation-page table.table img { width: 40px !important; height: 40px !important; }
+
+  /* Hide Category column on small to avoid horizontal scroll */
+  .confirmation-page table.table thead th:nth-child(2),
+  .confirmation-page table.table tbody td:nth-child(2) { display: none; }
+
+  /* Order summary spacing */
+  .confirmation-page .order-summary { padding: .75rem; }
+
+  /* Buttons: stack vertically and full width */
+  .confirmation-page .btn-group { display: flex; flex-direction: column; width: 100%; gap: .5rem; }
+  .confirmation-page .btn-group .btn { width: 100%; border-radius: .5rem !important; }
+}
+
+@media (max-width: 575.98px) {
+  /* Slightly smaller typography on extra small */
+  .confirmation-page .text-center.mb-5 h1 { font-size: 1.35rem; }
+  .confirmation-page .text-center.mb-5 .lead { font-size: .95rem; }
+
+  /* Tighten paddings */
+  .confirmation-page .card-body { padding: 1rem; }
+}

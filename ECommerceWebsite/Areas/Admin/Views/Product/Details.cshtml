@@ -1,0 +1,251 @@
+@model ECommerceWebsite.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle me-2"></i>Product Details
+                </h3>
+                <div class="card-tools">
+                    <span class="badge @(Model.IsActive ? "badge-success" : "badge-secondary") me-2">
+                        <i class="fas @(Model.IsActive ? "fa-check" : "fa-times") me-1"></i>
+                        @(Model.IsActive ? "Active" : "Inactive")
+                    </span>
+                    @if (Model.IsFeatured)
+                    {
+                        <span class="badge badge-warning">
+                            <i class="fas fa-star me-1"></i>Featured
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Product Image -->
+                    <div class="col-md-4 text-center mb-3">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow" style="max-height: 400px;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded shadow" style="height: 300px;">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+                            <p class="text-muted mt-2">No image available</p>
+                        }
+                    </div>
+                    
+                    <!-- Product Information -->
+                    <div class="col-md-8">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="25%">
+                                    <i class="fas fa-tag me-2 text-primary"></i>Name:
+                                </th>
+                                <td>
+                                    <strong>@Model.Name</strong>
+                                    @if (!string.IsNullOrWhiteSpace(Model.NameAr))
+                                    {
+                                        <div class="text-muted" dir="rtl">
+                                            <strong>@Model.NameAr</strong>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-align-left me-2 text-primary"></i>Description:
+                                </th>
+                                <td>
+                                    @Model.Description
+                                    @if (!string.IsNullOrWhiteSpace(Model.DescriptionAr))
+                                    {
+                                        <div class="mt-2" dir="rtl">@Model.DescriptionAr</div>
+                                    }
+                                </td>
+                            </tr>
+                            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription) || !string.IsNullOrWhiteSpace(Model.ShortDescriptionAr))
+                            {
+                                <tr>
+                                    <th>
+                                        <i class="fas fa-align-center me-2 text-primary"></i>Short Description:
+                                    </th>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+                                        {
+                                            <div>@Model.ShortDescription</div>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(Model.ShortDescriptionAr))
+                                        {
+                                            <div class="text-muted" dir="rtl">@Model.ShortDescriptionAr</div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <th>
+                                    <i class="fas fa-folder me-2 text-primary"></i>Category:
+                                </th>
+                                <td>
+                                    <span class="badge badge-info">@Model.Category.Name</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-dollar-sign me-2 text-primary"></i>Price:
+                                </th>
+                                <td>
+                                    @if (Model.DiscountPrice.HasValue)
+                                    {
+                                        <span class="text-muted text-decoration-line-through me-2">$@Model.Price</span>
+                                        <strong class="text-success">$@Model.DiscountPrice</strong>
+                                        <span class="badge badge-danger ms-2">
+                                            @(Math.Round((1 - (Model.DiscountPrice.Value / Model.Price)) * 100))% OFF
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <strong>$@Model.Price</strong>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-boxes me-2 text-primary"></i>Stock:
+                                </th>
+                                <td>
+                                    <span class="badge @(Model.StockQuantity > 10 ? "badge-success" : Model.StockQuantity > 0 ? "badge-warning" : "badge-danger")">
+                                        @Model.StockQuantity units
+                                    </span>
+                                    @if (Model.StockQuantity <= 5 && Model.StockQuantity > 0)
+                                    {
+                                        <small class="text-warning ms-2">
+                                            <i class="fas fa-exclamation-triangle"></i> Low stock
+                                        </small>
+                                    }
+                                    else if (Model.StockQuantity == 0)
+                                    {
+                                        <small class="text-danger ms-2">
+                                            <i class="fas fa-times-circle"></i> Out of stock
+                                        </small>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-toggle-on me-2 text-primary"></i>Status:
+                                </th>
+                                <td>
+                                    <span class="badge @(Model.IsActive ? "badge-success" : "badge-secondary")">
+                                        <i class="fas @(Model.IsActive ? "fa-check" : "fa-times") me-1"></i>
+                                        @(Model.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-star me-2 text-primary"></i>Featured:
+                                </th>
+                                <td>
+                                    @if (Model.IsFeatured)
+                                    {
+                                        <span class="badge badge-warning">
+                                            <i class="fas fa-star me-1"></i>Featured Product
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not featured</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-calendar me-2 text-primary"></i>Created:
+                                </th>
+                                <td>
+                                    @Model.CreatedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </td>
+                            </tr>
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <tr>
+                                    <th>
+                                        <i class="fas fa-edit me-2 text-primary"></i>Last Updated:
+                                    </th>
+                                    <td>
+                                        @Model.UpdatedAt.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            @if (Model.Reviews.Any())
+            {
+                <div class="card-footer">
+                    <h5 class="mb-3">
+                        <i class="fas fa-star me-2"></i>Customer Reviews (@Model.Reviews.Count)
+                        <span class="badge badge-warning ms-2">
+                            @Model.AverageRating.ToString("F1") <i class="fas fa-star"></i>
+                        </span>
+                    </h5>
+                    <div class="row">
+                        @foreach (var review in Model.Reviews.Take(3))
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card card-outline card-info">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <strong>@review.User.UserName</strong>
+                                            <div class="text-warning">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="fas fa-star @(i <= review.Rating ? "" : "text-muted")"></i>
+                                                }
+                                            </div>
+                                        </div>
+                                        <p class="mb-1">@review.Comment</p>
+                                        <small class="text-muted">@review.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.Reviews.Count > 3)
+                    {
+                        <div class="text-center">
+                            <small class="text-muted">And @(Model.Reviews.Count - 3) more reviews...</small>
+                        </div>
+                    }
+                </div>
+            }
+            
+            <!-- Action Buttons -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

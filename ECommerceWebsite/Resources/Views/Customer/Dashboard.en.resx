@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Customer Dashboard</value></data>
+  <data name="WelcomeBack" xml:space="preserve"><value>Welcome back, {0} {1}!</value></data>
+  <data name="HeroDescription" xml:space="preserve"><value>Manage your orders, profile, and preferences from your dashboard.</value></data>
+  <data name="MyOrders" xml:space="preserve"><value>My Orders</value></data>
+  <data name="Wishlist" xml:space="preserve"><value>Wishlist</value></data>
+  <data name="TotalOrders" xml:space="preserve"><value>Total Orders</value></data>
+  <data name="Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="TotalSpent" xml:space="preserve"><value>Total Spent</value></data>
+  <data name="QuickActions" xml:space="preserve"><value>Quick Actions</value></data>
+  <data name="ViewOrders" xml:space="preserve"><value>View Orders</value></data>
+  <data name="EditProfile" xml:space="preserve"><value>Edit Profile</value></data>
+  <data name="WishlistWithCount" xml:space="preserve"><value>Wishlist ({0})</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+  <data name="ReviewsAndRatings" xml:space="preserve"><value>Reviews &amp; Ratings</value></data>
+  <data name="TotalReviewsLabel" xml:space="preserve"><value>Total Reviews:</value></data>
+  <data name="ViewAllReviews" xml:space="preserve"><value>View All Reviews</value></data>
+  <data name="ShoppingCart" xml:space="preserve"><value>Shopping Cart</value></data>
+  <data name="ItemsInCart" xml:space="preserve"><value>Items in Cart:</value></data>
+  <data name="ViewCart" xml:space="preserve"><value>View Cart</value></data>
+  <data name="RtlToggleLabel" xml:space="preserve"><value>RTL</value></data>
+</root>

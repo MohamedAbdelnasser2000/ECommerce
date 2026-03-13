@@ -1,0 +1,480 @@
+@model IEnumerable<ECommerceWebsite.Models.Product>
+
+@{
+    ViewData["Title"] = L["PageTitle"];
+    var categories = ViewBag.Categories as IEnumerable<ECommerceWebsite.Models.Category>;
+    var currentCategory = ViewBag.CurrentCategory as int?;
+    var currentSearch = ViewBag.CurrentSearch as string;
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var sortBy = ViewBag.SortBy as string ?? "newest";
+    var minPrice = ViewBag.MinPrice as decimal?;
+    var maxPrice = ViewBag.MaxPrice as decimal?;
+    var viewMode = ViewBag.ViewMode as string ?? "grid";
+    var pageSize = 12;
+    var siteName = ViewBag.SiteName as string ?? L["DefaultSiteName"].Value;
+
+    var sliderMin = (int)(minPrice ?? 0);
+    var sliderMax = (int)(maxPrice ?? 10000);
+
+    var fallbackImage = "images/unnamed.jpg";
+    var fallbackImage200 = Url.Content("~/media/200x200/images/unnamed.jpg");
+    var fallbackImage400 = Url.Content("~/media/400x400/images/unnamed.jpg");
+    var fallbackImage800 = Url.Content("~/media/800x800/images/unnamed.jpg");
+}
+
+
+@section Styles {
+    <link href="~/css/consistent-product-page.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<!-- قسم Hero متناسق مع ألوان الموقع -->
+<section class="products-hero-consistent">
+    <div class="container">
+        <div class="hero-content">
+            <nav aria-label="breadcrumb" style="margin-bottom: 1rem;">
+                <ol class="breadcrumb" style="background: transparent; padding: 0; margin: 0; justify-content: center;">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")" style="color: rgba(255,255,255,0.8); text-decoration: none;">
+                            <i class="fas fa-home me-1"></i>@L["BreadcrumbHome"]
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" style="color: white;" aria-current="page">@L["BreadcrumbProducts"]</li>
+                </ol>
+            </nav>
+            
+            <h1 class="hero-title">@L["HeroTitle"]</h1>
+            <p class="hero-subtitle">@L["HeroSubtitle"]</p>
+            
+           @* <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">@(Model?.Count() ?? 8)</span>
+                    <div class="stat-label">@L["HeroStatProducts"]</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">@(categories?.Count() ?? 6)</span>
+                    <div class="stat-label">@L["HeroStatCategories"]</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">@L["HeroStatSupport"]</div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+</section>
+
+<!-- المحتوى الرئيسي -->
+<div class="products-container">
+    <!-- زر الفلاتر للهاتف المحمول -->
+    <button id="mobileFilterBtn" class="mobile-filter-btn d-md-none">
+        <i class="fas fa-filter me-2"></i>@L["MobileFilterButton"]
+    </button>
+    
+    <div class="products-layout">
+        <!-- شريط الفلاتر الجانبي -->
+        <aside class="filters-sidebar-consistent">
+            <div class="d-flex justify-content-between align-items-center d-md-none mb-3">
+                <h3 class="filters-title mb-0">@L["FiltersTitleMobile"]</h3>
+                <button id="closeFilters" class="btn btn-sm" style="color: var(--gold);">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <h3 class="filters-title d-none d-md-flex">
+                <i class="fas fa-filter"></i>
+                @L["FiltersTitle"]
+            </h3>
+            
+            <!-- البحث -->
+            <div class="filter-section">
+                <h4><i class="fas fa-search"></i>@L["SearchTitle"]</h4>
+                <form method="get" asp-action="Index">
+                    <div class="search-box">
+                        <input type="text" name="search" id="productSearch" class="search-input" 
+                               value="@currentSearch" placeholder="@L["SearchPlaceholder"]" aria-label="@L["SearchAriaLabel"]">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="hidden" name="categoryId" value="@currentCategory" />
+                        <input type="hidden" name="sortBy" value="@sortBy" />
+                        <input type="hidden" name="minPrice" value="@minPrice" />
+                        <input type="hidden" name="maxPrice" value="@maxPrice" />
+                    </div>
+                </form>
+            </div>
+            
+            <!-- الفئات -->
+            <div class="filter-section">
+                <h4><i class="fas fa-tags"></i>@L["CategoriesTitle"]</h4>
+                <ul class="category-list">
+                    <li class="category-item">
+                        <a href="@Url.Action("Index", "Product")" 
+                           class="category-link @(currentCategory == null ? "active" : "")">
+                            <span><i class="fas fa-th-large me-2"></i>@L["AllCategories"]</span>
+                            <span class="category-count">@(Model?.Count() ?? 0)</span>
+                        </a>
+                    </li>
+                    @if (categories != null)
+                    {
+                        @foreach (var category in categories)
+                        {
+                            <li class="category-item">
+                                <a href="@Url.Action("Index", "Product", new { categoryId = category.Id })" 
+                                   class="category-link @(currentCategory == category.Id ? "active" : "")">
+                                    <span><i class="fas fa-tag me-2"></i>@category.GetLocalizedName()</span>
+                                    <span class="category-count">@category.Products?.Count()</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            
+            <!-- نطاق الأسعار -->
+            <div class="filter-section">
+                <h4><i class="fas fa-dollar-sign"></i>@L["PriceRangeTitle"]</h4>
+                <form method="get" asp-action="Index">
+                    <div class="price-range-container">
+                        <div class="price-inputs">
+                            <input type="number" name="minPrice" id="minPrice" class="price-input" 
+                                   placeholder="@L["MinPricePlaceholder"]" min="0" value="@minPrice" aria-label="@L["MinPriceAriaLabel"]">
+                            <input type="number" name="maxPrice" id="maxPrice" class="price-input" 
+                                   placeholder="@L["MaxPricePlaceholder"]" min="0" value="@maxPrice" aria-label="@L["MaxPriceAriaLabel"]">
+                            <input type="hidden" name="search" value="@currentSearch" />
+                            <input type="hidden" name="categoryId" value="@currentCategory" />
+                            <input type="hidden" name="sortBy" value="@sortBy" />
+                        </div>
+                        <button type="submit" class="btn btn-sm mt-2" 
+                                style="background: var(--gold); color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; width: 100%;">
+                            @L["ApplyButton"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- خيارات إضافية -->
+            <div class="filter-section">
+                <h4><i class="fas fa-cog"></i>@L["AdditionalOptionsTitle"]</h4>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="inStockOnly" style="accent-color: var(--gold);">
+                    <label class="form-check-label" for="inStockOnly" style="font-size: 0.9rem;">
+                        @L["InStockOnly"]
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="onSaleOnly" style="accent-color: var(--gold);">
+                    <label class="form-check-label" for="onSaleOnly" style="font-size: 0.9rem;">
+                        @L["OnSaleOnly"]
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newOnly" style="accent-color: var(--gold);">
+                    <label class="form-check-label" for="newOnly" style="font-size: 0.9rem;">
+                        @L["NewOnly"]
+                    </label>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- منطقة المنتجات الرئيسية -->
+        <main class="products-main">
+            <!-- شريط التحكم العلوي -->
+            <div class="products-controls">
+                <div class="products-count">
+                    @L["ProductsCount", Model?.Count() ?? 0, Model?.Count() ?? 0]
+                </div>
+                
+                <div class="controls-right">
+                    <form method="get" asp-action="Index" style="display: inline;">
+                        <select name="sortBy" id="sortSelect" class="sort-select" aria-label="@L["SortByLabel"]"
+                                onchange="this.form.submit()">
+                            @if (sortBy == "newest")
+                            {
+                                <option value="newest" selected>@L["Newest"]</option>
+                            }
+                            else
+                            {
+                                <option value="newest">@L["Newest"]</option>
+                            }
+                            
+                            @if (sortBy == "price-low")
+                            {
+                                <option value="price-low" selected>@L["PriceLowToHigh"]</option>
+                            }
+                            else
+                            {
+                                <option value="price-low">@L["PriceLowToHigh"]</option>
+                            }
+                            
+                            @if (sortBy == "price-high")
+                            {
+                                <option value="price-high" selected>@L["PriceHighToLow"]</option>
+                            }
+                            else
+                            {
+                                <option value="price-high">@L["PriceHighToLow"]</option>
+                            }
+                            
+                            @if (sortBy == "name")
+                            {
+                                <option value="name" selected>@L["NameAZ"]</option>
+                            }
+                            else
+                            {
+                                <option value="name">@L["NameAZ"]</option>
+                            }
+                        </select>
+                        <input type="hidden" name="search" value="@currentSearch" />
+                        <input type="hidden" name="categoryId" value="@currentCategory" />
+                        <input type="hidden" name="minPrice" value="@minPrice" />
+                        <input type="hidden" name="maxPrice" value="@maxPrice" />
+                    </form>
+                    
+                    <div class="view-toggle">
+                        <button class="view-btn @(viewMode == "grid" ? "active" : "")" data-view="grid" 
+                                title="@L["GridViewTitle"]" aria-label="@L["GridViewAriaLabel"]">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn @(viewMode == "list" ? "active" : "")" data-view="list" 
+                                title="@L["ListViewTitle"]" aria-label="@L["ListViewAriaLabel"]">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- شبكة المنتجات -->
+            <div class="products-grid" role="main" aria-label="@L["ProductsListAriaLabel"]">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var product in Model)
+                    {
+                        <div class="product-card-consistent" data-product-id="@product.Id">
+                            <div class="product-image-container">
+                                @{
+                                    var normalizedImagePath = string.IsNullOrWhiteSpace(product.ImageUrl)
+                                        ? fallbackImage
+                                        : product.ImageUrl.TrimStart('/');
+                                    var imageSrc200 = Url.Content($"/media/200x200/{normalizedImagePath}");
+                                    var imageSrc400 = Url.Content($"/media/400x400/{normalizedImagePath}");
+                                    var imageSrc800 = Url.Content($"/media/800x800/{normalizedImagePath}");
+                                }
+                                <img src="@imageSrc400" alt="@product.GetLocalizedName()" class="product-image" loading="lazy" srcset="@imageSrc200 200w, @imageSrc400 400w, @imageSrc800 800w" sizes="(max-width: 768px) 50vw, 25vw" onerror="this.onerror=null; this.srcset=null; this.sizes=null; this.src='@fallbackImage400';">
+                                
+                                <div class="product-badges">
+                                    @if (product.DiscountPrice.HasValue)
+                                    {
+                                        <span class="product-badge badge-sale">@L["Sale"]</span>
+                                    }
+                                    @if (product.CreatedAt > DateTime.Now.AddDays(-30))
+                                    {
+                                        <span class="product-badge badge-new">@L["New"]</span>
+                                    }
+                                    @if (product.StockQuantity <= 0)
+                                    {
+                                        <span class="product-badge badge-out-of-stock">@L["Out of stock"]</span>
+                                    }
+                                </div>
+                                
+                                <div class="product-actions">
+                                    <button class="action-btn wishlist-btn" data-product-id="@product.Id"
+                                            title="@L["AddToWishlistTitle"]" aria-label="@L["AddToWishlistAriaLabel", product.GetLocalizedName()]">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="action-btn quick-view-btn" data-product-id="@product.Id" 
+                                            title="@L["QuickViewTitle"]" aria-label="@L["QuickViewAriaLabel", product.GetLocalizedName()]">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="product-content">
+                                <h1 class="product-title">
+                                    <a href="@Url.Action("Details", "Product", new { id = product.Id })" 
+                                       style="color: inherit; text-decoration: none;">
+                                        @product.GetLocalizedName()
+                                    </a>
+                                </h1>
+                                
+                               
+                                
+                                <div class="product-price">
+                                    <span class="current-price">$@product.FinalPrice.ToString("F2")</span>
+                                    @if (product.DiscountPrice.HasValue)
+                                    {
+                                        <span class="original-price">$@product.Price.ToString("F2")</span>
+                                        <span class="discount-percent">
+                                            -@(Math.Round((1 - (product.FinalPrice / product.Price)) * 100))%
+                                        </span>
+                                    }
+                                </div>
+                                
+                                <button class="add-to-cart-btn" data-product-id="@product.Id" 
+                                        @(product.StockQuantity <= 0 ? "disabled" : "")>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    @(product.StockQuantity > 0 ? L["AddToCart"].Value : L["OutOfStock"].Value)
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                        <i class="fas fa-box-open" style="font-size: 4rem; color: var(--gold); margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">@L["NoProductsTitle"]</h3>
+                        <p style="color: var(--text-muted);">@L["NoProductsSubtitle"]</p>
+                        <a href="@Url.Action("Index", "Home")" class="btn" 
+                           style="background: var(--gold); color: white; padding: 0.75rem 2rem; border-radius: 8px; text-decoration: none; margin-top: 1rem; display: inline-block;">
+                            @L["BackToHome"]
+                        </a>
+                    </div>
+                }
+            </div>
+            
+            <!-- التصفح (Pagination) -->
+            @if (totalPages > 1)
+            {
+                <nav aria-label="@L["PaginationAriaLabel"]" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = currentPage - 1, 
+                                    search = currentSearch, 
+                                    categoryId = currentCategory, 
+                                    sortBy = sortBy, 
+                                    minPrice = minPrice, 
+                                    maxPrice = maxPrice 
+                                })" style="color: var(--gold); border-color: var(--border-color);">
+                                    @L["Previous"]
+                                </a>
+                            </li>
+                        }
+                        
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = i, 
+                                    search = currentSearch, 
+                                    categoryId = currentCategory, 
+                                    sortBy = sortBy, 
+                                    minPrice = minPrice, 
+                                    maxPrice = maxPrice 
+                                })" style="@(i == currentPage ? "background: var(--gold); border-color: var(--gold);" : "color: var(--gold); border-color: var(--border-color);")">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                        
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = currentPage + 1, 
+                                    search = currentSearch, 
+                                    categoryId = currentCategory, 
+                                    sortBy = sortBy, 
+                                    minPrice = minPrice, 
+                                    maxPrice = maxPrice 
+                                })" style="color: var(--gold); border-color: var(--border-color);">
+                                    @L["Next"]
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </main>
+    </div>
+</div>
+
+<!-- الطبقة المتراكبة للهاتف المحمول -->
+<div class="mobile-overlay"></div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script src="~/js/consistent-product-page.js" asp-append-version="true"></script>
+    <script>
+        // تهيئة إضافية خاصة بـ ASP.NET Core
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحديث عداد السلة إذا كان متوفراً
+            function updateCartCount() {
+                fetch('/api/cart/count')
+                    .then(response => response.json())
+                    .then(data => {
+                        const cartCount = document.getElementById('cart-count');
+                        if (cartCount && data.count > 0) {
+                            cartCount.textContent = data.count;
+                            cartCount.style.display = 'inline';
+                        }
+                    })
+                    .catch(error => console.log('Cart count update failed:', error));
+            }
+            
+            // تحديث عداد المفضلة
+            function updateWishlistCount() {
+                fetch('/Wishlist/GetWishlistCount')
+                    .then(response => response.json())
+                    .then(data => {
+                        const wishlistCount = document.getElementById('wishlist-count');
+                        if (wishlistCount && data.count > 0) {
+                            wishlistCount.textContent = data.count;
+                            wishlistCount.style.display = 'inline';
+                        } else if (wishlistCount) {
+                            wishlistCount.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.log('Wishlist count update failed:', error));
+            }
+            
+            // تحديث العدادات عند تحميل الصفحة
+            updateCartCount();
+            updateWishlistCount();
+            
+            // تحديث العدادات عند إضافة منتجات
+            document.addEventListener('productAddedToCart', updateCartCount);
+            document.addEventListener('productAddedToWishlist', updateWishlistCount);
+        });
+    </script>
+}
+
+@* إضافة structured data للـ SEO *@
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "CollectionPage",
+    "name": "@L["SeoPageName", siteName]",
+    "description": "@L["SeoPageDescription"]",
+    "url": "@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)",
+    "mainEntity": {
+        "@@type": "ItemList",
+        "numberOfItems": @(Model?.Count() ?? 0),
+        "itemListElement": [
+            @if (Model != null && Model.Any())
+            {
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    var product = Model.ElementAt(i);
+                    <text>
+                    {
+                        "@@type": "Product",
+                        "position": @(i + 1),
+                        "name": "@product.GetLocalizedName()",
+                        "description": "@(string.IsNullOrWhiteSpace(product.GetLocalizedDescription()) ? product.GetLocalizedName() : product.GetLocalizedDescription())",
+                        "image": "@(Context.Request.Scheme)://@(Context.Request.Host)@Url.Content(product.ImageUrl ?? "~/images/unnamed.jpg")",
+                        "offers": {
+                            "@@type": "Offer",
+                            "price": "@product.Price",
+                            "priceCurrency": "USD",
+                            "availability": "@(product.StockQuantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock")"
+                        }
+                    }@(i < Model.Count() - 1 ? "," : "")
+                    </text>
+                }
+            }
+        ]
+    }
+}
+</script>

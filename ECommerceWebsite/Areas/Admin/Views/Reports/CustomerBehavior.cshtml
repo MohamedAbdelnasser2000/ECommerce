@@ -1,0 +1,81 @@
+@model ECommerceWebsite.ViewModels.CustomerBehaviorViewModel
+@{
+    ViewData["Title"] = "Customer Behavior";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-user-chart me-2"></i>Customer Behavior (RFM & Cohorts)</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">RFM Segments</h3></div>
+            <div class="card-body">
+                @if(Model.Rfm.Any()){
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Orders</th>
+                                    <th>Total Spent</th>
+                                    <th>Last Order</th>
+                                    <th>Segment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var c in Model.Rfm){
+                                    <tr>
+                                        <td>@c.User.FirstName @c.User.LastName<br/><small class="text-muted">@c.User.Email</small></td>
+                                        <td>@c.OrdersCount</td>
+                                        <td>$@c.TotalSpent.ToString("N2")</td>
+                                        <td>@(c.LastOrderDate.HasValue ? c.LastOrderDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                                        <td><span class="badge bg-secondary">@c.Segment</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } else { <p class="text-muted">No customer data.</p> }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Cohorts</h3></div>
+            <div class="card-body">
+                @if(Model.Cohorts.Any()){
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Cohort</th>
+                                    <th>Customers</th>
+                                    <th>Orders</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var row in Model.Cohorts){
+                                    <tr>
+                                        <td>@row.Cohort</td>
+                                        <td>@row.Customers</td>
+                                        <td>@row.Orders</td>
+                                        <td>$@row.Revenue.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } else { <p class="text-muted">No cohorts data.</p> }
+            </div>
+        </div>
+    </div>
+</div>

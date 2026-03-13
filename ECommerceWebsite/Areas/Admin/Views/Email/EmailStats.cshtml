@@ -1,0 +1,212 @@
+@{
+    ViewData["Title"] = "Email Statistics";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Email Statistics</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Email")">Email</a></li>
+                        <li class="breadcrumb-item active">Statistics</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Email Statistics Cards -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@ViewBag.TodaySent</h3>
+                            <p>Emails Sent Today</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@ViewBag.WeekSent</h3>
+                            <p>Emails Sent This Week</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@ViewBag.MonthSent</h3>
+                            <p>Emails Sent This Month</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@ViewBag.TotalSubscribers</h3>
+                            <p>Newsletter Subscribers</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Failed Emails Row -->
+            <div class="row">
+                <div class="col-lg-4 col-6">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-danger"><i class="fas fa-times-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Failed Today</span>
+                            <span class="info-box-number">@ViewBag.TodayFailed</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-warning"><i class="fas fa-exclamation-triangle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Failed This Week</span>
+                            <span class="info-box-number">@ViewBag.WeekFailed</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-secondary"><i class="fas fa-ban"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Failed This Month</span>
+                            <span class="info-box-number">@ViewBag.MonthFailed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Additional Stats -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Email Performance</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-responsive">
+                                <canvas id="emailChart" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="@Url.Action("Index")" class="btn btn-primary btn-block">
+                                        <i class="fas fa-list mr-2"></i>
+                                        View Email Logs
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="@Url.Action("Templates")" class="btn btn-info btn-block">
+                                        <i class="fas fa-file-alt mr-2"></i>
+                                        Manage Templates
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <a href="@Url.Action("Newsletter")" class="btn btn-success btn-block">
+                                        <i class="fas fa-newspaper mr-2"></i>
+                                        Send Newsletter
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-warning btn-block" onclick="refreshStats()">
+                                        <i class="fas fa-sync-alt mr-2"></i>
+                                        Refresh Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Email Performance Chart
+        const ctx = document.getElementById('emailChart').getContext('2d');
+        const emailChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sent Successfully', 'Failed', 'Pending'],
+                datasets: [{
+                    data: [@ViewBag.WeekSent, @ViewBag.WeekFailed, 0],
+                    backgroundColor: [
+                        '#28a745',
+                        '#dc3545',
+                        '#ffc107'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function refreshStats() {
+            location.reload();
+        }
+    </script>
+}
+
+<style>
+    .small-box {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .info-box {
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>

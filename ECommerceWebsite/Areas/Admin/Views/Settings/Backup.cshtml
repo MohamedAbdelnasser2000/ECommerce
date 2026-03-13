@@ -1,0 +1,276 @@
+@model BackupViewModel
+
+@{
+    ViewData["Title"] = "Backup & Restore";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-database me-2"></i>Backup & Restore
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Backup Information -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle me-2"></i>Backup Information
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">Last Backup:</th>
+                        <td>
+                            @if (Model.LastBackupDate.HasValue)
+                            {
+                                <span class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    @Model.LastBackupDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    No backup found
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Backup Size:</th>
+                        <td><strong>@Model.BackupSize</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Backup Location:</th>
+                        <td><code>@Model.BackupLocation</code></td>
+                    </tr>
+                    <tr>
+                        <th>Auto Backup:</th>
+                        <td>
+                            @if (Model.AutoBackupEnabled)
+                            {
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check me-1"></i>Enabled (@Model.BackupFrequency)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">
+                                    <i class="fas fa-times me-1"></i>Disabled
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Regular backups are essential for data protection. 
+                    We recommend creating backups before major updates or changes.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Actions -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-tools me-2"></i>Backup Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- Create Backup -->
+                <div class="mb-4">
+                    <h5 class="text-primary">Create New Backup</h5>
+                    <p class="text-muted">Create a complete backup of your database and files.</p>
+                    <form asp-action="CreateBackup" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-primary" id="createBackupBtn">
+                            <i class="fas fa-download me-1"></i>Create Backup Now
+                        </button>
+                    </form>
+                </div>
+
+                <hr>
+
+                <!-- Auto Backup Settings -->
+                <div class="mb-4">
+                    <h5 class="text-primary">Auto Backup Settings</h5>
+                    <form asp-action="UpdateAutoBackup" method="post">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="autoBackupEnabled" 
+                                   @(Model.AutoBackupEnabled ? "checked" : "") id="autoBackupEnabled">
+                            <label class="form-check-label" for="autoBackupEnabled">
+                                Enable Automatic Backups
+                            </label>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="backupFrequency" class="form-label">Backup Frequency</label>
+                            <select name="backupFrequency" id="backupFrequency" class="form-control">
+                                <option value="Daily" selected="@(Model.BackupFrequency == "Daily")">Daily</option>
+                                <option value="Weekly" selected="@(Model.BackupFrequency == "Weekly")">Weekly</option>
+                                <option value="Monthly" selected="@(Model.BackupFrequency == "Monthly")">Monthly</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Save Auto Backup Settings
+                        </button>
+                    </form>
+                </div>
+
+                <hr>
+
+                <!-- Restore Options -->
+                <div class="mb-4">
+                    <h5 class="text-danger">Restore from Backup</h5>
+                    <p class="text-muted">Upload and restore from a previous backup file.</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> Restoring will overwrite all current data!
+                    </div>
+                    
+                    <form asp-action="RestoreBackup" method="post" enctype="multipart/form-data">
+                        <div class="form-group mb-3">
+                            <label for="backupFile" class="form-label">Select Backup File</label>
+                            <input type="file" name="backupFile" id="backupFile" class="form-control" accept=".sql,.bak,.zip">
+                            <div class="form-text">Accepted formats: .sql, .bak, .zip</div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="confirmRestore" id="confirmRestore" required>
+                            <label class="form-check-label" for="confirmRestore">
+                                I understand that this will overwrite all current data
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger" id="restoreBtn" disabled>
+                            <i class="fas fa-upload me-1"></i>Restore from Backup
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup History -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-history me-2"></i>Backup History
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" id="refreshHistory">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@(Model.LastBackupDate?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</td>
+                                <td><span class="badge badge-primary">Automatic</span></td>
+                                <td>@Model.BackupSize</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Only the most recent backup is shown. Full history available in production.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enable/disable restore button based on confirmation
+            $('#confirmRestore').change(function() {
+                $('#restoreBtn').prop('disabled', !$(this).prop('checked'));
+            });
+
+            // Create backup with progress
+            $('#createBackupBtn').click(function(e) {
+                e.preventDefault();
+                var btn = $(this);
+                var originalText = btn.html();
+                
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Creating Backup...');
+                
+                // Simulate backup process
+                setTimeout(function() {
+                    btn.closest('form')[0].submit();
+                }, 1000);
+            });
+
+            // Auto backup toggle
+            $('#autoBackupEnabled').change(function() {
+                $('#backupFrequency').prop('disabled', !$(this).prop('checked'));
+            });
+
+            // Initialize frequency dropdown state
+            $('#backupFrequency').prop('disabled', !$('#autoBackupEnabled').prop('checked'));
+
+            // Refresh history
+            $('#refreshHistory').click(function() {
+                var btn = $(this);
+                btn.addClass('fa-spin');
+                
+                setTimeout(function() {
+                    btn.removeClass('fa-spin');
+                    // In a real app, this would reload the backup history
+                }, 1000);
+            });
+
+            // Confirm restore action
+            $('form[action*="RestoreBackup"]').submit(function(e) {
+                if (!confirm('Are you absolutely sure you want to restore from this backup? This action cannot be undone and will overwrite all current data.')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+}

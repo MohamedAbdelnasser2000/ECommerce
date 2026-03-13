@@ -1,0 +1,26 @@
+/* Footer centering overrides for small screens */
+@media (max-width: 575.98px) {
+  /* Top section */
+  .site-footer .footer-top { text-align: center; }
+  .site-footer .footer-brand { justify-content: center; }
+  .site-footer .footer-social { justify-content: center; }
+  .site-footer .footer-col { text-align: center; }
+  .site-footer .footer-links { justify-items: center; }
+  .site-footer .footer-newsletter { text-align: center; }
+
+  /* Bottom bar */
+  .site-footer .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: .5rem;
+  }
+  .site-footer .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: center;
+    margin-top: .25rem;
+  }
+}

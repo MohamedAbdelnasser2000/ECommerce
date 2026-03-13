@@ -1,0 +1,102 @@
+@model ECommerceWebsite.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section Styles {
+    <link href="~/css/auth.css" rel="stylesheet" />
+}
+
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-7">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-user-plus brand-icon"></i>
+                            @L["Create your account"]
+                        </h4>
+                    </div>
+
+                    <div class="auth-body">
+                        <form asp-action="Register" method="post" asp-antiforgery="true">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="FirstName" class="form-label">
+                                        <i class="fas fa-user me-1"></i>@L["First Name"]
+                                    </label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="LastName" class="form-label">
+                                        <i class="fas fa-user me-1"></i>@L["Last Name"]
+                                    </label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>@L["Email"]
+                                </label>
+                                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="PhoneNumber" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>@L["Phone Number (Optional)"]
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Password" class="form-label">
+                                        <i class="fas fa-lock me-1"></i>@L["Password"]
+                                    </label>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                    <div class="form-text">@L["Password must be at least 6 characters long."]</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ConfirmPassword" class="form-label">
+                                        <i class="fas fa-lock me-1"></i>@L["Confirm Password"]
+                                    </label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="auth-actions d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>@L["Create Account"]
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="auth-footer">
+                        <div class="divider"></div>
+                        <div class="text-center">
+                            <p class="mb-2">@L["Already have an account?"]</p>
+                            <a asp-action="Login" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>@L["Login"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>لوحة تحكم العميل</value></data>
+  <data name="WelcomeBack" xml:space="preserve"><value>مرحباً بعودتك، {0} {1}!</value></data>
+  <data name="HeroDescription" xml:space="preserve"><value>قم بإدارة طلباتك وملفك الشخصي وتفضيلاتك من لوحة التحكم.</value></data>
+  <data name="MyOrders" xml:space="preserve"><value>طلباتي</value></data>
+  <data name="Wishlist" xml:space="preserve"><value>قائمة الأمنيات</value></data>
+  <data name="TotalOrders" xml:space="preserve"><value>إجمالي الطلبات</value></data>
+  <data name="Pending" xml:space="preserve"><value>قيد الانتظار</value></data>
+  <data name="Completed" xml:space="preserve"><value>مكتمل</value></data>
+  <data name="TotalSpent" xml:space="preserve"><value>إجمالي الإنفاق</value></data>
+  <data name="QuickActions" xml:space="preserve"><value>إجراءات سريعة</value></data>
+  <data name="ViewOrders" xml:space="preserve"><value>عرض الطلبات</value></data>
+  <data name="EditProfile" xml:space="preserve"><value>تعديل الملف الشخصي</value></data>
+  <data name="WishlistWithCount" xml:space="preserve"><value>قائمة الأمنيات ({0})</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>تغيير كلمة المرور</value></data>
+  <data name="ReviewsAndRatings" xml:space="preserve"><value>المراجعات والتقييمات</value></data>
+  <data name="TotalReviewsLabel" xml:space="preserve"><value>إجمالي المراجعات:</value></data>
+  <data name="ViewAllReviews" xml:space="preserve"><value>عرض جميع المراجعات</value></data>
+  <data name="ShoppingCart" xml:space="preserve"><value>سلة التسوق</value></data>
+  <data name="ItemsInCart" xml:space="preserve"><value>العناصر في السلة:</value></data>
+  <data name="ViewCart" xml:space="preserve"><value>عرض السلة</value></data>
+  <data name="RtlToggleLabel" xml:space="preserve"><value>اتجاه RTL</value></data>
+</root>

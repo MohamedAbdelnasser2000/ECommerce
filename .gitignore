@@ -1,0 +1,59 @@
+# .gitignore for .NET projects (Razor Pages)
+# Ignore build outputs and user-specific files
+
+# Build Folders
+[Ee]bin/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Razor generated files
+*.g.cs
+
+# Certificate files
+*.pfx
+
+# Publish output
+publish/
+
+# Local secrets and development settings
+appsettings.Development.json
+secrets.json
+
+# VS Code
+.vscode/
+
+# Docker
+docker-compose.override.yml
+
+# Others
+*.backup
+*.bak
+
+# End of .gitignore
